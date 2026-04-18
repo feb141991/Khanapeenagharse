@@ -156,7 +156,7 @@ function Header({ cartCount, wishlistCount, isLoggedIn, onSignOut }) {
       transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
     >
       <Link className="brand" to="/" aria-label="Khana Peena Ghar Se home">
-        <img src="images/logo.png" alt="" />
+        <img src="/images/logo.png" alt="" />
         <span className="brand-copy">
           <strong>Khana Peena Ghar Se</strong>
           <span>Homemade achar and Indian food</span>
@@ -464,7 +464,7 @@ function HomePage() {
                         alt={product.name}
                         loading="lazy"
                         onError={(event) => {
-                          event.currentTarget.src = "images/logo.png";
+                          event.currentTarget.src = "/images/logo.png";
                         }}
                       />
                     </div>
@@ -482,7 +482,7 @@ function HomePage() {
       <footer className="site-footer-react">
         <div className="footer-brand-block">
           <Link className="brand" to="/">
-            <img src="images/logo.png" alt="" />
+            <img src="/images/logo.png" alt="" />
             <span className="brand-copy">
               <strong>Khana Peena Ghar Se</strong>
               <span>Homemade achar and Indian food</span>
@@ -724,7 +724,7 @@ function ProductSystemSection({ wishlist, toggleWishlist, addToCart }) {
                           alt={product.name}
                           loading="lazy"
                           onError={(event) => {
-                            event.currentTarget.src = "images/logo.png";
+                            event.currentTarget.src = "/images/logo.png";
                           }}
                         />
                         <div className="product-tile-grid" aria-hidden="true" />
@@ -804,7 +804,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
           src={selectedImage || product.image}
           alt={product.name}
           onError={(event) => {
-            event.currentTarget.src = "images/logo.png";
+            event.currentTarget.src = "/images/logo.png";
           }}
         />
         {product.images?.length > 1 ? (
@@ -820,7 +820,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
                   src={imagePath}
                   alt={`${product.name} view`}
                   onError={(event) => {
-                    event.currentTarget.src = "images/logo.png";
+                    event.currentTarget.src = "/images/logo.png";
                   }}
                 />
               </button>
@@ -925,7 +925,7 @@ function WishlistPage({ wishlist }) {
                   src={product.image}
                   alt={product.name}
                   onError={(event) => {
-                    event.currentTarget.src = "images/logo.png";
+                    event.currentTarget.src = "/images/logo.png";
                   }}
                 />
               </div>
