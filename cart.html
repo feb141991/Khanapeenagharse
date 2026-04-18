@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FBF6EC">
+  <title>Cart | Khana Peena Ghar Se</title>
+  <meta name="description" content="Review your cart and complete your order at Khana Peena Ghar Se." />
+  <link rel="icon" href="images/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="site-shell">
+    <header class="site-header" role="banner">
+      <a class="brand" href="index.html" aria-label="Khana Peena Ghar Se — home">
+        <img src="images/logo.png" alt="" onerror="this.style.display='none'">
+        <span class="brand-copy"><strong>Khana Peena Ghar Se</strong><span>Cart &amp; checkout</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="achar.html">Achar Menu</a>
+        <a href="wishlist.html">Wishlist</a>
+        <a href="cart.html" aria-current="page">Cart</a>
+        <a href="login.html">Login</a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="page-hero">
+        <p class="eyebrow">Checkout</p>
+        <h1>Your cart, your delivery details.</h1>
+        <p class="page-hero-lede">
+          Review the jars, fill in where they're going, and place the order.
+          Payment integration is coming soon — for now orders are confirmed by our team
+          and an order number is generated instantly.
+        </p>
+      </section>
+
+      <section class="checkout-layout">
+        <div class="checkout-card">
+          <p class="eyebrow">Your jars</p>
+          <h2>Cart</h2>
+          <div id="cart-items" aria-live="polite"></div>
+        </div>
+        <div class="checkout-card">
+          <p class="eyebrow">Delivery</p>
+          <h2>Where it's going</h2>
+          <form id="checkout-form" class="stack-form" novalidate>
+            <div class="form-grid">
+              <label>Full name<input type="text" name="customerName" autocomplete="name" required></label>
+              <label>Phone<input type="tel" name="phone" autocomplete="tel" required></label>
+            </div>
+            <label>Email<input type="email" name="email" autocomplete="email"></label>
+            <label>Address line 1<input type="text" name="addressLine1" autocomplete="address-line1" required></label>
+            <label>Address line 2<input type="text" name="addressLine2" autocomplete="address-line2"></label>
+            <div class="form-grid">
+              <label>City<input type="text" name="city" autocomplete="address-level2" required></label>
+              <label>State<input type="text" name="state" autocomplete="address-level1" required></label>
+              <label>Pincode<input type="text" name="pincode" autocomplete="postal-code" pattern="[0-9]{6}" inputmode="numeric" required></label>
+            </div>
+            <label>Delivery notes<textarea name="notes" rows="4" placeholder="Gift note, landmark, preferred delivery window…"></textarea></label>
+            <div class="payment-placeholder">
+              <strong>Payment</strong>
+              <p>Razorpay will plug in here. For now our team will confirm the order and share the payment link.</p>
+            </div>
+            <button class="button button-primary" type="submit" id="checkout-submit">Place order request</button>
+            <p class="form-status" id="checkout-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-grid">
+        <div>
+          <strong class="footer-brand">Khana Peena Ghar Se</strong>
+          <p>Small-batch achar from a Bahadurgarh kitchen. Sealed jars, honest masala.</p>
+        </div>
+        <div>
+          <h3>Shop</h3>
+          <a href="achar.html">Achar Menu</a>
+          <a href="wishlist.html">Wishlist</a>
+          <a href="cart.html">Cart</a>
+        </div>
+        <div>
+          <h3>Help</h3>
+          <a href="track-order.html">Track order</a>
+          <a href="login.html">Account</a>
+        </div>
+        <div>
+          <h3>Contact</h3>
+          <p>Bahadurgarh, Haryana<br>Mon–Sat, 10am–7pm</p>
+        </div>
+      </div>
+      <p class="footer-legal">© <span id="year"></span> Khana Peena Ghar Se. All jars made in small batches.</p>
+    </footer>
+  </div>
+  <script src="js/store.js" defer></script>
+  <script src="js/cart.js" defer></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

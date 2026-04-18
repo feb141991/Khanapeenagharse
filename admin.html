@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1F1A12">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin | Khana Peena Ghar Se</title>
+  <link rel="icon" href="images/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+  <a class="skip-link" href="#admin-main">Skip to content</a>
+  <main class="admin-shell" id="admin-main">
+    <section class="admin-hero">
+      <div class="admin-hero-copy">
+        <p class="eyebrow">Staff only</p>
+        <h1>Orders &amp; inventory</h1>
+        <p>Protected dashboard for order status, stock levels, pricing, and product gallery management.</p>
+      </div>
+      <div class="admin-hero-meta" aria-hidden="true">
+        <span class="admin-pill">Live</span>
+        <span class="admin-pill subtle">v1</span>
+      </div>
+    </section>
+
+    <section class="admin-login" id="admin-login" aria-labelledby="admin-login-heading">
+      <div class="section-heading">
+        <h2 id="admin-login-heading">Admin access</h2>
+        <p>Enter the dashboard password to load orders and inventory.</p>
+      </div>
+      <form id="login-form" class="admin-login-form" novalidate>
+        <label>Admin password<input type="password" id="admin-password" required autocomplete="current-password"></label>
+        <button class="button button-primary" type="submit">Open admin</button>
+        <p class="form-status" id="login-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="admin-dashboard hidden" id="admin-dashboard" aria-labelledby="admin-dashboard-heading">
+      <div class="admin-toolbar">
+        <div class="toolbar-copy">
+          <h2 id="admin-dashboard-heading">Dashboard</h2>
+          <p id="order-count">0 orders</p>
+        </div>
+        <div class="toolbar-actions">
+          <button class="button button-secondary" type="button" id="refresh-orders">Refresh</button>
+          <button class="button button-ghost" type="button" id="logout-admin">Log out</button>
+        </div>
+      </div>
+
+      <div class="admin-panels">
+        <section class="admin-panel" aria-labelledby="panel-orders">
+          <h3 id="panel-orders">Orders</h3>
+          <div class="admin-table-wrap">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th scope="col">Order</th>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Items</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Update</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="panel-inventory">
+          <h3 id="panel-inventory">Inventory</h3>
+          <div class="admin-table-wrap">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th scope="col">Size</th>
+                  <th scope="col">Stock</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Update</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section class="admin-panel admin-media-panel" aria-labelledby="panel-media">
+        <div class="admin-media-head">
+          <div>
+            <h3 id="panel-media">Product gallery manager</h3>
+            <p>Add relative image paths for each achar — one path per line. First path is used as the card cover.</p>
+          </div>
+          <button class="button button-secondary" type="button" id="save-media">Save galleries</button>
+        </div>
+        <p class="admin-media-hint">
+          Example path: <code>/images/achars/aam-ka-achar/hero.jpg</code>
+        </p>
+        <div class="media-grid" id="media-grid"></div>
+      </section>
+
+      <p class="form-status" id="orders-status" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+  <script src="js/admin.js" defer></script>
+</body>
+</html>
