@@ -10,6 +10,7 @@ const refreshButton = document.querySelector("#refresh-orders");
 const logoutButton = document.querySelector("#logout-admin");
 const mediaGrid = document.querySelector("#media-grid");
 const saveMediaButton = document.querySelector("#save-media");
+const createProductForm = document.querySelector("#create-product-form");
 
 const ADMIN_KEY_STORAGE = "kp_admin_key_v2";
 let currentInventory = [];
@@ -42,15 +43,23 @@ function renderMediaManager(items = currentInventory) {
             <h4>${product.name}</h4>
             <p>${product.slug}</p>
           </div>
-          <span class="media-folder">/images/achars/${product.slug}/</span>
+          <span class="media-folder">${product.slug}/</span>
         </div>
         <label>
-          Image paths
-          <textarea rows="6" data-media-id="${product.id}" data-media-slug="${product.slug}" placeholder="/images/achars/${product.slug}/hero.jpg&#10;/images/achars/${product.slug}/detail-1.jpg">${images.join("\n")}</textarea>
+          Bucket object paths
+          <textarea rows="6" data-media-id="${product.id}" data-media-slug="${product.slug}" placeholder="${product.slug}/cover.jpg&#10;${product.slug}/detail-1.jpg">${images.join("\n")}</textarea>
         </label>
       </article>
     `;
   }).join("");
+}
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 function showDashboard() {
@@ -143,6 +152,34 @@ loginForm?.addEventListener("submit", (event) => {
   loginStatus.textContent = "";
   showDashboard();
   fetchDashboard();
+});
+
+createProductForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const name = document.querySelector("#new-product-name").value.trim();
+  const slugInput = document.querySelector("#new-product-slug");
+  const slug = slugify(slugInput.value || name);
+  const sizeLabel = document.querySelector("#new-product-size").value.trim();
+  const price = Number(document.querySelector("#new-product-price").value);
+  const stockQuantity = Number(document.querySelector("#new-product-stock").value);
+  const description = document.querySelector("#new-product-description").value.trim();
+
+  if (!name || !slug || !sizeLabel) {
+    ordersStatus.textContent = "Enter product name, slug, and size label.";
+    return;
+  }
+
+  try {
+    ordersStatus.textContent = `Creating ${name}...`;
+    await patchAdmin({ type: "create-product", name, slug, sizeLabel, price, stockQuantity, description });
+    createProductForm.reset();
+    slugInput.value = "";
+    await fetchDashboard();
+    ordersStatus.textContent = `Created ${name}. Upload images to the ${slug}/ folder in the Supabase bucket.`;
+  } catch (error) {
+    ordersStatus.textContent = error.message || "Unable to create product.";
+  }
 });
 
 refreshButton?.addEventListener("click", fetchDashboard);

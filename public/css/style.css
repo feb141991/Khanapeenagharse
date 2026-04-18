@@ -493,6 +493,16 @@ textarea { min-height: 110px; resize: vertical; }
   border-radius: var(--radius);
   background: var(--cream-2);
 }
+.admin-create-product {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.admin-create-product label:last-of-type,
+.admin-create-product button {
+  grid-column: 1 / -1;
+}
 .admin-panel h3 { font-size: 1.3rem; font-weight: 500; margin-bottom: 14px; }
 .admin-media-panel { margin-top: 20px; }
 .admin-media-head {
@@ -596,7 +606,7 @@ textarea { min-height: 110px; resize: vertical; }
 
 /* Responsive */
 @media (max-width: 1080px) {
-  .product-layout, .checkout-layout, .auth-layout, .admin-panels, .media-grid {
+  .product-layout, .checkout-layout, .auth-layout, .admin-panels, .media-grid, .admin-create-product {
     grid-template-columns: 1fr;
   }
   .auth-layout.single-column { grid-template-columns: 1fr; }

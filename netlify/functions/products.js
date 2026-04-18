@@ -12,6 +12,21 @@ function toPublicMediaUrl(supabase, value) {
   return supabase.storage.from(storageBucket).getPublicUrl(value).data.publicUrl;
 }
 
+async function resolveProductFolderImages(supabase, slug) {
+  if (!slug) return [];
+
+  const { data, error } = await supabase.storage.from(storageBucket).list(slug, {
+    limit: 100,
+    sortBy: { column: "name", order: "asc" }
+  });
+
+  if (error || !Array.isArray(data)) return [];
+
+  return data
+    .filter((file) => file?.name && !file.name.startsWith("."))
+    .map((file) => `${slug}/${file.name}`);
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== "GET") {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
@@ -27,12 +42,17 @@ exports.handler = async (event) => {
 
     if (error) throw error;
 
-    const products = (data || []).map((product) => ({
-      ...product,
-      image_url: toPublicMediaUrl(supabase, product.image_url),
-      gallery_images: Array.isArray(product.gallery_images)
-        ? product.gallery_images.map((image) => toPublicMediaUrl(supabase, image)).filter(Boolean)
-        : []
+    const products = await Promise.all((data || []).map(async (product) => {
+      const folderImages = await resolveProductFolderImages(supabase, product.slug);
+      const configuredImages = Array.isArray(product.gallery_images) ? product.gallery_images.filter(Boolean) : [];
+      const allImages = folderImages.length ? folderImages : configuredImages;
+      const coverImage = allImages[0] || product.image_url || null;
+
+      return {
+        ...product,
+        image_url: toPublicMediaUrl(supabase, coverImage),
+        gallery_images: allImages.map((image) => toPublicMediaUrl(supabase, image)).filter(Boolean)
+      };
     }));
 
     return { statusCode: 200, headers, body: JSON.stringify({ products, storageBucket }) };

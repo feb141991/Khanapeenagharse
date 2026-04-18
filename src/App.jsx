@@ -934,7 +934,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   );
 }
 
-function WishlistPage({ wishlist }) {
+function WishlistPage({ wishlist, addToCart }) {
   const productCatalog = useCatalogProducts();
   const items = productCatalog.filter((product) => wishlist.includes(product.slug));
 
@@ -963,9 +963,19 @@ function WishlistPage({ wishlist }) {
                 <h3>{product.name}</h3>
                 <p>{product.shortDescription}</p>
               </div>
-              <Link className="button button-primary" to={`/product/${product.slug}`}>
-                Open product
-              </Link>
+              <div className="account-card-actions">
+                <Link className="button button-primary" to={`/product/${product.slug}`}>
+                  Open product
+                </Link>
+                <button
+                  className="button button-secondary"
+                  type="button"
+                  disabled={product.stock <= 0}
+                  onClick={() => addToCart(product.slug, 1, product.stock)}
+                >
+                  {product.stock > 0 ? "Add to cart" : "Out of stock"}
+                </button>
+              </div>
             </article>
           ))
         ) : (
@@ -1095,11 +1105,20 @@ function CartPage({ cart, updateCartQuantity }) {
   );
 }
 
-function AccountPage({ session, refreshSession, wishlist }) {
+function AccountPage({ session, refreshSession, wishlist, addToCart }) {
   const [loginState, setLoginState] = useState({ email: "", password: "" });
   const [signupState, setSignupState] = useState({ fullName: "", email: "", password: "" });
   const [status, setStatus] = useState("");
   const [profile, setProfile] = useState(null);
+  const [profileForm, setProfileForm] = useState({
+    fullName: "",
+    phone: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    pincode: ""
+  });
   const productCatalog = useCatalogProducts();
 
   useEffect(() => {
@@ -1120,11 +1139,30 @@ function AccountPage({ session, refreshSession, wishlist }) {
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "Unable to load account.");
         if (!cancelled) {
-          setProfile(result.customer || { email: result.user?.email || session.user.email || "" });
+          const nextProfile = result.customer || { email: result.user?.email || session.user.email || "" };
+          setProfile(nextProfile);
+          setProfileForm({
+            fullName: nextProfile.full_name || session.user.user_metadata?.full_name || "",
+            phone: nextProfile.phone || "",
+            addressLine1: nextProfile.address_line_1 || "",
+            addressLine2: nextProfile.address_line_2 || "",
+            city: nextProfile.city || "",
+            state: nextProfile.state || "",
+            pincode: nextProfile.pincode || ""
+          });
         }
       } catch {
         if (!cancelled) {
           setProfile({ email: session.user?.email || "" });
+          setProfileForm({
+            fullName: session.user?.user_metadata?.full_name || "",
+            phone: "",
+            addressLine1: "",
+            addressLine2: "",
+            city: "",
+            state: "",
+            pincode: ""
+          });
         }
       }
     }
@@ -1189,25 +1227,122 @@ function AccountPage({ session, refreshSession, wishlist }) {
     setStatus(data.session ? "Account created." : "Account created. Check your email to confirm sign in.");
   };
 
+  const handleProfileUpdate = async (event) => {
+    event.preventDefault();
+    if (!session?.access_token) return;
+
+    setStatus("Saving account details...");
+    try {
+      const response = await fetch("/.netlify/functions/customer-profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(profileForm)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Unable to save account.");
+      setProfile(result.customer || null);
+      setStatus("Account details updated.");
+    } catch (error) {
+      setStatus(error.message || "Unable to save account.");
+    }
+  };
+
   if (session) {
     const wishlistItems = productCatalog.filter((product) => wishlist.includes(product.slug));
+    const fullName = profile?.full_name || session.user.user_metadata?.full_name || "Customer";
+    const addressSummary = [profile?.address_line_1, profile?.address_line_2, profile?.city, profile?.state, profile?.pincode]
+      .filter(Boolean)
+      .join(", ");
 
     return (
-      <section className="auth-shell single">
-        <div className="auth-panel primary auth-form-panel">
-          <p className="eyebrow">My account</p>
-          <h1>Your account is active.</h1>
-          <p>{profile?.full_name || session.user.user_metadata?.full_name || "Customer"}</p>
-          <p>{profile?.email || session.user.email}</p>
-          <p>{profile?.phone || "Add your phone and delivery details during checkout for faster repeat orders."}</p>
+      <section className="account-shell">
+        <div className="account-overview-card">
+          <div>
+            <p className="eyebrow">My account</p>
+            <h1>{fullName}</h1>
+            <p>{profile?.email || session.user.email}</p>
+          </div>
+          <div className="account-overview-metrics">
+            <div>
+              <span>Saved jars</span>
+              <strong>{wishlistItems.length}</strong>
+            </div>
+            <div>
+              <span>Phone</span>
+              <strong>{profile?.phone || "Add number"}</strong>
+            </div>
+            <div>
+              <span>Delivery profile</span>
+              <strong>{addressSummary || "Complete address details"}</strong>
+            </div>
+          </div>
         </div>
-        <div className="auth-panel">
-          <p className="eyebrow">Saved jars</p>
-          <h2>Wishlist</h2>
+
+        <div className="account-dashboard-grid">
+          <section className="account-section-card">
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Profile</p>
+                <h2>Contact and delivery details</h2>
+              </div>
+              <p>Keep your address and phone ready for faster checkout and repeat orders.</p>
+            </div>
+            <form className="account-form-grid" onSubmit={handleProfileUpdate}>
+              <label>Full name<input type="text" value={profileForm.fullName} onChange={(event) => setProfileForm((current) => ({ ...current, fullName: event.target.value }))} /></label>
+              <label>Phone<input type="tel" value={profileForm.phone} onChange={(event) => setProfileForm((current) => ({ ...current, phone: event.target.value }))} /></label>
+              <label className="account-form-span">Address line 1<input type="text" value={profileForm.addressLine1} onChange={(event) => setProfileForm((current) => ({ ...current, addressLine1: event.target.value }))} /></label>
+              <label className="account-form-span">Address line 2<input type="text" value={profileForm.addressLine2} onChange={(event) => setProfileForm((current) => ({ ...current, addressLine2: event.target.value }))} /></label>
+              <label>City<input type="text" value={profileForm.city} onChange={(event) => setProfileForm((current) => ({ ...current, city: event.target.value }))} /></label>
+              <label>State<input type="text" value={profileForm.state} onChange={(event) => setProfileForm((current) => ({ ...current, state: event.target.value }))} /></label>
+              <label>Pincode<input type="text" value={profileForm.pincode} onChange={(event) => setProfileForm((current) => ({ ...current, pincode: event.target.value }))} /></label>
+              <div className="account-card-actions account-form-span">
+                <button className="button button-primary" type="submit">Save account details</button>
+                <Link className="button button-secondary" to="/track-order">Track orders</Link>
+              </div>
+            </form>
+          </section>
+
+          <section className="account-section-card">
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Payment</p>
+                <h2>Payment methods</h2>
+              </div>
+              <p>Razorpay will be connected here for online payments. Card details are not being stored yet.</p>
+            </div>
+            <div className="account-payment-stack">
+              <article className="account-payment-card">
+                <span className="account-chip">Coming soon</span>
+                <strong>Secure online payment</strong>
+                <p>Once Razorpay is connected, you will be able to pay online during checkout and review saved payment references from this page.</p>
+              </article>
+              <article className="account-payment-card subtle">
+                <span className="account-chip">Current flow</span>
+                <strong>Order request and confirmation</strong>
+                <p>Your account, delivery profile, wishlist, and order history can be managed now. Payment confirmation will be added in the next release.</p>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <section className="account-section-card">
+          <div className="account-section-head">
+            <div>
+              <p className="eyebrow">Wishlist</p>
+              <h2>Saved jars</h2>
+            </div>
+            <div className="account-section-head-actions">
+              <p>Move favourites into the cart directly from here.</p>
+              <Link className="button button-secondary" to="/wishlist">Open full wishlist</Link>
+            </div>
+          </div>
           {wishlistItems.length ? (
-            <div className="account-wishlist-list">
+            <div className="account-wishlist-grid">
               {wishlistItems.map((product) => (
-                <Link key={product.slug} className="account-wishlist-item" to={`/product/${product.slug}`}>
+                <article key={product.slug} className="account-wishlist-card">
                   <img
                     src={product.image}
                     alt={product.name}
@@ -1215,17 +1350,35 @@ function AccountPage({ session, refreshSession, wishlist }) {
                       event.currentTarget.src = "/images/logo.png";
                     }}
                   />
-                  <div>
+                  <div className="account-wishlist-copy">
                     <strong>{product.name}</strong>
                     <span>{product.shortDescription}</span>
+                    <small>{product.stock > 0 ? `${product.stock} available` : "Out of stock"}</small>
                   </div>
-                </Link>
+                  <div className="account-card-actions">
+                    <Link className="button button-secondary" to={`/product/${product.slug}`}>
+                      View product
+                    </Link>
+                    <button
+                      className="button button-primary"
+                      type="button"
+                      disabled={product.stock <= 0}
+                      onClick={() => addToCart(product.slug, 1, product.stock)}
+                    >
+                      {product.stock > 0 ? "Add to cart" : "Out of stock"}
+                    </button>
+                  </div>
+                </article>
               ))}
             </div>
           ) : (
-            <p>Save products from the achar menu to keep them ready here for your next order.</p>
+            <div className="empty-panel">
+              <h2>No saved flavours yet.</h2>
+              <p>Save products from the achar menu to keep them ready here for your next order.</p>
+            </div>
           )}
-        </div>
+        </section>
+        <p className="inline-status">{status}</p>
       </section>
     );
   }
@@ -1390,8 +1543,9 @@ export default function App() {
               path="/cart"
               element={<CartPage cart={shop.cart} updateCartQuantity={shop.updateCartQuantity} />}
             />
-            <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} />} />
-            <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} />} />
+            <Route path="/wishlist" element={<WishlistPage wishlist={shop.wishlist} addToCart={shop.addToCart} />} />
+            <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} addToCart={shop.addToCart} />} />
+            <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} addToCart={shop.addToCart} />} />
             <Route path="/track-order" element={<TrackPage session={session} />} />
           </Routes>
         </motion.div>

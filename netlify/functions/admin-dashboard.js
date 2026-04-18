@@ -55,6 +55,22 @@ exports.handler = async (event) => {
         return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
       }
 
+      if (payload.type === "create-product") {
+        const { error } = await supabase.from("products").insert({
+          slug: payload.slug,
+          name: payload.name,
+          size_label: payload.sizeLabel,
+          price: payload.price,
+          stock_quantity: payload.stockQuantity,
+          description: payload.description || null,
+          image_url: null,
+          gallery_images: [],
+          active: true
+        });
+        if (error) throw error;
+        return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
+      }
+
       return { statusCode: 400, headers, body: JSON.stringify({ error: "Invalid patch payload" }) };
     }
 
