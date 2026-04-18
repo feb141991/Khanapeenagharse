@@ -11,6 +11,9 @@ const logoutButton = document.querySelector("#logout-admin");
 const mediaGrid = document.querySelector("#media-grid");
 const saveMediaButton = document.querySelector("#save-media");
 const createProductForm = document.querySelector("#create-product-form");
+const analyticsGrid = document.querySelector("#analytics-grid");
+const customersTableBody = document.querySelector("#customers-table-body");
+const supportReferrals = document.querySelector("#support-referrals");
 
 const ADMIN_KEY_STORAGE = "kp_admin_key_v2";
 let currentInventory = [];
@@ -104,6 +107,54 @@ function renderInventory(items) {
   `).join("") : `<tr><td colspan="5">No inventory rows yet.</td></tr>`;
 }
 
+function renderAnalytics(analytics = {}) {
+  if (!analyticsGrid) return;
+  analyticsGrid.innerHTML = [
+    ["Revenue today", `INR ${analytics.revenueToday || 0}`],
+    ["Revenue month", `INR ${analytics.revenueMonth || 0}`],
+    ["Average order", `INR ${analytics.averageOrderValue || 0}`],
+    ["Repeat rate", `${analytics.repeatCustomerRate || 0}%`],
+    ["Open support", `${analytics.openSupportTickets || 0}`],
+    ["Pending referrals", `${analytics.pendingReferrals || 0}`]
+  ].map(([label, value]) => `<article class="admin-metric-card"><span>${label}</span><strong>${value}</strong></article>`).join("");
+}
+
+function renderCustomers(items = []) {
+  if (!customersTableBody) return;
+  customersTableBody.innerHTML = items.length ? items.map((item) => `
+    <tr>
+      <td>${item.full_name}<br><span>${item.email || item.phone || ""}</span></td>
+      <td>INR ${item.lifetime_value || 0}</td>
+      <td>${item.total_orders || 0}</td>
+      <td>${item.last_order_at ? new Date(item.last_order_at).toLocaleDateString("en-IN") : "New"}</td>
+    </tr>
+  `).join("") : `<tr><td colspan="4">No customers yet.</td></tr>`;
+}
+
+function renderSupportReferrals(tickets = [], referrals = []) {
+  if (!supportReferrals) return;
+  supportReferrals.innerHTML = `
+    <article class="admin-list-card">
+      <h4>Support inbox</h4>
+      ${(tickets.length ? tickets : [{ subject: "No support tickets", status: "clear", priority: "" }]).map((ticket) => `
+        <div class="admin-list-row">
+          <strong>${ticket.subject}</strong>
+          <span>${ticket.status}${ticket.priority ? ` • ${ticket.priority}` : ""}</span>
+        </div>
+      `).join("")}
+    </article>
+    <article class="admin-list-card">
+      <h4>Referrals</h4>
+      ${(referrals.length ? referrals : [{ referral_code: "No referrals yet", status: "pending" }]).map((referral) => `
+        <div class="admin-list-row">
+          <strong>${referral.referral_code}</strong>
+          <span>${referral.status}</span>
+        </div>
+      `).join("")}
+    </article>
+  `;
+}
+
 async function fetchDashboard() {
   const adminKey = getAdminKey();
   if (!adminKey) return;
@@ -119,6 +170,9 @@ async function fetchDashboard() {
     renderOrders(result.orders || []);
     renderInventory(result.inventory || []);
     renderMediaManager(result.inventory || []);
+    renderAnalytics(result.analytics || {});
+    renderCustomers(result.customers || []);
+    renderSupportReferrals(result.tickets || [], result.referrals || []);
     ordersStatus.textContent = "";
   } catch (error) {
     ordersStatus.textContent = error.message;

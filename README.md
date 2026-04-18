@@ -1,99 +1,123 @@
 # Khana Peena Ghar Se
 
-Production-ready Vite + React storefront for Netlify with Supabase-backed:
-- customer auth
-- customer profiles
-- orders and order tracking
-- inventory
-- product media galleries
-- admin dashboard updates
+Premium achar storefront built with Vite, React, Netlify Functions, and Supabase.
 
-## Environment variables
+## Current structure
 
-Client-side Vite variables:
-
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-Server-side Netlify function variables:
-
-- `SUPABASE_URL`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `ADMIN_DASHBOARD_KEY`
-
-Use `.env.example` as the template.
+```text
+src/
+  App.jsx
+  data.js
+  main.jsx
+  store.js
+  styles.css
+  supabaseClient.js
+netlify/functions/
+  _lib/supabase.js
+  admin-dashboard.js
+  create-order.js
+  customer-addresses.js
+  customer-dashboard.js
+  customer-orders.js
+  customer-profile.js
+  products.js
+  track-order.js
+public/
+  admin.html
+  css/style.css
+  js/admin.js
+  images/
+supabase/
+  schema.sql
+```
 
 ## Supabase setup
 
-Run the SQL in [`supabase/schema.sql`](/Users/Business(C)/Khana%20Peena%20Ghar%20Se/Khannana/supabase/schema.sql) in your Supabase SQL editor.
+Run `supabase/schema.sql` against your Supabase project.
 
-That schema sets up:
+Main tables:
+
 - `customers`
+- `addresses`
 - `products`
 - `orders`
 - `order_items`
+- `order_status_events`
+- `support_tickets`
+- `refunds`
+- `referrals`
+- `reward_points`
+- `notifications`
+- `admin_roles`
 - `wishlist_items`
-- product gallery storage via `products.gallery_images`
-- authenticated customer linking via `customers.auth_user_id`
 
-In Supabase Auth:
+## Environment variables
 
-1. Enable Email/Password sign-in
-2. Configure your site URL and redirect URLs for Netlify
-3. If email confirmation is enabled, users will need to verify before first sign-in
+Frontend:
 
-## Netlify setup
+- `NETLIFY_SUPABASE_URL`
+- `NETLIFY_SUPABASE_ANON_KEY`
 
-`netlify.toml` is configured with:
-- build command: `npm run build`
-- publish directory: `dist`
-- functions directory: `netlify/functions`
-- SPA redirect for React routes
+Server:
 
-## Image handling
+- `NETLIFY_SUPABASE_URL` or `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `ADMIN_DASHBOARD_KEY`
+- `NETLIFY_SUPABASE_STORAGE_BUCKET` optional, defaults to `product-images`
 
-Product images live in:
+## Key improvements made
 
-- `public/images/achars/aam-ka-achar/`
-- `public/images/achars/hing-ka-achar/`
-- `public/images/achars/mirch-ka-achar/`
-- `public/images/achars/mix-veg-achar/`
+### Customer conversion and retention
 
-The admin dashboard stores gallery paths in the database. One image path per line.
+- conversion-optimized login, signup, forgot password, and reset password flow
+- remember-me behavior and session timeout for session-only logins
+- richer account dashboard with saved addresses, preferences, referral section, and loyalty messaging
+- premium orders page with order search, reorder actions, cancel request, support request, and refund request placeholders
+- improved order tracking timeline with ETA and tracking placeholder fields
 
-Example:
+### Admin and operations
 
-```text
-/images/achars/aam-ka-achar/hero.jpg
-/images/achars/aam-ka-achar/detail-1.jpg
-/images/achars/aam-ka-achar/detail-2.jpg
-```
+- admin analytics cards for revenue, repeat customer rate, referrals, and support load
+- customer list in admin
+- support and referral summaries in admin
+- product creation in admin
+- Supabase-backed product image delivery from storage folders
 
-## Local development
+### Data model
+
+- relational schema expanded for addresses, referrals, reward points, notifications, support, refunds, and admin roles
+- RLS starter policies added for customer-owned records
+
+## Product image convention
+
+Bucket:
+
+- `product-images`
+
+Folder naming:
+
+- use the exact product slug as the folder name
+
+Examples:
+
+- `aam-ka-achar/cover.jpg`
+- `aam-ka-achar/detail-1.jpg`
+- `hing-ka-achar/cover.jpg`
+
+The server resolves all images in the slug folder and returns signed URLs to the frontend.
+
+## Build
 
 ```bash
 npm install
-npm run dev
-```
-
-## Verification
-
-```bash
 npm run check
 ```
 
-## Current production shape
+## Next growth roadmap
 
-- Public storefront uses database-backed product media and inventory values
-- Login and signup are wired to Supabase Auth
-- Customer account creation can sync to the `customers` table through the `customer-profile` function
-- Order creation writes customers, orders, and order items
-- Admin can update order status, inventory, and gallery media
-
-## Remaining deployment requirements outside the repo
-
-- Add the environment variables in Netlify
-- Run the Supabase schema
-- Enable Supabase email/password auth
-- Upload final product images
-- Add Razorpay when you are ready to activate payments
+1. Connect Razorpay checkout and payment webhooks
+2. Connect Shiprocket tracking sync into `order_status_events`
+3. Add real invoice PDF generation and download
+4. Move wishlist from local storage into Supabase per account
+5. Add abandoned checkout capture and win-back messaging
+6. Add admin-triggered email campaigns for repeat orders and referrals

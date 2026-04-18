@@ -18,7 +18,7 @@ exports.handler = async (event) => {
 
     const { data: order, error } = await supabase
       .from("orders")
-      .select("order_number, customer_name, phone, status, total_amount")
+      .select("order_number, customer_name, phone, status, total_amount, delivery_eta, tracking_number")
       .eq("order_number", orderNumber)
       .eq("phone", phone)
       .maybeSingle();

@@ -52,6 +52,11 @@
       </div>
 
       <div class="admin-panels">
+        <section class="admin-panel" aria-labelledby="panel-analytics">
+          <h3 id="panel-analytics">Revenue analytics</h3>
+          <div class="admin-metric-grid" id="analytics-grid"></div>
+        </section>
+
         <section class="admin-panel" aria-labelledby="panel-orders">
           <h3 id="panel-orders">Orders</h3>
           <div class="admin-table-wrap">
@@ -96,6 +101,30 @@
               <tbody id="inventory-table-body"></tbody>
             </table>
           </div>
+        </section>
+      </div>
+
+      <div class="admin-panels">
+        <section class="admin-panel" aria-labelledby="panel-customers">
+          <h3 id="panel-customers">Customers</h3>
+          <div class="admin-table-wrap">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Lifetime value</th>
+                  <th scope="col">Orders</th>
+                  <th scope="col">Last order</th>
+                </tr>
+              </thead>
+              <tbody id="customers-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="panel-support">
+          <h3 id="panel-support">Support & referrals</h3>
+          <div class="admin-list-grid" id="support-referrals"></div>
         </section>
       </div>
 

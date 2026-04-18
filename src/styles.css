@@ -1212,6 +1212,107 @@ textarea {
   gap: 10px;
 }
 
+.auth-trust-row,
+.account-address-list,
+.account-reward-stack,
+.account-notification-list,
+.order-list,
+.order-item-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.account-address-card,
+.account-notification-card,
+.order-card,
+.order-item-card,
+.account-delete-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.account-address-card span,
+.account-notification-card p,
+.account-delete-card p,
+.order-item-card span {
+  display: block;
+  color: var(--text-soft);
+}
+
+.order-search {
+  min-width: 280px;
+}
+
+.order-card {
+  display: grid;
+  gap: 16px;
+}
+
+.order-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: start;
+}
+
+.order-card-meta {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  text-align: right;
+}
+
+.order-item-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.order-item-card {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.order-item-card img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.timeline-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.timeline-pill {
+  min-height: 38px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--text-soft);
+  text-transform: capitalize;
+}
+
+.timeline-pill.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--blue), #1836aa);
+  border-color: transparent;
+}
+
+.spam-trap {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .admin-create-product {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1435,7 +1536,9 @@ textarea {
   .account-section-head,
   .account-form-grid,
   .admin-create-product,
-  .account-overview-metrics {
+  .account-overview-metrics,
+  .order-card-head,
+  .order-item-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1445,5 +1548,9 @@ textarea {
 
   .account-section-head-actions {
     justify-items: stretch;
+  }
+
+  .order-search {
+    min-width: 100%;
   }
 }

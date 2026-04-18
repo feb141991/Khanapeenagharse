@@ -16,13 +16,46 @@ exports.handler = async (event) => {
     const supabase = getSupabaseAdmin();
 
     if (event.httpMethod === "GET") {
-      const [{ data: orders, error: ordersError }, { data: inventory, error: inventoryError }] = await Promise.all([
-        supabase.from("orders").select("id, order_number, customer_name, phone, status, total_amount, items_summary, created_at").order("created_at", { ascending: false }),
-        supabase.from("products").select("id, slug, name, size_label, stock_quantity, price, image_url, gallery_images").order("name", { ascending: true })
+      const [{ data: orders, error: ordersError }, { data: inventory, error: inventoryError }, { data: customers, error: customersError }, { data: tickets, error: ticketsError }, { data: referrals, error: referralsError }] = await Promise.all([
+        supabase.from("orders").select("id, order_number, customer_name, phone, status, payment_status, tracking_number, total_amount, items_summary, created_at").order("created_at", { ascending: false }),
+        supabase.from("products").select("id, slug, name, size_label, stock_quantity, price, image_url, gallery_images").order("name", { ascending: true }),
+        supabase.from("customers").select("id, full_name, email, phone, lifetime_value, total_orders, last_order_at, created_at").order("lifetime_value", { ascending: false }).limit(20),
+        supabase.from("support_tickets").select("id, subject, status, priority, created_at").order("created_at", { ascending: false }).limit(20),
+        supabase.from("referrals").select("id, referral_code, status, reward_to_referrer, reward_to_referred, created_at").order("created_at", { ascending: false }).limit(20)
       ]);
       if (ordersError) throw ordersError;
       if (inventoryError) throw inventoryError;
-      return { statusCode: 200, headers, body: JSON.stringify({ orders: orders || [], inventory: inventory || [] }) };
+      if (customersError) throw customersError;
+      if (ticketsError) throw ticketsError;
+      if (referralsError) throw referralsError;
+
+      const analytics = {
+        revenueToday: (orders || [])
+          .filter((order) => new Date(order.created_at).toDateString() === new Date().toDateString())
+          .reduce((sum, order) => sum + Number(order.total_amount || 0), 0),
+        revenueMonth: (orders || []).reduce((sum, order) => sum + Number(order.total_amount || 0), 0),
+        averageOrderValue: orders?.length
+          ? (orders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0) / orders.length).toFixed(2)
+          : "0.00",
+        repeatCustomerRate: customers?.length
+          ? Math.round((customers.filter((customer) => Number(customer.total_orders || 0) > 1).length / customers.length) * 100)
+          : 0,
+        openSupportTickets: (tickets || []).filter((ticket) => ticket.status !== "closed").length,
+        pendingReferrals: (referrals || []).filter((referral) => referral.status !== "completed").length
+      };
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          orders: orders || [],
+          inventory: inventory || [],
+          customers: customers || [],
+          tickets: tickets || [],
+          referrals: referrals || [],
+          analytics
+        })
+      };
     }
 
     if (event.httpMethod === "PATCH") {

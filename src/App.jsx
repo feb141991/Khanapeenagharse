@@ -144,6 +144,7 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
     { to: "/achar", label: "Achar" },
+    ...(isLoggedIn ? [{ to: "/orders", label: "Orders" }] : []),
     { to: "/account", label: isLoggedIn ? "My account" : "Login" },
     { to: "/cart", label: `Cart${cartCount ? ` (${cartCount})` : ""}` }
   ];
@@ -1105,11 +1106,43 @@ function CartPage({ cart, updateCartQuantity }) {
   );
 }
 
+function useAuthorizedJson(session, path, options = {}) {
+  return fetch(path, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${session.access_token}`
+    }
+  }).then(async (response) => {
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || "Request failed.");
+    return payload;
+  });
+}
+
 function AccountPage({ session, refreshSession, wishlist, addToCart }) {
+  const location = useLocation();
   const [loginState, setLoginState] = useState({ email: "", password: "" });
-  const [signupState, setSignupState] = useState({ fullName: "", email: "", password: "" });
+  const [signupState, setSignupState] = useState({ fullName: "", email: "", password: "", referralCode: "", website: "" });
+  const [resetRequestEmail, setResetRequestEmail] = useState("");
+  const [resetState, setResetState] = useState({ password: "", confirmPassword: "" });
+  const [rememberMe, setRememberMe] = useState(true);
+  const [authMode, setAuthMode] = useState(() => (location.search.includes("recovery") ? "reset" : "login"));
   const [status, setStatus] = useState("");
   const [profile, setProfile] = useState(null);
+  const [dashboard, setDashboard] = useState({ addresses: [], orders: [], rewards: [], referrals: [], notifications: [], insights: null });
+  const [addressForm, setAddressForm] = useState({
+    id: null,
+    label: "Home",
+    recipientName: "",
+    phone: "",
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    pincode: "",
+    isDefault: true
+  });
   const [profileForm, setProfileForm] = useState({
     fullName: "",
     phone: "",
@@ -1117,7 +1150,11 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
     addressLine2: "",
     city: "",
     state: "",
-    pincode: ""
+    pincode: "",
+    avatarUrl: "",
+    marketingOptIn: true,
+    orderUpdatesOptIn: true,
+    supportOptIn: true
   });
   const productCatalog = useCatalogProducts();
 
@@ -1127,17 +1164,15 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
     async function loadProfile() {
       if (!session?.access_token) {
         setProfile(null);
+        setDashboard({ addresses: [], orders: [], rewards: [], referrals: [], notifications: [], insights: null });
         return;
       }
 
       try {
-        const response = await fetch("/.netlify/functions/customer-profile", {
-          headers: {
-            Authorization: `Bearer ${session.access_token}`
-          }
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Unable to load account.");
+        const [result, dashboardData] = await Promise.all([
+          useAuthorizedJson(session, "/.netlify/functions/customer-profile"),
+          useAuthorizedJson(session, "/.netlify/functions/customer-dashboard")
+        ]);
         if (!cancelled) {
           const nextProfile = result.customer || { email: result.user?.email || session.user.email || "" };
           setProfile(nextProfile);
@@ -1148,8 +1183,35 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             addressLine2: nextProfile.address_line_2 || "",
             city: nextProfile.city || "",
             state: nextProfile.state || "",
-            pincode: nextProfile.pincode || ""
+            pincode: nextProfile.pincode || "",
+            avatarUrl: dashboardData.customer?.avatar_url || "",
+            marketingOptIn: dashboardData.customer?.marketing_opt_in ?? true,
+            orderUpdatesOptIn: dashboardData.customer?.order_updates_opt_in ?? true,
+            supportOptIn: dashboardData.customer?.support_opt_in ?? true
           });
+          setDashboard({
+            addresses: dashboardData.addresses || [],
+            orders: dashboardData.orders || [],
+            rewards: dashboardData.rewards || [],
+            referrals: dashboardData.referrals || [],
+            notifications: dashboardData.notifications || [],
+            insights: dashboardData.insights || null
+          });
+          const defaultAddress = (dashboardData.addresses || []).find((item) => item.is_default) || dashboardData.addresses?.[0];
+          if (defaultAddress) {
+            setAddressForm({
+              id: defaultAddress.id,
+              label: defaultAddress.label || "Home",
+              recipientName: defaultAddress.recipient_name || "",
+              phone: defaultAddress.phone || "",
+              addressLine1: defaultAddress.address_line_1 || "",
+              addressLine2: defaultAddress.address_line_2 || "",
+              city: defaultAddress.city || "",
+              state: defaultAddress.state || "",
+              pincode: defaultAddress.pincode || "",
+              isDefault: Boolean(defaultAddress.is_default)
+            });
+          }
         }
       } catch {
         if (!cancelled) {
@@ -1161,7 +1223,11 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             addressLine2: "",
             city: "",
             state: "",
-            pincode: ""
+            pincode: "",
+            avatarUrl: "",
+            marketingOptIn: true,
+            orderUpdatesOptIn: true,
+            supportOptIn: true
           });
         }
       }
@@ -1188,6 +1254,11 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
       setStatus(error.message);
       return;
     }
+    if (!rememberMe) {
+      window.sessionStorage.setItem("kp_session_mode", "session-only");
+    } else {
+      window.sessionStorage.removeItem("kp_session_mode");
+    }
     await refreshSession();
     setStatus("Signed in.");
   };
@@ -1198,13 +1269,18 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
       setStatus("Missing Supabase client configuration.");
       return;
     }
+    if (signupState.website) {
+      setStatus("Unable to create account.");
+      return;
+    }
     setStatus("Creating account...");
     const { data, error } = await supabase.auth.signUp({
       email: signupState.email,
       password: signupState.password,
       options: {
         data: {
-          full_name: signupState.fullName
+          full_name: signupState.fullName,
+          referral_code: signupState.referralCode || null
         }
       }
     });
@@ -1227,27 +1303,111 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
     setStatus(data.session ? "Account created." : "Account created. Check your email to confirm sign in.");
   };
 
+  const handleForgotPassword = async (event) => {
+    event.preventDefault();
+    if (!supabase || !resetRequestEmail) {
+      setStatus("Enter your email to reset the password.");
+      return;
+    }
+    setStatus("Sending reset link...");
+    const { error } = await supabase.auth.resetPasswordForEmail(resetRequestEmail, {
+      redirectTo: `${window.location.origin}/login?recovery=1`
+    });
+    setStatus(error ? error.message : "Reset link sent. Check your email.");
+  };
+
+  const handleResetPassword = async (event) => {
+    event.preventDefault();
+    if (!supabase) return;
+    if (resetState.password.length < 8) {
+      setStatus("Use at least 8 characters for the new password.");
+      return;
+    }
+    if (resetState.password !== resetState.confirmPassword) {
+      setStatus("Passwords do not match.");
+      return;
+    }
+    setStatus("Updating password...");
+    const { error } = await supabase.auth.updateUser({ password: resetState.password });
+    if (error) {
+      setStatus(error.message);
+      return;
+    }
+    setAuthMode("login");
+    setStatus("Password updated. Sign in with your new password.");
+  };
+
   const handleProfileUpdate = async (event) => {
     event.preventDefault();
     if (!session?.access_token) return;
 
     setStatus("Saving account details...");
     try {
-      const response = await fetch("/.netlify/functions/customer-profile", {
+      const result = await useAuthorizedJson(session, "/.netlify/functions/customer-profile", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profileForm)
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Unable to save account.");
+      await useAuthorizedJson(session, "/.netlify/functions/customer-dashboard", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileForm)
+      });
       setProfile(result.customer || null);
       setStatus("Account details updated.");
     } catch (error) {
       setStatus(error.message || "Unable to save account.");
     }
+  };
+
+  const saveAddress = async (event) => {
+    event.preventDefault();
+    if (!session?.access_token) return;
+    setStatus(addressForm.id ? "Updating address..." : "Adding address...");
+    try {
+      await useAuthorizedJson(session, "/.netlify/functions/customer-addresses", {
+        method: addressForm.id ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(addressForm)
+      });
+      const refreshed = await useAuthorizedJson(session, "/.netlify/functions/customer-addresses");
+      setDashboard((current) => ({ ...current, addresses: refreshed.addresses || [] }));
+      setStatus("Address saved.");
+    } catch (error) {
+      setStatus(error.message || "Unable to save address.");
+    }
+  };
+
+  const editAddress = (address) => {
+    setAddressForm({
+      id: address.id,
+      label: address.label || "Home",
+      recipientName: address.recipient_name || "",
+      phone: address.phone || "",
+      addressLine1: address.address_line_1 || "",
+      addressLine2: address.address_line_2 || "",
+      city: address.city || "",
+      state: address.state || "",
+      pincode: address.pincode || "",
+      isDefault: Boolean(address.is_default)
+    });
+  };
+
+  const deleteAddress = async (id) => {
+    if (!session?.access_token) return;
+    setStatus("Removing address...");
+    try {
+      await useAuthorizedJson(session, `/.netlify/functions/customer-addresses?id=${id}`, { method: "DELETE" });
+      const refreshed = await useAuthorizedJson(session, "/.netlify/functions/customer-addresses");
+      setDashboard((current) => ({ ...current, addresses: refreshed.addresses || [] }));
+      setStatus("Address removed.");
+    } catch (error) {
+      setStatus(error.message || "Unable to remove address.");
+    }
+  };
+
+  const handleDeleteRequest = async () => {
+    setStatus("Before you leave: use code STAY10 on your next order for 10% off. Account deletion can be handled through support for now.");
   };
 
   if (session) {
@@ -1298,9 +1458,14 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
               <label>City<input type="text" value={profileForm.city} onChange={(event) => setProfileForm((current) => ({ ...current, city: event.target.value }))} /></label>
               <label>State<input type="text" value={profileForm.state} onChange={(event) => setProfileForm((current) => ({ ...current, state: event.target.value }))} /></label>
               <label>Pincode<input type="text" value={profileForm.pincode} onChange={(event) => setProfileForm((current) => ({ ...current, pincode: event.target.value }))} /></label>
+              <label className="account-form-span">Avatar image URL<input type="url" value={profileForm.avatarUrl} onChange={(event) => setProfileForm((current) => ({ ...current, avatarUrl: event.target.value }))} placeholder="https://..." /></label>
+              <label><input type="checkbox" checked={profileForm.marketingOptIn} onChange={(event) => setProfileForm((current) => ({ ...current, marketingOptIn: event.target.checked }))} /> Email offers</label>
+              <label><input type="checkbox" checked={profileForm.orderUpdatesOptIn} onChange={(event) => setProfileForm((current) => ({ ...current, orderUpdatesOptIn: event.target.checked }))} /> Order notifications</label>
+              <label><input type="checkbox" checked={profileForm.supportOptIn} onChange={(event) => setProfileForm((current) => ({ ...current, supportOptIn: event.target.checked }))} /> Support updates</label>
               <div className="account-card-actions account-form-span">
                 <button className="button button-primary" type="submit">Save account details</button>
                 <Link className="button button-secondary" to="/track-order">Track orders</Link>
+                <Link className="button button-secondary" to="/orders">My orders</Link>
               </div>
             </form>
           </section>
@@ -1323,6 +1488,73 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 <span className="account-chip">Current flow</span>
                 <strong>Order request and confirmation</strong>
                 <p>Your account, delivery profile, wishlist, and order history can be managed now. Payment confirmation will be added in the next release.</p>
+              </article>
+            </div>
+          </section>
+        </div>
+
+        <div className="account-dashboard-grid">
+          <section className="account-section-card">
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Addresses</p>
+                <h2>Saved addresses</h2>
+              </div>
+              <p>Keep delivery details ready to reduce checkout friction and help repeat purchases convert faster.</p>
+            </div>
+            <form className="account-form-grid" onSubmit={saveAddress}>
+              <label>Label<input type="text" value={addressForm.label} onChange={(event) => setAddressForm((current) => ({ ...current, label: event.target.value }))} /></label>
+              <label>Recipient<input type="text" value={addressForm.recipientName} onChange={(event) => setAddressForm((current) => ({ ...current, recipientName: event.target.value }))} /></label>
+              <label>Phone<input type="tel" value={addressForm.phone} onChange={(event) => setAddressForm((current) => ({ ...current, phone: event.target.value }))} /></label>
+              <label className="account-form-span">Address line 1<input type="text" value={addressForm.addressLine1} onChange={(event) => setAddressForm((current) => ({ ...current, addressLine1: event.target.value }))} /></label>
+              <label className="account-form-span">Address line 2<input type="text" value={addressForm.addressLine2} onChange={(event) => setAddressForm((current) => ({ ...current, addressLine2: event.target.value }))} /></label>
+              <label>City<input type="text" value={addressForm.city} onChange={(event) => setAddressForm((current) => ({ ...current, city: event.target.value }))} /></label>
+              <label>State<input type="text" value={addressForm.state} onChange={(event) => setAddressForm((current) => ({ ...current, state: event.target.value }))} /></label>
+              <label>Pincode<input type="text" value={addressForm.pincode} onChange={(event) => setAddressForm((current) => ({ ...current, pincode: event.target.value }))} /></label>
+              <label><input type="checkbox" checked={addressForm.isDefault} onChange={(event) => setAddressForm((current) => ({ ...current, isDefault: event.target.checked }))} /> Set as default</label>
+              <div className="account-card-actions account-form-span">
+                <button className="button button-primary" type="submit">{addressForm.id ? "Update address" : "Add address"}</button>
+                <button className="button button-secondary" type="button" onClick={() => setAddressForm({ id: null, label: "Home", recipientName: "", phone: profileForm.phone, addressLine1: "", addressLine2: "", city: "", state: "", pincode: "", isDefault: true })}>New address</button>
+              </div>
+            </form>
+            <div className="account-address-list">
+              {dashboard.addresses.map((address) => (
+                <article key={address.id} className="account-address-card">
+                  <strong>{address.label}{address.is_default ? " • Default" : ""}</strong>
+                  <span>{address.recipient_name}</span>
+                  <span>{[address.address_line_1, address.address_line_2, address.city, address.state, address.pincode].filter(Boolean).join(", ")}</span>
+                  <div className="account-card-actions">
+                    <button className="button button-secondary" type="button" onClick={() => editAddress(address)}>Edit</button>
+                    <button className="button button-ghost" type="button" onClick={() => deleteAddress(address.id)}>Delete</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="account-section-card">
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Rewards</p>
+                <h2>Referrals and retention</h2>
+              </div>
+              <p>Reward-driven repeat orders and referrals help grow loyalty without needing heavy support.</p>
+            </div>
+            <div className="account-reward-stack">
+              <article className="account-payment-card">
+                <span className="account-chip">Referral code</span>
+                <strong>{profile?.referral_code || dashboard.referrals[0]?.referral_code || "Generating..."}</strong>
+                <p>Share this code with friends. Rewards are recorded in Supabase and can later plug into your checkout discount rules.</p>
+              </article>
+              <article className="account-payment-card subtle">
+                <span className="account-chip">Reward points</span>
+                <strong>{profile?.reward_points || 0} points</strong>
+                <p>{dashboard.insights?.reorderHint || "Your next order and referral completions will show here."}</p>
+              </article>
+              <article className="account-delete-card">
+                <strong>Delete account</strong>
+                <p>Before leaving, offer a reason to stay and route destructive requests through support.</p>
+                <button className="button button-ghost" type="button" onClick={handleDeleteRequest}>Request deletion</button>
               </article>
             </div>
           </section>
@@ -1378,6 +1610,24 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             </div>
           )}
         </section>
+        {dashboard.notifications.length ? (
+          <section className="account-section-card">
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Notifications</p>
+                <h2>Recent updates</h2>
+              </div>
+            </div>
+            <div className="account-notification-list">
+              {dashboard.notifications.map((note) => (
+                <article key={note.id} className="account-notification-card">
+                  <strong>{note.title}</strong>
+                  <p>{note.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        ) : null}
         <p className="inline-status">{status}</p>
       </section>
     );
@@ -1386,27 +1636,192 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
   return (
     <section className="auth-shell">
       <div className="auth-panel primary">
-        <p className="eyebrow">Customer login</p>
-        <h1>{session ? "Your account is active." : "Sign in to continue."}</h1>
-        <p>{session ? `Signed in as ${session.user.email}.` : "Use your account to keep your saved jars, manage repeat orders, and track purchases from one place."}</p>
-        <form className="auth-form" onSubmit={handleLogin}>
-          <label>Email<input type="email" placeholder="you@example.com" value={loginState.email} onChange={(event) => setLoginState((current) => ({ ...current, email: event.target.value }))} /></label>
-          <label>Password<input type="password" placeholder="Password" value={loginState.password} onChange={(event) => setLoginState((current) => ({ ...current, password: event.target.value }))} /></label>
-          <button className="button button-primary" type="submit" disabled={!!session}>Sign in</button>
-        </form>
+        <p className="eyebrow">Secure account</p>
+        <h1>{authMode === "reset" ? "Set your new password." : "Sign in with confidence."}</h1>
+        <p>Secure login, saved addresses, faster reorder flows, and premium order support from one account.</p>
+        <div className="auth-trust-row">
+          <div className="hero-metric-card"><strong>Secure login</strong><span>Supabase auth and protected account routes.</span></div>
+          <div className="hero-metric-card"><strong>Repeat orders</strong><span>Reorder faster with saved details and favourites.</span></div>
+        </div>
+        <div className="account-card-actions">
+          <button className={`button ${authMode === "login" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("login")}>Login</button>
+          <button className={`button ${authMode === "signup" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("signup")}>Create account</button>
+          <button className={`button ${authMode === "forgot" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("forgot")}>Forgot password</button>
+        </div>
       </div>
       <div className="auth-panel">
-        <p className="eyebrow">New customer</p>
-        <h2>Create your account</h2>
-        <p>Create an account for a smoother checkout, easier reordering, and a more personal buying experience.</p>
-        <form className="auth-form" onSubmit={handleSignup}>
-          <label>Full name<input type="text" placeholder="Your name" value={signupState.fullName} onChange={(event) => setSignupState((current) => ({ ...current, fullName: event.target.value }))} /></label>
-          <label>Email<input type="email" placeholder="you@example.com" value={signupState.email} onChange={(event) => setSignupState((current) => ({ ...current, email: event.target.value }))} /></label>
-          <label>Password<input type="password" placeholder="Create password" value={signupState.password} onChange={(event) => setSignupState((current) => ({ ...current, password: event.target.value }))} /></label>
-          <button className="button button-secondary" type="submit">Create account</button>
-        </form>
+        {authMode === "login" ? (
+          <>
+            <p className="eyebrow">Welcome back</p>
+            <h2>Login</h2>
+            <form className="auth-form" onSubmit={handleLogin}>
+              <label>Email<input type="email" placeholder="you@example.com" value={loginState.email} onChange={(event) => setLoginState((current) => ({ ...current, email: event.target.value }))} /></label>
+              <label>Password<input type="password" placeholder="Password" value={loginState.password} onChange={(event) => setLoginState((current) => ({ ...current, password: event.target.value }))} /></label>
+              <label><input type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} /> Remember me on this device</label>
+              <button className="button button-primary" type="submit" disabled={!!session}>Sign in</button>
+            </form>
+          </>
+        ) : null}
+        {authMode === "signup" ? (
+          <>
+            <p className="eyebrow">New customer</p>
+            <h2>Create your account</h2>
+            <p>Minimal signup now, richer account details later. Faster path to the first order.</p>
+            <form className="auth-form" onSubmit={handleSignup}>
+              <label>Full name<input type="text" placeholder="Your name" value={signupState.fullName} onChange={(event) => setSignupState((current) => ({ ...current, fullName: event.target.value }))} /></label>
+              <label>Email<input type="email" placeholder="you@example.com" value={signupState.email} onChange={(event) => setSignupState((current) => ({ ...current, email: event.target.value }))} /></label>
+              <label>Password<input type="password" placeholder="Create password" value={signupState.password} onChange={(event) => setSignupState((current) => ({ ...current, password: event.target.value }))} /></label>
+              <label>Referral code<input type="text" placeholder="Optional referral code" value={signupState.referralCode} onChange={(event) => setSignupState((current) => ({ ...current, referralCode: event.target.value }))} /></label>
+              <input type="text" tabIndex="-1" autoComplete="off" className="spam-trap" value={signupState.website} onChange={(event) => setSignupState((current) => ({ ...current, website: event.target.value }))} />
+              <button className="button button-primary" type="submit">Create account</button>
+            </form>
+          </>
+        ) : null}
+        {authMode === "forgot" ? (
+          <>
+            <p className="eyebrow">Password help</p>
+            <h2>Forgot password</h2>
+            <form className="auth-form" onSubmit={handleForgotPassword}>
+              <label>Email<input type="email" placeholder="you@example.com" value={resetRequestEmail} onChange={(event) => setResetRequestEmail(event.target.value)} /></label>
+              <button className="button button-primary" type="submit">Send reset link</button>
+            </form>
+          </>
+        ) : null}
+        {authMode === "reset" ? (
+          <>
+            <p className="eyebrow">Password recovery</p>
+            <h2>Reset password</h2>
+            <form className="auth-form" onSubmit={handleResetPassword}>
+              <label>New password<input type="password" value={resetState.password} onChange={(event) => setResetState((current) => ({ ...current, password: event.target.value }))} /></label>
+              <label>Confirm password<input type="password" value={resetState.confirmPassword} onChange={(event) => setResetState((current) => ({ ...current, confirmPassword: event.target.value }))} /></label>
+              <button className="button button-primary" type="submit">Update password</button>
+            </form>
+          </>
+        ) : null}
         <p className="inline-status">{status}</p>
       </div>
+    </section>
+  );
+}
+
+function OrdersPage({ session, addToCart }) {
+  const [status, setStatus] = useState("");
+  const [ordersData, setOrdersData] = useState({ orders: [], loyalty: null });
+  const [query, setQuery] = useState("");
+  const productCatalog = useCatalogProducts();
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (!session?.access_token) return;
+      try {
+        const payload = await useAuthorizedJson(session, `/.netlify/functions/customer-orders${query ? `?q=${encodeURIComponent(query)}` : ""}`);
+        if (!cancelled) setOrdersData(payload);
+      } catch (error) {
+        if (!cancelled) setStatus(error.message);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [session, query]);
+
+  if (!session) {
+    return (
+      <section className="auth-shell single">
+        <div className="auth-panel primary auth-form-panel">
+          <p className="eyebrow">My orders</p>
+          <h1>Sign in to manage orders.</h1>
+          <p>View delivery progress, reorder favourites, and raise support requests from one place.</p>
+          <Link className="button button-secondary" to="/account">Go to account</Link>
+        </div>
+      </section>
+    );
+  }
+
+  const handleAction = async (payload, successMessage) => {
+    setStatus("Updating order...");
+    try {
+      await useAuthorizedJson(session, "/.netlify/functions/customer-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const refreshed = await useAuthorizedJson(session, "/.netlify/functions/customer-orders");
+      setOrdersData(refreshed);
+      setStatus(successMessage);
+    } catch (error) {
+      setStatus(error.message || "Unable to update order.");
+    }
+  };
+
+  return (
+    <section className="page-shell">
+      <div className="product-system-head">
+        <div>
+          <p className="eyebrow">Orders</p>
+          <h1>Every order, ready to repeat or support.</h1>
+        </div>
+        <div className="account-card-actions">
+          <input className="order-search" type="search" placeholder="Search order number or status" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <div className="hero-metric-card">
+            <strong>{ordersData.loyalty?.rewardPoints || 0} points</strong>
+            <span>Loyalty balance</span>
+          </div>
+        </div>
+      </div>
+      <div className="order-list">
+        {(ordersData.orders || []).map((order) => (
+          <article key={order.id} className="order-card">
+            <div className="order-card-head">
+              <div>
+                <p className="eyebrow">{order.order_number}</p>
+                <h2>{order.items_summary}</h2>
+              </div>
+              <div className="order-card-meta">
+                <strong>{order.status}</strong>
+                <span>INR {order.total_amount}</span>
+                <span>{order.delivery_eta ? `ETA ${order.delivery_eta}` : "ETA will be updated"}</span>
+              </div>
+            </div>
+            <div className="order-item-grid">
+              {(order.items || []).map((item) => {
+                const product = productCatalog.find((entry) => entry.slug === item.product_slug);
+                return (
+                  <div key={item.id} className="order-item-card">
+                    <img src={product?.image || "/images/logo.png"} alt={item.product_name} />
+                    <div>
+                      <strong>{item.product_name}</strong>
+                      <span>{item.size_label || product?.size}</span>
+                      <span>{item.quantity} x INR {item.unit_price}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="timeline-row">
+              {["placed", "packed", "shipped", "out_for_delivery", "delivered"].map((step) => {
+                const active = (order.timeline || []).some((item) => item.status === step);
+                return <span key={step} className={`timeline-pill ${active ? "active" : ""}`}>{step.replaceAll("_", " ")}</span>;
+              })}
+            </div>
+            <div className="account-card-actions">
+              {(order.items || []).map((item) => (
+                <button key={`reorder-${item.id}`} className="button button-primary" type="button" onClick={() => addToCart(item.product_slug, item.quantity || 1, 99)}>
+                  Buy {item.product_name} again
+                </button>
+              )).slice(0, 1)}
+              {order.cancelEligible ? (
+                <button className="button button-secondary" type="button" onClick={() => handleAction({ type: "cancel-order", orderId: order.id }, "Order cancelled.")}>Cancel order</button>
+              ) : null}
+              <button className="button button-secondary" type="button" onClick={() => handleAction({ type: "support-request", orderId: order.id, subject: `Help for ${order.order_number}` }, "Support request created.")}>Need help</button>
+              <button className="button button-ghost" type="button" onClick={() => handleAction({ type: "refund-request", orderId: order.id, amount: order.total_amount, reason: "Customer requested review from My Orders." }, "Refund request submitted.")}>Request refund</button>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p className="inline-status">{status}</p>
     </section>
   );
 }
@@ -1459,9 +1874,16 @@ function TrackPage({ session }) {
           <>
             <p className="eyebrow">Order status</p>
             <h2>{result.order_number}</h2>
+            <div className="timeline-row">
+              {["placed", "packed", "shipped", "out_for_delivery", "delivered"].map((step) => (
+                <span key={step} className={`timeline-pill ${result.status === step ? "active" : ""}`}>{step.replaceAll("_", " ")}</span>
+              ))}
+            </div>
             <p>Status: {result.status}</p>
             <p>Customer: {result.customer_name}</p>
             <p>Total: INR {result.total_amount}</p>
+            <p>{result.delivery_eta ? `Estimated arrival: ${result.delivery_eta}` : "Estimated arrival will appear when dispatch begins."}</p>
+            <p>{result.tracking_number ? `Tracking number: ${result.tracking_number}` : "Tracking number will be added when shipping is enabled."}</p>
           </>
         ) : (
           <>
@@ -1488,6 +1910,27 @@ export default function App() {
     });
     return () => listener.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!session || !supabase) return undefined;
+    let timeoutId;
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        if (window.sessionStorage.getItem("kp_session_mode") === "session-only") {
+          supabase.auth.signOut();
+          setSession(null);
+        }
+      }, 1000 * 60 * 30);
+    };
+
+    ["mousemove", "keydown", "scroll", "click"].forEach((eventName) => window.addEventListener(eventName, resetTimer));
+    resetTimer();
+    return () => {
+      clearTimeout(timeoutId);
+      ["mousemove", "keydown", "scroll", "click"].forEach((eventName) => window.removeEventListener(eventName, resetTimer));
+    };
+  }, [session]);
 
   const refreshSession = async () => {
     if (!supabase) return;
@@ -1543,6 +1986,7 @@ export default function App() {
               path="/cart"
               element={<CartPage cart={shop.cart} updateCartQuantity={shop.updateCartQuantity} />}
             />
+            <Route path="/orders" element={<OrdersPage session={session} addToCart={shop.addToCart} />} />
             <Route path="/wishlist" element={<WishlistPage wishlist={shop.wishlist} addToCart={shop.addToCart} />} />
             <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} addToCart={shop.addToCart} />} />
             <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} addToCart={shop.addToCart} />} />

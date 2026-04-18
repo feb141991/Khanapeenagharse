@@ -8,6 +8,17 @@ function randomOrderNumber() {
   return `KP-${stamp}-${salt}`;
 }
 
+function addBusinessDays(days) {
+  const date = new Date();
+  let remaining = days;
+  while (remaining > 0) {
+    date.setDate(date.getDate() + 1);
+    const day = date.getDay();
+    if (day !== 0) remaining -= 1;
+  }
+  return date.toISOString().slice(0, 10);
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
@@ -59,6 +70,7 @@ exports.handler = async (event) => {
 
     const customerPayload = {
       full_name: customer.customerName,
+      first_name: String(customer.customerName || "").split(" ")[0] || customer.customerName,
       phone: customer.phone,
       email: customer.email || null,
       address_line_1: customer.addressLine1,
@@ -70,7 +82,7 @@ exports.handler = async (event) => {
 
     const { data: existingCustomer } = await supabase
       .from("customers")
-      .select("id")
+      .select("id, lifetime_value, total_orders")
       .eq("phone", customer.phone)
       .maybeSingle();
 
@@ -88,15 +100,34 @@ exports.handler = async (event) => {
       await supabase.from("customers").update(customerPayload).eq("id", customerId);
     }
 
+    const deliveryEta = addBusinessDays(4);
+    const shippingAmount = totalAmount >= 799 ? 0 : 79;
     const orderPayload = {
       order_number: randomOrderNumber(),
       customer_id: customerId,
       customer_name: customer.customerName,
       phone: customer.phone,
-      status: "pending",
-      total_amount: totalAmount,
+      email: customer.email || null,
+      status: "placed",
+      payment_status: "payment_pending",
+      tracking_number: null,
+      delivery_eta: deliveryEta,
+      subtotal_amount: totalAmount,
+      shipping_amount: shippingAmount,
+      total_amount: totalAmount + shippingAmount,
       delivery_notes: customer.notes || null,
-      items_summary: validatedItems.map((item) => `${item.name} x${item.quantity}`).join(", ")
+      items_summary: validatedItems.map((item) => `${item.name} x${item.quantity}`).join(", "),
+      shipping_address: {
+        line1: customer.addressLine1,
+        line2: customer.addressLine2 || "",
+        city: customer.city,
+        state: customer.state,
+        pincode: customer.pincode
+      },
+      metadata: {
+        payment_provider: "razorpay_placeholder",
+        payment_note: "Online payment will be integrated later."
+      }
     };
 
     const { data: order, error: orderError } = await supabase
@@ -113,11 +144,30 @@ exports.handler = async (event) => {
       size_label: item.size,
       quantity: Number(item.quantity),
       unit_price: Number(item.unitPrice),
-      line_total: Number(item.unitPrice) * Number(item.quantity)
+      line_total: Number(item.unitPrice) * Number(item.quantity),
+      product_image: null
     }));
 
     const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
     if (itemsError) throw itemsError;
+
+    await supabase.from("order_status_events").insert([
+      {
+        order_id: order.id,
+        status: "placed",
+        label: "Order placed",
+        note: "Your order has been received and is waiting for confirmation."
+      }
+    ]);
+
+    await supabase
+      .from("customers")
+      .update({
+        lifetime_value: Number(existingCustomer?.lifetime_value || 0) + Number(orderPayload.total_amount),
+        total_orders: Number(existingCustomer?.total_orders || 0) + 1,
+        last_order_at: new Date().toISOString()
+      })
+      .eq("id", customerId);
 
     for (const item of validatedItems) {
       const currentStock = Number(liveProductMap.get(item.slug)?.stock_quantity || 0);

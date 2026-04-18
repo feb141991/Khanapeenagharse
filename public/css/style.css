@@ -533,6 +533,43 @@ textarea { min-height: 110px; resize: vertical; }
   gap: 16px;
   margin-top: 16px;
 }
+.admin-metric-grid,
+.admin-list-grid {
+  display: grid;
+  gap: 14px;
+}
+.admin-metric-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.admin-metric-card,
+.admin-list-card {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream);
+}
+.admin-metric-card span,
+.admin-list-row span {
+  color: var(--muted);
+  display: block;
+}
+.admin-metric-card strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.2rem;
+}
+.admin-list-card {
+  display: grid;
+  gap: 10px;
+}
+.admin-list-row {
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.admin-list-row:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
 .media-card {
   padding: 18px;
   border: 1px solid var(--line);
@@ -606,7 +643,7 @@ textarea { min-height: 110px; resize: vertical; }
 
 /* Responsive */
 @media (max-width: 1080px) {
-  .product-layout, .checkout-layout, .auth-layout, .admin-panels, .media-grid, .admin-create-product {
+  .product-layout, .checkout-layout, .auth-layout, .admin-panels, .media-grid, .admin-create-product, .admin-metric-grid {
     grid-template-columns: 1fr;
   }
   .auth-layout.single-column { grid-template-columns: 1fr; }
