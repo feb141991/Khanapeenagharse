@@ -1,6 +1,16 @@
 const { getSupabaseAdmin } = require("./_lib/supabase");
 
 const headers = { "Content-Type": "application/json" };
+const storageBucket =
+  process.env.NETLIFY_SUPABASE_STORAGE_BUCKET ||
+  process.env.SUPABASE_STORAGE_BUCKET ||
+  "product-images";
+
+function toPublicMediaUrl(supabase, value) {
+  if (!value) return null;
+  if (/^https?:\/\//i.test(value) || value.startsWith("/")) return value;
+  return supabase.storage.from(storageBucket).getPublicUrl(value).data.publicUrl;
+}
 
 exports.handler = async (event) => {
   if (event.httpMethod !== "GET") {
@@ -17,7 +27,15 @@ exports.handler = async (event) => {
 
     if (error) throw error;
 
-    return { statusCode: 200, headers, body: JSON.stringify({ products: data || [] }) };
+    const products = (data || []).map((product) => ({
+      ...product,
+      image_url: toPublicMediaUrl(supabase, product.image_url),
+      gallery_images: Array.isArray(product.gallery_images)
+        ? product.gallery_images.map((image) => toPublicMediaUrl(supabase, image)).filter(Boolean)
+        : []
+    }));
+
+    return { statusCode: 200, headers, body: JSON.stringify({ products, storageBucket }) };
   } catch (error) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: error.message || "Internal server error" }) };
   }

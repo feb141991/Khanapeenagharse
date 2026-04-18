@@ -319,6 +319,55 @@ textarea {
   z-index: 1;
 }
 
+.hero-image-panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-items: center;
+}
+
+.hero-image-frame,
+.about-owner-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(237, 243, 255, 0.92)),
+    linear-gradient(135deg, rgba(36, 85, 255, 0.05), rgba(93, 167, 255, 0.08));
+  box-shadow: var(--shadow-md);
+}
+
+.hero-image-frame {
+  min-height: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.hero-image-frame img,
+.about-owner-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-image-frame.is-empty,
+.about-owner-card.is-empty {
+  min-height: 520px;
+}
+
+.hero-image-frame.is-empty::before,
+.about-owner-card.is-empty::before {
+  content: "Add hero image";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-soft);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .hero-copy-block {
   display: grid;
   align-content: center;
@@ -583,6 +632,10 @@ textarea {
   top: 100px;
   display: grid;
   gap: 14px;
+}
+
+.about-owner-card {
+  aspect-ratio: 4 / 5;
 }
 
 .about-value-card {
@@ -1066,6 +1119,10 @@ textarea {
     grid-template-columns: 1fr 1fr;
   }
 
+  .hero-image-frame {
+    min-height: 420px;
+  }
+
   .chapter-rail {
     position: static;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1143,6 +1200,13 @@ textarea {
   .chapter-products,
   .compact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-image-frame,
+  .about-owner-card,
+  .hero-image-frame.is-empty,
+  .about-owner-card.is-empty {
+    min-height: 320px;
   }
 
   .chapter-mini-panel {

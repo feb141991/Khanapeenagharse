@@ -15,6 +15,8 @@ import { getCart, getWishlist, setCart, setWishlist } from "./store";
 
 const ZOMATO_URL =
   "https://www.zomato.com/bahadurgarh/khana-peena-ghar-se-bahadurgarh-locality/order";
+const HOME_HERO_IMAGE = "/images/brand/home-hero.jpg";
+const ABOUT_OWNER_IMAGE = "/images/brand/about-owner.jpg";
 
 const PRODUCT_CHAPTERS = [
   {
@@ -435,6 +437,24 @@ function HomePage() {
           </div>
         </div>
 
+        <motion.div
+          className="hero-image-panel"
+          initial={{ opacity: 0, y: 24, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.18 }}
+        >
+          <div className="hero-image-frame">
+            <img
+              src={HOME_HERO_IMAGE}
+              alt="Khana Peena Ghar Se signature table spread"
+              onError={(event) => {
+                event.currentTarget.closest(".hero-image-frame")?.classList.add("is-empty");
+                event.currentTarget.remove();
+              }}
+            />
+          </div>
+        </motion.div>
+
       </motion.section>
 
       <section className="home-chapters">
@@ -557,6 +577,16 @@ function AboutPage() {
         </article>
 
         <aside className="about-values-panel">
+          <div className="about-owner-card">
+            <img
+              src={ABOUT_OWNER_IMAGE}
+              alt="Founder portrait"
+              onError={(event) => {
+                event.currentTarget.closest(".about-owner-card")?.classList.add("is-empty");
+                event.currentTarget.remove();
+              }}
+            />
+          </div>
           <div className="about-value-card">
             <strong>Women-led</strong>
             <span>Built on resilience, instinct, and years of lived experience in the kitchen.</span>
