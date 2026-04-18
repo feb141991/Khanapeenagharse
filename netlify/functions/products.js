@@ -12,6 +12,18 @@ function toPublicMediaUrl(supabase, value) {
   return supabase.storage.from(storageBucket).getPublicUrl(value).data.publicUrl;
 }
 
+async function toSignedMediaUrl(supabase, value) {
+  if (!value) return null;
+  if (/^https?:\/\//i.test(value) || value.startsWith("/")) return value;
+
+  const { data, error } = await supabase.storage.from(storageBucket).createSignedUrl(value, 60 * 60 * 24 * 7);
+  if (error || !data?.signedUrl) {
+    return toPublicMediaUrl(supabase, value);
+  }
+
+  return data.signedUrl;
+}
+
 async function resolveProductFolderImages(supabase, slug) {
   if (!slug) return [];
 
@@ -47,11 +59,13 @@ exports.handler = async (event) => {
       const configuredImages = Array.isArray(product.gallery_images) ? product.gallery_images.filter(Boolean) : [];
       const allImages = folderImages.length ? folderImages : configuredImages;
       const coverImage = allImages[0] || product.image_url || null;
+      const signedImages = await Promise.all(allImages.map((image) => toSignedMediaUrl(supabase, image)));
+      const signedCover = await toSignedMediaUrl(supabase, coverImage);
 
       return {
         ...product,
-        image_url: toPublicMediaUrl(supabase, coverImage),
-        gallery_images: allImages.map((image) => toPublicMediaUrl(supabase, image)).filter(Boolean)
+        image_url: signedCover,
+        gallery_images: signedImages.filter(Boolean)
       };
     }));
 
