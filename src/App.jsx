@@ -125,7 +125,7 @@ function useCatalogProducts() {
   return catalog;
 }
 
-function Header({ cartCount, wishlistCount, isLoggedIn, onSignOut }) {
+function Header({ cartCount, isLoggedIn, onSignOut }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -141,10 +141,10 @@ function Header({ cartCount, wishlistCount, isLoggedIn, onSignOut }) {
   }, [menuOpen]);
 
   const navItems = [
+    { to: "/", label: "Home" },
     { to: "/about", label: "About" },
     { to: "/achar", label: "Achar" },
-    { to: "/wishlist", label: `Wishlist${wishlistCount ? ` (${wishlistCount})` : ""}` },
-    { to: "/login", label: isLoggedIn ? "Account" : "Login" },
+    { to: "/account", label: isLoggedIn ? "My account" : "Login" },
     { to: "/cart", label: `Cart${cartCount ? ` (${cartCount})` : ""}` }
   ];
 
@@ -209,7 +209,7 @@ function Header({ cartCount, wishlistCount, isLoggedIn, onSignOut }) {
                 Sign out
               </button>
             ) : (
-              <Link className="nav-admin" to="/login">
+              <Link className="nav-admin" to="/account">
                 Login
               </Link>
             )}
@@ -516,25 +516,25 @@ function HomePage() {
           <div>
             <h3>About</h3>
             <Link to="/about">Our story</Link>
-            <span>Women-led</span>
-            <span>Curated masalas</span>
+            <span>Brand story</span>
+            <span>Homemade food</span>
           </div>
           <div>
             <h3>Shop</h3>
             <Link to="/achar">Achar menu</Link>
             <Link to="/cart">Cart</Link>
-            <Link to="/wishlist">Wishlist</Link>
+            <Link to="/account">My account</Link>
           </div>
           <div>
             <h3>Account</h3>
-            <Link to="/login">Login</Link>
+            <Link to="/account">My account</Link>
             <Link to="/track-order">Track order</Link>
           </div>
           <div>
             <h3>Order</h3>
             <a href={ZOMATO_URL} target="_blank" rel="noreferrer">Zomato</a>
-            <span>Bahadurgarh</span>
-            <span>Batch-made, homemade</span>
+            <span>Online ordering</span>
+            <span>Dispatch updates</span>
           </div>
         </div>
       </footer>
@@ -1083,8 +1083,8 @@ function CartPage({ cart, updateCartQuantity }) {
         <label>Pincode<input type="text" name="pincode" required /></label>
         <label>Delivery notes<textarea name="notes" rows="4" /></label>
         <div className="payment-placeholder-react">
-          <strong>Razorpay placeholder</strong>
-          <p>The final payment action will plug in here.</p>
+          <strong>Online payment coming soon</strong>
+          <p>Razorpay will be connected here for secure online payments. Until then, this checkout records the order request and customer details so the team can confirm the order directly.</p>
         </div>
         <button className="button button-primary button-full" type="submit">
           Place order request
@@ -1095,10 +1095,45 @@ function CartPage({ cart, updateCartQuantity }) {
   );
 }
 
-function LoginPage({ session, refreshSession }) {
+function AccountPage({ session, refreshSession, wishlist }) {
   const [loginState, setLoginState] = useState({ email: "", password: "" });
   const [signupState, setSignupState] = useState({ fullName: "", email: "", password: "" });
   const [status, setStatus] = useState("");
+  const [profile, setProfile] = useState(null);
+  const productCatalog = useCatalogProducts();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfile() {
+      if (!session?.access_token) {
+        setProfile(null);
+        return;
+      }
+
+      try {
+        const response = await fetch("/.netlify/functions/customer-profile", {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Unable to load account.");
+        if (!cancelled) {
+          setProfile(result.customer || { email: result.user?.email || session.user.email || "" });
+        }
+      } catch {
+        if (!cancelled) {
+          setProfile({ email: session.user?.email || "" });
+        }
+      }
+    }
+
+    loadProfile();
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -1154,6 +1189,47 @@ function LoginPage({ session, refreshSession }) {
     setStatus(data.session ? "Account created." : "Account created. Check your email to confirm sign in.");
   };
 
+  if (session) {
+    const wishlistItems = productCatalog.filter((product) => wishlist.includes(product.slug));
+
+    return (
+      <section className="auth-shell single">
+        <div className="auth-panel primary auth-form-panel">
+          <p className="eyebrow">My account</p>
+          <h1>Your account is active.</h1>
+          <p>{profile?.full_name || session.user.user_metadata?.full_name || "Customer"}</p>
+          <p>{profile?.email || session.user.email}</p>
+          <p>{profile?.phone || "Add your phone and delivery details during checkout for faster repeat orders."}</p>
+        </div>
+        <div className="auth-panel">
+          <p className="eyebrow">Saved jars</p>
+          <h2>Wishlist</h2>
+          {wishlistItems.length ? (
+            <div className="account-wishlist-list">
+              {wishlistItems.map((product) => (
+                <Link key={product.slug} className="account-wishlist-item" to={`/product/${product.slug}`}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    onError={(event) => {
+                      event.currentTarget.src = "/images/logo.png";
+                    }}
+                  />
+                  <div>
+                    <strong>{product.name}</strong>
+                    <span>{product.shortDescription}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p>Save products from the achar menu to keep them ready here for your next order.</p>
+          )}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="auth-shell">
       <div className="auth-panel primary">
@@ -1192,8 +1268,8 @@ function TrackPage({ session }) {
         <div className="auth-panel primary auth-form-panel">
           <p className="eyebrow">Order tracking</p>
           <h1>Sign in to track your order.</h1>
-          <p>Order tracking is available for signed-in customers so order details stay private.</p>
-          <Link className="button button-secondary" to="/login">Go to login</Link>
+          <p>Shiprocket-based tracking will be connected here later. Until then, signed-in customers will be able to check manual order updates from this page.</p>
+          <Link className="button button-secondary" to="/account">Go to account</Link>
         </div>
       </section>
     );
@@ -1219,10 +1295,10 @@ function TrackPage({ session }) {
     <section className="auth-shell single">
       <form className="auth-panel primary auth-form-panel" onSubmit={submit}>
         <p className="eyebrow">Order tracking</p>
-        <h1>Check delivery status</h1>
+        <h1>Delivery tracking coming soon</h1>
         <label>Order number<input type="text" name="orderNumber" required /></label>
         <label>Phone<input type="tel" name="phone" required /></label>
-        <button className="button button-primary" type="submit">Track order</button>
+        <button className="button button-primary" type="submit">Check current status</button>
         <p className="inline-status">{status}</p>
       </form>
       <div className="auth-panel">
@@ -1237,8 +1313,8 @@ function TrackPage({ session }) {
         ) : (
           <>
             <p className="eyebrow">Tracking</p>
-            <h2>Enter order details</h2>
-            <p>Tracking is available once you have your order number.</p>
+            <h2>Manual dispatch updates for now</h2>
+            <p>Shiprocket will be integrated later. Until then, this page shows the latest order status updated by the team after confirmation, packing, and dispatch.</p>
           </>
         )}
       </div>
@@ -1276,7 +1352,6 @@ export default function App() {
     <div className="app-shell">
       <Header
         cartCount={shop.cart.length}
-        wishlistCount={shop.wishlist.length}
         isLoggedIn={!!session}
         onSignOut={handleSignOut}
       />
@@ -1311,12 +1386,12 @@ export default function App() {
                 />
               }
             />
-            <Route path="/wishlist" element={<WishlistPage wishlist={shop.wishlist} />} />
             <Route
               path="/cart"
               element={<CartPage cart={shop.cart} updateCartQuantity={shop.updateCartQuantity} />}
             />
-            <Route path="/login" element={<LoginPage session={session} refreshSession={refreshSession} />} />
+            <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} />} />
+            <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} wishlist={shop.wishlist} />} />
             <Route path="/track-order" element={<TrackPage session={session} />} />
           </Routes>
         </motion.div>

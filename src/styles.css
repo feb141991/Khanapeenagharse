@@ -1058,6 +1058,40 @@ textarea {
   background: rgba(36, 85, 255, 0.04);
 }
 
+.account-wishlist-list {
+  display: grid;
+  gap: 12px;
+}
+
+.account-wishlist-item {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.account-wishlist-item img {
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(36, 85, 255, 0.04), rgba(36, 85, 255, 0.1));
+}
+
+.account-wishlist-item div {
+  display: grid;
+  gap: 6px;
+}
+
+.account-wishlist-item span {
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
 .auth-panel {
   padding: 24px;
 }

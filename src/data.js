@@ -10,7 +10,7 @@ export const products = [
     size: "500 g jar",
     stock: 24,
     spice: "Medium",
-    image: "images/achars/aam-ka-achar.jpg",
+    image: "/images/logo.png",
     images: [
       "/images/achars/aam-ka-achar/Aam ka aachar.png"
     ],
@@ -34,7 +34,7 @@ export const products = [
     size: "450 g jar",
     stock: 18,
     spice: "Mild",
-    image: "images/achars/hing-ka-achar.jpg",
+    image: "/images/logo.png",
     images: [
       "/images/achars/hing-ka-achar/Hing Aachar.png",
       "/images/achars/hing-ka-achar/Hing Aachar2.png",
@@ -60,7 +60,7 @@ export const products = [
     size: "400 g jar",
     stock: 20,
     spice: "Hot",
-    image: "images/achars/mirch-ka-achar.jpg",
+    image: "/images/logo.png",
     images: [
       "/images/achars/mirch-ka-achar/MirchKa aachar.png"
     ],
@@ -84,7 +84,7 @@ export const products = [
     size: "500 g jar",
     stock: 16,
     spice: "Medium",
-    image: "images/achars/mix-veg-achar.jpg",
+    image: "/images/logo.png",
     images: [
       "/images/achars/mix-veg-achar/mix aachar.png"
     ],
