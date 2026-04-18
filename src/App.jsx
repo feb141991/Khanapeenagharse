@@ -1073,7 +1073,7 @@ function LoginPage({ session, refreshSession }) {
   const handleLogin = async (event) => {
     event.preventDefault();
     if (!hasSupabaseClientEnv || !supabase) {
-      setStatus("Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY.");
+      setStatus("Missing Supabase client configuration.");
       return;
     }
     setStatus("Signing in...");
@@ -1092,7 +1092,7 @@ function LoginPage({ session, refreshSession }) {
   const handleSignup = async (event) => {
     event.preventDefault();
     if (!hasSupabaseClientEnv || !supabase) {
-      setStatus("Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY.");
+      setStatus("Missing Supabase client configuration.");
       return;
     }
     setStatus("Creating account...");

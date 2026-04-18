@@ -9,10 +9,10 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       "import.meta.env.PUBLIC_SUPABASE_URL": JSON.stringify(
-        env.SUPABASE_URL || env.VITE_SUPABASE_URL || ""
+        env.NETLIFY_SUPABASE_URL || env.SUPABASE_URL || env.VITE_SUPABASE_URL || ""
       ),
       "import.meta.env.PUBLIC_SUPABASE_ANON_KEY": JSON.stringify(
-        env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY || ""
+        env.NETLIFY_SUPABASE_ANON_KEY || env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY || ""
       )
     },
     server: {
