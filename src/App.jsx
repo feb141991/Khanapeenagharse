@@ -352,6 +352,7 @@ function HeroCanvas() {
 function HomePage() {
   const productCatalog = useCatalogProducts();
   const heroProduct = productCatalog.find((product) => product.slug === "aam-ka-achar") || productCatalog[0];
+  const heroImage = heroProduct?.images?.[0] || heroProduct?.image || "/images/logo.png";
 
   return (
     <div className="landing-page-cld">
@@ -360,7 +361,7 @@ function HomePage() {
         <div className="cld-hero-radial cld-hero-radial-a" />
         <div className="cld-hero-radial cld-hero-radial-b" />
         <div className="cld-hero-copy">
-          <div className="cld-eyebrow"><span className="cld-dot" />Batch 04 · Shipping pan-India</div>
+          <div className="cld-eyebrow"><span className="cld-dot" />Live now · Shipping pan-India</div>
           <h1>Homemade achar, <em>shaped by a woman</em> who has been serving with passion for years.</h1>
           <p>
             Khana Peena Ghar Se began in a kitchen where spices were measured by instinct and every jar was filled by hand. Small batches. Curated masalas. The kind of achar that belongs beside paratha, dal-chawal, and the meals people actually eat every day.
@@ -385,15 +386,16 @@ function HomePage() {
               <strong>{heroProduct?.name || "Aam Ka Achar"}</strong>
               <span>{heroProduct?.ingredients?.[0] || "Raw mango"} · {heroProduct?.spice || "Medium"} heat · {heroProduct?.size || "500 g"}</span>
             </div>
-            <div className="cld-jar">
-              <div className="cld-jar-label">
-                <div className="tiny">01 · Signature</div>
-                <div className="name">{heroProduct?.name || "Aam Ka Achar"}</div>
-                <div className="sep" />
-                <div className="weight">{heroProduct?.size || "500 g"} · Batch 04</div>
-              </div>
-            </div>
-            <div className="cld-jar-batch"><span className="b-dot" />Batch sealed this week</div>
+            <Link className="cld-hero-product-frame" to={heroProduct ? `/product/${heroProduct.slug}` : "/achar"}>
+              <img
+                src={heroImage}
+                alt={heroProduct?.name || "Aam Ka Achar"}
+                onError={(event) => {
+                  event.currentTarget.src = "/images/logo.png";
+                }}
+              />
+            </Link>
+            <div className="cld-jar-batch"><span className="b-dot" />Live now</div>
           </div>
         </div>
       </section>
@@ -406,7 +408,7 @@ function HomePage() {
         </div>
       </div>
 
-      <section id="ranges" className="cld-section">
+      <section id="ranges" className="cld-section"> 
         <div className="cld-section-head">
           <div>
             <div className="cld-eyebrow"><span className="cld-dot" />The menu</div>
@@ -449,36 +451,9 @@ function HomePage() {
             })}
           </div>
           <div className="cld-shelf-base">
-            <span>The shelf · April batch</span>
+            <span>The shelf · Live menu</span>
             <span>{productCatalog.length} jars · Bahadurgarh kitchen</span>
           </div>
-        </div>
-      </section>
-
-      <section id="process" className="cld-process">
-        <div className="copy">
-          <div className="cld-eyebrow"><span className="cld-dot" />How each jar is made</div>
-          <h2>Five steps, <em>one kitchen</em>.</h2>
-          <p>Nothing is automated. Every batch moves through the same five slow steps — the way it has always been done. No preservatives, no shortcuts, just time and care.</p>
-          <div className="cld-process-note">
-            <div className="tiny">Shelf life</div>
-            <div>1 year when stored in a dry place.<br /><span>Use a dry spoon — moisture shortens it.</span></div>
-          </div>
-        </div>
-        <div className="steps">
-          {[
-            ["Source", "Fresh ingredients brought in from trusted local mandis each morning.", "Day 0"],
-            ["Sun-cure", "Hand-cut, salted, and sun-dried to pull out moisture and concentrate flavour.", "Day 1–3"],
-            ["Masala", "Curated masalas roasted and blended for each batch.", "Day 3"],
-            ["Fold", "Masala folded into the cured base with mustard oil, salt, and time.", "Day 4"],
-            ["Seal", "Filled hot, sealed, labelled by hand, and dispatched the same week.", "Day 5"]
-          ].map(([title, body, duration], index) => (
-            <article key={title} className="step">
-              <div className="num">{["i", "ii", "iii", "iv", "v"][index]}</div>
-              <div className="body"><strong>{title}</strong><span>{body}</span></div>
-              <div className="dur">{duration}</div>
-            </article>
-          ))}
         </div>
       </section>
 
@@ -486,9 +461,12 @@ function HomePage() {
         <article className="cld-story-copy">
           <div className="cld-eyebrow"><span className="cld-dot" />About</div>
           <h2>A story of food, care, and the strength of a woman who built a <em>legacy</em> through her kitchen.</h2>
-          <p>Khana Peena Ghar Se was born from the hands of a woman who spent her life bringing people together through food. A woman with years of wisdom, resilience, and tradition behind her, she turned everyday meals into moments of comfort, celebration, and connection.</p>
+          <p>Khana Peena Ghar Se was born from the hands of a woman who spent her life bringing people together through food. Years of wisdom, resilience, and tradition shaped a kitchen where meals were always made to care for people properly.</p>
           <div className="cld-pull">For her, cooking was never just about feeding people — it was about caring for them.</div>
-          <p>Proudly women-led, every jar is prepared in small batches with carefully selected ingredients and time-honoured methods. This is more than a food brand. It is the story of a strong woman who proved that experience is power, and that the kitchen can build a legacy.</p>
+          <p>Proudly women-led, every jar is prepared in small batches with carefully selected ingredients and time-honoured methods.</p>
+          <div className="cld-story-actions">
+            <Link className="button button-secondary" to="/about">Read more</Link>
+          </div>
         </article>
         <aside className="cld-story-aside">
           <div className="cld-portrait">
@@ -546,9 +524,9 @@ function HomePage() {
 
       <section className="cld-cta-banner">
         <div>
-          <div className="cld-eyebrow"><span className="cld-dot" />Batch 04 · April</div>
+          <div className="cld-eyebrow"><span className="cld-dot" />Live now</div>
           <h2>Four jars. One <em>shared table</em>.</h2>
-          <p>Pick a range, or take the full set. Batch 04 is fresh out of the Bahadurgarh kitchen — sealed hot, shipping this week.</p>
+          <p>Pick a range, or take the full set. The live menu is ready to order from the Bahadurgarh kitchen and shipping this week.</p>
           <div className="cld-hero-actions">
             <Link className="button button-primary" to="/achar">Shop the achar menu</Link>
             <a className="button button-secondary" href={ZOMATO_URL} target="_blank" rel="noreferrer">Order on Zomato</a>
@@ -562,7 +540,7 @@ function HomePage() {
             <img src="/images/logo.png" alt="" />
             <span className="brand-copy">
               <strong>Khana Peena Ghar Se</strong>
-              <span>Homemade achar · Bahadurgarh</span>
+              <span>Homemade achar  </span>
             </span>
           </Link>
           <p>Homemade food prepared with care, curated masalas, and the warmth of a kitchen that still believes food should feel personal.</p>
@@ -577,8 +555,8 @@ function HomePage() {
           <div>
             <h4>About</h4>
             <Link to="/about">Our story</Link>
-            <a href="#process">Process</a>
             <a href="#faq">FAQ</a>
+            <Link to="/about">Read more</Link>
           </div>
           <div>
             <h4>Order</h4>
@@ -2031,26 +2009,28 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
     <section className="auth-shell">
       <div className="auth-panel primary">
         <p className="eyebrow">Secure account</p>
-        <h1>{authMode === "reset" ? "Set your new password." : "Sign in with confidence."}</h1>
-        <p>Secure login, saved addresses, faster reorder flows, and premium order support from one account.</p>
+        <h1>{authMode === "reset" ? "Set your new password." : "Sign in to your account."}</h1>
+        <p>Keep your saved addresses, order history, favourites, and faster checkout details in one secure place.</p>
         <div className="auth-trust-row">
-          <div className="hero-metric-card"><strong>Secure login</strong><span>Supabase auth and protected account routes.</span></div>
-          <div className="hero-metric-card"><strong>Repeat orders</strong><span>Reorder faster with saved details and favourites.</span></div>
+          <div className="auth-trust-card"><strong>Secure login</strong><span>Protected access for orders, addresses, and account details.</span></div>
+          <div className="auth-trust-card"><strong>Faster reorders</strong><span>Saved preferences and favourites make the next order simpler.</span></div>
         </div>
-        <div className="account-card-actions">
+        <div className="auth-mode-row">
+          <button className={`button ${authMode === "login" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("login")}>Sign in</button>
           <button className={`button ${authMode === "signup" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("signup")}>Create account</button>
           <button className={`button ${authMode === "forgot" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("forgot")}>Forgot password</button>
         </div>
       </div>
-      <div className="auth-panel">
+      <div className="auth-panel auth-form-panel">
         {authMode === "login" ? (
           <>
             <p className="eyebrow">Welcome back</p>
-            <h2>Login</h2>
+            <h2>Sign in</h2>
+            <p>Use your email and password to access orders, wishlist, addresses, and account settings.</p>
             <form className="auth-form" onSubmit={handleLogin}>
               <label>Email<input type="email" placeholder="you@example.com" value={loginState.email} onChange={(event) => setLoginState((current) => ({ ...current, email: event.target.value }))} /></label>
               <label>Password<input type="password" placeholder="Password" value={loginState.password} onChange={(event) => setLoginState((current) => ({ ...current, password: event.target.value }))} /></label>
-              <label><input type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} /> Remember me on this device</label>
+              <label className="auth-checkbox"><input type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} /> <span>Remember me on this device</span></label>
               <button className="button button-primary" type="submit" disabled={!!session}>Sign in</button>
             </form>
           </>

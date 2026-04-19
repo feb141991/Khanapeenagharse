@@ -442,56 +442,23 @@ textarea {
   padding: 24px;
 }
 
-.cld-jar {
-  position: relative;
-  z-index: 1;
-  width: 260px;
-  aspect-ratio: 3 / 4;
-  border-radius: 18px 18px 22px 22px;
-  background: linear-gradient(180deg, #d89b1d 0%, #e79a1f 35%, #c67a0f 100%);
-  box-shadow: 0 32px 60px rgba(17, 33, 78, 0.18), inset 0 2px 0 rgba(255, 255, 255, 0.25), inset 0 -8px 20px rgba(0, 0, 0, 0.18);
-  transform: rotate(-2deg);
+.cld-hero-product-frame {
+  width: min(100%, 360px);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 32px 60px rgba(17, 33, 78, 0.18);
+  background: rgba(255, 255, 255, 0.9);
 }
 
-.cld-jar::before {
-  content: "";
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 78%;
-  height: 22px;
-  background: linear-gradient(180deg, #1a2a4c, #0f1c36);
-  border-radius: 6px 6px 3px 3px;
+.cld-hero-product-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.cld-jar::after {
-  content: "";
-  position: absolute;
-  top: 18%;
-  left: 12%;
-  right: 12%;
-  bottom: 12%;
-  background: #fff;
-  border-radius: 4px;
-}
-
-.cld-jar-label {
-  position: absolute;
-  top: 18%;
-  left: 12%;
-  right: 12%;
-  bottom: 12%;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 18px 12px;
-}
-
-.cld-jar-label .tiny,
-.cld-jar-ticket .tiny,
-.cld-process-note .tiny {
+.cld-jar-ticket .tiny {
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -499,22 +466,12 @@ textarea {
   font-weight: 700;
 }
 
-.cld-jar-label .name {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 1;
-  margin: 8px 0;
-}
-
-.cld-jar-label .sep,
 .cld-shelf-jar .sep-s {
   width: 28px;
   height: 1px;
   background: var(--line-strong);
 }
 
-.cld-jar-label .weight,
 .cld-shelf-jar .w-s {
   font-size: 10px;
   letter-spacing: 0.18em;
@@ -563,7 +520,7 @@ textarea {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--sky);
+  background: #8cc7ff;
 }
 
 .cld-marquee {
@@ -571,6 +528,7 @@ textarea {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   padding: 14px 0;
+  position: relative;
 }
 
 .cld-marquee-track {
@@ -578,6 +536,8 @@ textarea {
   gap: 48px;
   white-space: nowrap;
   animation: scroll 38s linear infinite;
+  width: max-content;
+  padding-right: 48px;
 }
 
 .cld-marquee-track span {
@@ -597,7 +557,6 @@ textarea {
 .cld-section-head,
 .cld-story,
 .cld-faq,
-.cld-process,
 .cld-cta-banner,
 .cld-footer {
   display: grid;
@@ -795,64 +754,6 @@ textarea {
   text-transform: uppercase;
 }
 
-.cld-process {
-  position: relative;
-  overflow: hidden;
-  padding: 44px;
-  border: 1px solid var(--line);
-  border-radius: 28px;
-  background: linear-gradient(160deg, var(--text) 0%, #0b1832 55%, #1836aa 100%);
-  color: #fff;
-  box-shadow: var(--shadow-lg);
-}
-
-.cld-process .copy p,
-.cld-process .copy h2,
-.cld-process .copy .cld-eyebrow,
-.cld-process .step .body strong,
-.cld-process .dur {
-  color: #fff;
-}
-
-.cld-process-note {
-  margin-top: 20px;
-  padding: 16px 18px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.cld-process-note span,
-.cld-process .step .body span {
-  color: rgba(255, 255, 255, 0.68);
-}
-
-.cld-process .steps {
-  display: grid;
-  gap: 14px;
-}
-
-.cld-process .step {
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) auto;
-  gap: 18px;
-  align-items: start;
-  padding: 18px 20px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.cld-process .num {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, rgba(93, 167, 255, 0.2), rgba(119, 92, 255, 0.2));
-  color: #b7c9ff;
-}
-
 .cld-story-copy,
 .cld-portrait,
 .v-card,
@@ -867,6 +768,13 @@ textarea {
   padding: 36px;
   display: grid;
   gap: 16px;
+}
+
+.cld-story-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 4px;
 }
 
 .cld-pull {
@@ -2524,6 +2432,9 @@ textarea {
 .auth-panel.primary {
   background: linear-gradient(180deg, rgba(36, 85, 255, 0.94), rgba(24, 54, 170, 0.96));
   color: #fff;
+  display: grid;
+  align-content: start;
+  gap: 18px;
 }
 
 .auth-panel.primary p,
@@ -2533,6 +2444,65 @@ textarea {
 
 .auth-form-panel {
   align-content: start;
+  gap: 18px;
+}
+
+.auth-mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.auth-trust-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.auth-trust-card {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.1);
+  display: grid;
+  gap: 6px;
+}
+
+.auth-trust-card strong {
+  color: #fff;
+  font-size: 15px;
+}
+
+.auth-trust-card span {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.auth-form {
+  align-content: start;
+}
+
+.auth-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+}
+
+.auth-checkbox input {
+  width: 16px;
+  height: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+.auth-checkbox span {
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+.auth-form-panel .inline-status {
+  margin: 0;
 }
 
 .auth-shell.single {
@@ -2599,6 +2569,7 @@ textarea {
   .chapter-band-panels,
   .chapter-products,
   .compact-grid,
+  .auth-trust-row,
   .account-wishlist-grid,
   .account-reorder-grid,
   .account-recommendation-grid,
@@ -2628,7 +2599,6 @@ textarea {
 @media (max-width: 760px) {
   .cld-hero,
   .cld-story-copy,
-  .cld-process,
   .cld-cta-banner,
   .cld-footer {
     padding: 24px;
