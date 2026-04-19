@@ -209,11 +209,7 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
               <button className="nav-admin nav-admin-button" type="button" onClick={onSignOut}>
                 Sign out
               </button>
-            ) : (
-              <Link className="nav-admin" to="/account">
-                Login
-              </Link>
-            )}
+            ) : null}
           </div>
         </motion.nav>
       </AnimatePresence>
@@ -445,49 +441,15 @@ function HomePage() {
             );
           })}
         </div>
-        <div className="cld-shelf-wrap">
-          <div className="cld-shelf">
-            {PRODUCT_CHAPTERS.map((chapter) => {
-              const product = productCatalog.find((item) => item.categoryKey === chapter.id);
-              const productImage = product?.images?.[0] || product?.image || "/images/logo.png";
-              return (
-                <Link key={`shelf-${chapter.id}`} to={product ? `/product/${product.slug}` : "/achar"} className={`cld-shelf-jar ${chapter.id}`}>
-                  <div className="price-chip">₹{product?.price || 0}</div>
-                  <div className="art">
-                    <img
-                      src={productImage}
-                      alt={product?.name || chapter.label}
-                      loading="lazy"
-                      onError={(event) => {
-                        event.currentTarget.src = "/images/logo.png";
-                      }}
-                    />
-                    <div className="label">
-                      <div className="mini">{chapter.index} · {chapter.label.slice(0, 3).toUpperCase()}</div>
-                      <div className="name-s">{product?.name?.split(" ")[0] || chapter.label}</div>
-                      <div className="sep-s" />
-                      <div className="w-s">{product?.size || "500 g"}</div>
-                    </div>
-                  </div>
-                  <div className="caption"><strong>{product?.name || chapter.label}</strong><span>{product?.ingredients?.[0] || product?.tagline || chapter.copy}</span></div>
-                </Link>
-              );
-            })}
-          </div>
-          <div className="cld-shelf-base">
-            <span>The shelf · Live menu</span>
-            <span>{productCatalog.length} jars · Bahadurgarh kitchen</span>
-          </div>
-        </div>
       </section>
 
       <section id="story" className="cld-story">
         <article className="cld-story-copy">
           <div className="cld-eyebrow"><span className="cld-dot" />About</div>
           <h2>A story of food, care, and the strength of a woman who built a <em>legacy</em> through her kitchen.</h2>
-          <p>Khana Peena Ghar Se was born from the hands of a woman who spent her life bringing people together through food. Years of wisdom, resilience, and tradition shaped a kitchen where meals were always made to care for people properly.</p>
-          <div className="cld-pull">For her, cooking was never just about feeding people — it was about caring for them.</div>
-          <p>Proudly women-led, every jar is prepared in small batches with carefully selected ingredients and time-honoured methods.</p>
+          <p>I've spent my life in the kitchen, not because I had to, but because it's where I learned to care. Where I fed my family. Where I turned everyday meals into moments that mattered.</p>
+          <div className="cld-pull">Khana Peena Ghar Se is my kitchen, now in yours.</div>
+          <p>Small batches. Real ingredients. The same instinct and patience I've always believed in.</p>
           <div className="cld-story-actions">
             <Link className="button button-secondary" to="/about">Read more</Link>
           </div>
@@ -613,24 +575,19 @@ function AboutPage() {
       <div className="about-story-grid">
         <article className="about-story-panel">
           <p>
-            Khana Peena Ghar Se was born from the hands of a woman who spent her life bringing people
-            together through food. A woman with years of wisdom, resilience, and tradition behind her,
-            she turned everyday meals into moments of comfort, celebration, and connection. For her,
-            cooking was never just about feeding people—it was about caring for them.
+            I've spent my life in the kitchen, not because I had to, but because it's where I learned
+            to care. Where I fed my family. Where I turned everyday meals into moments that mattered.
           </p>
           <p>
-            After decades of perfecting recipes, blending spices by instinct, and knowing that the best
-            food comes from patience and love, she chose to share that legacy beyond her own kitchen.
-            What began as family favourites and trusted homemade masalas became a brand rooted in heritage and heart.
+            For decades, I've made achar the only way I know how: by hand, with spices I trust, taking
+            the time it deserves. My family always said, "You should share this." So I am.
           </p>
           <p>
-            Proudly women-led, Khana Peena Ghar Se carries forward her strength, warmth, and belief that
-            real food should feel like home. Every jar is prepared in small batches, with carefully selected
-            ingredients and time-honoured methods, so that each spoonful brings the taste of tradition to modern homes.
+            Khana Peena Ghar Se is my kitchen, now in yours. Small batches. Real ingredients. The same
+            instinct and patience I've always believed in.
           </p>
           <p>
-            This is more than a food brand—it is the story of a strong woman who proved that experience
-            is power, tradition is timeless, and the kitchen can build a legacy.
+            Because good food isn't complicated. It's just made with intention. And that's all I've ever done.
           </p>
         </article>
 
