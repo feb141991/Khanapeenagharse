@@ -1276,6 +1276,8 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
   const recommendedProducts = productCatalog
     .filter((product) => !dashboard.orders.some((order) => (order.items || []).some((item) => item.product_slug === product.slug)))
     .slice(0, 3);
+  const referralCode = profile?.referral_code || dashboard.referrals[0]?.referral_code || "";
+  const showSection = (...keys) => keys.includes(activeSection);
 
   useEffect(() => {
     let cancelled = false;
@@ -1293,7 +1295,10 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
           useAuthorizedJson(session, "/.netlify/functions/customer-dashboard")
         ]);
         if (!cancelled) {
-          const nextProfile = result.customer || { email: result.user?.email || session.user.email || "" };
+          const nextProfile = {
+            ...(result.customer || { email: result.user?.email || session.user.email || "" }),
+            ...(dashboardData.customer || {})
+          };
           setProfile(nextProfile);
           setProfileForm({
             fullName: nextProfile.full_name || session.user.user_metadata?.full_name || "",
@@ -1610,7 +1615,7 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
           </aside>
 
           <div className="account-main">
-          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+          {showSection("dashboard") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Quick reorder</p>
@@ -1641,9 +1646,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 </div>
               )}
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "dashboard" || activeSection === "orders" ? "" : "section-muted"}`}>
+          {showSection("dashboard", "orders") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Orders snapshot</p>
@@ -1659,9 +1664,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 </article>
               ))}
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "rewards" ? "" : "section-muted"}`}>
+          {showSection("rewards") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Rewards Club</p>
@@ -1695,9 +1700,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
               ) : null}
             </div>
             {nextTier && ordersUntilNextTier === 1 ? <div className="celebration-banner">One more order unlocks your next tier.</div> : null}
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+          {showSection("dashboard") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Recommended for you</p>
@@ -1714,9 +1719,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 </article>
               ))}
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card seasonal-drop-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+          {showSection("dashboard") ? <section className="account-section-card seasonal-drop-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Member drop</p>
@@ -1733,9 +1738,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 <span>Countdown placeholder until live drops are connected.</span>
               </div>
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+          {showSection("dashboard") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Milestones</p>
@@ -1760,9 +1765,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 <strong>{totalOrders > 4 ? "Table Favourite" : "First Pour"}</strong>
               </article>
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "profile" ? "" : "section-muted"}`}>
+          {showSection("profile") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Profile</p>
@@ -1788,9 +1793,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 <Link className="button button-secondary" to="/orders">My orders</Link>
               </div>
             </form>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "security" ? "" : "section-muted"}`}>
+          {showSection("security") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Security</p>
@@ -1810,10 +1815,10 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 <p>Your account, delivery profile, wishlist, and order history can be managed now. Payment confirmation will be added in the next release.</p>
               </article>
             </div>
-          </section>
+          </section> : null}
         
 
-          <section className={`account-section-card ${activeSection === "addresses" ? "" : "section-muted"}`}>
+          {showSection("addresses") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Addresses</p>
@@ -1849,9 +1854,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 </article>
               ))}
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "referrals" ? "" : "section-muted"}`}>
+          {showSection("referrals") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Referrals</p>
@@ -1862,7 +1867,7 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             <div className="account-reward-stack">
               <article className="account-payment-card">
                 <span className="account-chip">Referral code</span>
-                <strong>{profile?.referral_code || dashboard.referrals[0]?.referral_code || "Generating..."}</strong>
+                <strong>{referralCode || "Will appear after your account is fully synced."}</strong>
                 <p>Give £5, get £5 style offer placeholder. Rewards are already modelled in Supabase and can later plug into checkout discounts.</p>
               </article>
               <article className="account-payment-card subtle">
@@ -1872,13 +1877,13 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
               </article>
               <article className="account-payment-card subtle">
                 <span className="account-chip">Share link</span>
-                <strong>{`${window.location.origin}/signup?ref=${profile?.referral_code || ""}`}</strong>
+                <strong>{referralCode ? `${window.location.origin}/account?ref=${referralCode}` : "Share link will appear with your referral code."}</strong>
                 <p>Ready for WhatsApp, Instagram bio, or direct sharing.</p>
               </article>
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+          {showSection("dashboard") ? <section className="account-section-card">
           <div className="account-section-head">
             <div>
               <p className="eyebrow">Wishlist</p>
@@ -1927,10 +1932,10 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
               <p>Save products from the achar menu to keep them ready here for your next order.</p>
             </div>
           )}
-          </section>
+          </section> : null}
 
-        {dashboard.notifications.length ? (
-          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+        {dashboard.notifications.length && showSection("dashboard") ? (
+          <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Notifications</p>
@@ -1948,7 +1953,7 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
           </section>
         ) : null}
 
-          <section className={`account-section-card ${activeSection === "support" ? "" : "section-muted"}`}>
+          {showSection("support") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Support</p>
@@ -1967,21 +1972,21 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
                 <button className="button button-ghost" type="button">Coming soon</button>
               </article>
             </div>
-          </section>
+          </section> : null}
 
-          <section className={`account-section-card ${activeSection === "security" ? "" : "section-muted"}`}>
+          {showSection("security") ? <section className="account-section-card">
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Account exit</p>
-                <h2>Save the customer before they leave</h2>
+                <h2>Close account access</h2>
               </div>
             </div>
             <article className="account-delete-card">
               <strong>Thinking of leaving?</strong>
-              <p>Offer a soft retention win before deletion. This reduces churn and creates another ordering moment.</p>
+              <p>If you want to close your account, send the request here and we will handle it through support.</p>
               <button className="button button-ghost" type="button" onClick={handleDeleteRequest}>Request deletion</button>
             </article>
-          </section>
+          </section> : null}
 
           </div>
         </div>

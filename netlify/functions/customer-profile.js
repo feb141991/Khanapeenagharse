@@ -40,11 +40,10 @@ exports.handler = async (event) => {
     }
 
     const payload = JSON.parse(event.body || "{}");
-    const fallbackPhone = existingCustomer?.phone || `auth-${authUser.id.slice(0, 12)}`;
     const customerPayload = {
       auth_user_id: authUser.id,
       full_name: payload.fullName || existingCustomer?.full_name || authUser.user_metadata?.full_name || "Customer",
-      phone: payload.phone || fallbackPhone,
+      phone: payload.phone || existingCustomer?.phone || null,
       email: authUser.email || payload.email || existingCustomer?.email || null,
       address_line_1: payload.addressLine1 || existingCustomer?.address_line_1 || null,
       address_line_2: payload.addressLine2 || existingCustomer?.address_line_2 || null,

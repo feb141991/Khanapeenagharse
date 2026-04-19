@@ -959,8 +959,7 @@ textarea {
 .chapter-band-copy h2,
 .product-page-copy h1,
 .auth-panel h1,
-.auth-panel h2,
-.empty-panel h2 {
+.auth-panel h2 {
   margin: 0;
   font-size: clamp(2.7rem, 6vw, 5.7rem);
   line-height: 0.95;
@@ -2065,9 +2064,26 @@ textarea {
 .account-reorder-card img,
 .account-recommendation-card img {
   width: 100%;
-  aspect-ratio: 1 / 0.9;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   border-radius: 12px;
+}
+
+.account-recommendation-grid {
+  grid-template-columns: 1fr;
+}
+
+.account-recommendation-card {
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.account-recommendation-card img {
+  width: 96px;
+  height: 96px;
+  max-height: 96px;
+  border-radius: 10px;
 }
 
 .account-reorder-card span,
@@ -2400,6 +2416,17 @@ textarea {
   padding: 28px;
 }
 
+.empty-panel h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.empty-panel p {
+  margin: 0;
+}
+
 @keyframes shimmer {
   0% {
     transform: translateX(-90%) rotate(8deg);
@@ -2459,10 +2486,13 @@ textarea {
   .auth-trust-row,
   .account-wishlist-grid,
   .account-reorder-grid,
-  .account-recommendation-grid,
   .account-stats-grid,
   .account-benefits-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .account-recommendation-grid {
+    grid-template-columns: 1fr;
   }
 
   .hero-image-frame {
@@ -2496,6 +2526,10 @@ textarea {
   .cld-shelf,
   .cld-footer-links {
     grid-template-columns: 1fr;
+  }
+
+  .account-recommendation-card img {
+    max-height: 150px;
   }
 
   .app-shell {
