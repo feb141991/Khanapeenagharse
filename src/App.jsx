@@ -402,8 +402,12 @@ function HomePage() {
 
       <div className="cld-marquee" aria-hidden="true">
         <div className="cld-marquee-track">
-          {["Small batch", "Curated masalas", "Women-led kitchen", "Sealed hot", "Pan-India shipping", "Zomato listed", "Small batch", "Curated masalas", "Women-led kitchen", "Sealed hot", "Pan-India shipping", "Zomato listed"].map((label, index) => (
-            <span key={`${label}-${index}`}>{label}</span>
+          {[0, 1].map((group) => (
+            <div key={group} className="cld-marquee-group">
+              {["Small batch", "Curated masalas", "Women-led kitchen", "Sealed hot", "Pan-India shipping", "Zomato listed"].map((label, index) => (
+                <span key={`${group}-${label}-${index}`}>{label}</span>
+              ))}
+            </div>
           ))}
         </div>
       </div>
@@ -419,9 +423,20 @@ function HomePage() {
         <div className="cld-atlas">
           {PRODUCT_CHAPTERS.map((chapter) => {
             const product = productCatalog.find((item) => item.categoryKey === chapter.id);
+            const productImage = product?.images?.[0] || product?.image || "/images/logo.png";
             return (
               <Link key={chapter.id} to={product ? `/product/${product.slug}` : "/achar"} className={`cld-atlas-card ${chapter.id}`}>
                 <div className="glow" />
+                <div className="cld-atlas-media">
+                  <img
+                    src={productImage}
+                    alt={product?.name || chapter.label}
+                    loading="lazy"
+                    onError={(event) => {
+                      event.currentTarget.src = "/images/logo.png";
+                    }}
+                  />
+                </div>
                 <div className="idx">{chapter.index} · {chapter.label}</div>
                 <h3>{product?.name || chapter.label}</h3>
                 <p>{product?.tagline || chapter.copy}</p>
@@ -434,10 +449,19 @@ function HomePage() {
           <div className="cld-shelf">
             {PRODUCT_CHAPTERS.map((chapter) => {
               const product = productCatalog.find((item) => item.categoryKey === chapter.id);
+              const productImage = product?.images?.[0] || product?.image || "/images/logo.png";
               return (
                 <Link key={`shelf-${chapter.id}`} to={product ? `/product/${product.slug}` : "/achar"} className={`cld-shelf-jar ${chapter.id}`}>
                   <div className="price-chip">₹{product?.price || 0}</div>
                   <div className="art">
+                    <img
+                      src={productImage}
+                      alt={product?.name || chapter.label}
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.src = "/images/logo.png";
+                      }}
+                    />
                     <div className="label">
                       <div className="mini">{chapter.index} · {chapter.label.slice(0, 3).toUpperCase()}</div>
                       <div className="name-s">{product?.name?.split(" ")[0] || chapter.label}</div>

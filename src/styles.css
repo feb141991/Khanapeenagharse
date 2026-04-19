@@ -532,11 +532,17 @@ textarea {
 }
 
 .cld-marquee-track {
-  display: inline-flex;
-  gap: 48px;
+  display: flex;
   white-space: nowrap;
   animation: scroll 38s linear infinite;
   width: max-content;
+}
+
+.cld-marquee-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 48px;
+  flex-shrink: 0;
   padding-right: 48px;
 }
 
@@ -545,6 +551,16 @@ textarea {
   font-size: 13px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
 .cld-section,
@@ -577,6 +593,19 @@ textarea {
   display: grid;
   gap: 14px;
   min-height: 300px;
+}
+
+.cld-atlas-media {
+  overflow: hidden;
+  border-radius: 14px;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(180deg, rgba(36, 85, 255, 0.04), rgba(36, 85, 255, 0.1));
+}
+
+.cld-atlas-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .cld-atlas-card .glow {
@@ -651,15 +680,17 @@ textarea {
   width: 100%;
   max-width: 180px;
   aspect-ratio: 3 / 4;
+  overflow: hidden;
   border-radius: 14px 14px 18px 18px;
   position: relative;
   box-shadow: 0 22px 40px rgba(17, 33, 78, 0.16);
 }
 
-.cld-shelf-jar.signature .art { background: linear-gradient(180deg, #d89b1d 0%, #e79a1f 35%, #c67a0f 100%); }
-.cld-shelf-jar.daily .art { background: linear-gradient(180deg, #a7905a 0%, #c6ac6c 35%, #8f7640 100%); }
-.cld-shelf-jar.bold .art { background: linear-gradient(180deg, #c23e2b 0%, #d14a2f 35%, #9a2e1e 100%); }
-.cld-shelf-jar.family .art { background: linear-gradient(180deg, #7a8f4a 0%, #92a75c 35%, #5d713a 100%); }
+.cld-shelf-jar .art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
 .cld-shelf-jar .art::before,
 .cld-shelf-jar .art::after {
@@ -678,30 +709,26 @@ textarea {
 }
 
 .cld-shelf-jar .art::after {
-  top: 22%;
-  left: 14%;
-  right: 14%;
-  bottom: 14%;
-  background: #fff;
-  border-radius: 3px;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(17, 33, 78, 0.02), rgba(17, 33, 78, 0.16));
 }
 
 .cld-shelf-jar .label {
   position: absolute;
-  top: 22%;
-  left: 14%;
-  right: 14%;
-  bottom: 14%;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
   z-index: 1;
   display: grid;
   place-items: center;
-  padding: 10px 6px;
+  padding: 12px 8px;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 
 .cld-shelf-jar .mini {
   font-size: 7px;
   letter-spacing: 0.26em;
-  color: var(--blue);
+  color: rgba(255, 255, 255, 0.86);
   font-weight: 700;
 }
 
@@ -709,6 +736,7 @@ textarea {
   font-family: "Cormorant Garamond", serif;
   font-size: 18px;
   font-weight: 600;
+  color: #fff;
 }
 
 .cld-shelf-jar .caption {
@@ -720,6 +748,14 @@ textarea {
 .cld-shelf-jar .caption span {
   color: var(--text-soft);
   font-size: 12px;
+}
+
+.cld-shelf-jar .sep-s {
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.cld-shelf-jar .w-s {
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .cld-shelf-jar .price-chip {
