@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform
 } from "motion/react";
-import { products } from "./data";
+import { faqs, products, testimonials } from "./data";
 import { hasSupabaseClientEnv, supabase } from "./supabaseClient";
 import { getCart, getWishlist, setCart, setWishlist } from "./store";
 
@@ -351,191 +351,246 @@ function HeroCanvas() {
 
 function HomePage() {
   const productCatalog = useCatalogProducts();
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const springX = useSpring(pointerX, { stiffness: 90, damping: 20 });
-  const springY = useSpring(pointerY, { stiffness: 90, damping: 20 });
-  const rotateX = useTransform(springY, [-160, 160], [7, -7]);
-  const rotateY = useTransform(springX, [-160, 160], [-9, 9]);
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, -70]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.4]);
-  const progressScale = useSpring(scrollYProgress, { stiffness: 120, damping: 28 });
-
-  const onMove = (event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    pointerX.set(event.clientX - (rect.left + rect.width / 2));
-    pointerY.set(event.clientY - (rect.top + rect.height / 2));
-  };
-
-  const onLeave = () => {
-    pointerX.set(0);
-    pointerY.set(0);
-  };
+  const heroProduct = productCatalog.find((product) => product.slug === "aam-ka-achar") || productCatalog[0];
 
   return (
-    <div className="landing-shell">
-      <motion.div className="page-progress" style={{ scaleX: progressScale }} />
-
-      <motion.section
-        ref={heroRef}
-        className="react-hero"
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
-        style={{ y: heroY, opacity: heroOpacity }}
-      >
-        <HeroCanvas />
-        <div className="hero-grid-pattern" />
-        <div className="hero-radial hero-radial-a" />
-        <div className="hero-radial hero-radial-b" />
-
-        <div className="hero-copy-block">
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.04 }}
-          >
-            Homemade food, shaped by a woman who has been serving with passion for years.
-          </motion.h1>
-          <motion.p
-            className="hero-copy-text"
-            initial={{ opacity: 0, y: 26 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.16 }}
-          >
-            Khana Peena Ghar Se was born from the hands of a woman who spent her life bringing people together through food. A woman with years of wisdom, resilience, and tradition behind her, she turned everyday meals into moments of comfort, celebration, and connection. For her, cooking was never just about feeding people—it was about caring for them.
-          </motion.p>
-          <motion.div
-            className="hero-cta-row"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.24 }}
-          >
-            <Link className="button button-primary" to="/achar">
-              Explore the achar menu
-            </Link>
-            <a className="button button-secondary" href={ZOMATO_URL} target="_blank" rel="noreferrer">
-              Order on Zomato
-            </a>
-          </motion.div>
-          <div className="hero-metric-row">
+    <div className="landing-page-cld">
+      <section className="cld-hero">
+        <div className="cld-hero-grid" />
+        <div className="cld-hero-radial cld-hero-radial-a" />
+        <div className="cld-hero-radial cld-hero-radial-b" />
+        <div className="cld-hero-copy">
+          <div className="cld-eyebrow"><span className="cld-dot" />Batch 04 · Shipping pan-India</div>
+          <h1>Homemade achar, <em>shaped by a woman</em> who has been serving with passion for years.</h1>
+          <p>
+            Khana Peena Ghar Se began in a kitchen where spices were measured by instinct and every jar was filled by hand. Small batches. Curated masalas. The kind of achar that belongs beside paratha, dal-chawal, and the meals people actually eat every day.
+          </p>
+          <div className="cld-hero-actions">
+            <Link className="button button-primary" to="/achar">Explore the achar menu</Link>
+            <Link className="button button-secondary" to="/about">Read the story</Link>
+          </div>
+          <div className="cld-hero-metrics">
             {FEATURE_METRICS.map((metric) => (
-              <motion.div
-                key={metric.label}
-                className="hero-metric-card"
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-              >
+              <article key={metric.label} className="cld-metric-card">
                 <strong>{metric.value}</strong>
                 <span>{metric.label}</span>
-              </motion.div>
+              </article>
             ))}
           </div>
         </div>
+        <div className="cld-hero-visual">
+          <div className="cld-jar-stage">
+            <div className="cld-jar-ticket">
+              <div className="tiny">01 · Signature</div>
+              <strong>{heroProduct?.name || "Aam Ka Achar"}</strong>
+              <span>{heroProduct?.ingredients?.[0] || "Raw mango"} · {heroProduct?.spice || "Medium"} heat · {heroProduct?.size || "500 g"}</span>
+            </div>
+            <div className="cld-jar">
+              <div className="cld-jar-label">
+                <div className="tiny">01 · Signature</div>
+                <div className="name">{heroProduct?.name || "Aam Ka Achar"}</div>
+                <div className="sep" />
+                <div className="weight">{heroProduct?.size || "500 g"} · Batch 04</div>
+              </div>
+            </div>
+            <div className="cld-jar-batch"><span className="b-dot" />Batch sealed this week</div>
+          </div>
+        </div>
+      </section>
 
-        <motion.div
-          className="hero-image-panel"
-          initial={{ opacity: 0, y: 24, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.18 }}
-        >
-          <div className="hero-image-frame">
+      <div className="cld-marquee" aria-hidden="true">
+        <div className="cld-marquee-track">
+          {["Small batch", "Curated masalas", "Women-led kitchen", "Sealed hot", "Pan-India shipping", "Zomato listed", "Small batch", "Curated masalas", "Women-led kitchen", "Sealed hot", "Pan-India shipping", "Zomato listed"].map((label, index) => (
+            <span key={`${label}-${index}`}>{label}</span>
+          ))}
+        </div>
+      </div>
+
+      <section id="ranges" className="cld-section">
+        <div className="cld-section-head">
+          <div>
+            <div className="cld-eyebrow"><span className="cld-dot" />The menu</div>
+            <h2>Four ranges, one <em>table</em>.</h2>
+          </div>
+          <p>Each jar is built for a specific kind of meal — the premium table, the everyday plate, the spicier bite, the shared thali. Pick the one that fits how you actually eat.</p>
+        </div>
+        <div className="cld-atlas">
+          {PRODUCT_CHAPTERS.map((chapter) => {
+            const product = productCatalog.find((item) => item.categoryKey === chapter.id);
+            return (
+              <Link key={chapter.id} to={product ? `/product/${product.slug}` : "/achar"} className={`cld-atlas-card ${chapter.id}`}>
+                <div className="glow" />
+                <div className="idx">{chapter.index} · {chapter.label}</div>
+                <h3>{product?.name || chapter.label}</h3>
+                <p>{product?.tagline || chapter.copy}</p>
+                <div className="meta"><span>{product?.size || "Jar"} · {product?.spice || "Classic"}</span><strong>INR {product?.price || 0}</strong></div>
+              </Link>
+            );
+          })}
+        </div>
+        <div className="cld-shelf-wrap">
+          <div className="cld-shelf">
+            {PRODUCT_CHAPTERS.map((chapter) => {
+              const product = productCatalog.find((item) => item.categoryKey === chapter.id);
+              return (
+                <Link key={`shelf-${chapter.id}`} to={product ? `/product/${product.slug}` : "/achar"} className={`cld-shelf-jar ${chapter.id}`}>
+                  <div className="price-chip">₹{product?.price || 0}</div>
+                  <div className="art">
+                    <div className="label">
+                      <div className="mini">{chapter.index} · {chapter.label.slice(0, 3).toUpperCase()}</div>
+                      <div className="name-s">{product?.name?.split(" ")[0] || chapter.label}</div>
+                      <div className="sep-s" />
+                      <div className="w-s">{product?.size || "500 g"}</div>
+                    </div>
+                  </div>
+                  <div className="caption"><strong>{product?.name || chapter.label}</strong><span>{product?.ingredients?.[0] || product?.tagline || chapter.copy}</span></div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="cld-shelf-base">
+            <span>The shelf · April batch</span>
+            <span>{productCatalog.length} jars · Bahadurgarh kitchen</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="process" className="cld-process">
+        <div className="copy">
+          <div className="cld-eyebrow"><span className="cld-dot" />How each jar is made</div>
+          <h2>Five steps, <em>one kitchen</em>.</h2>
+          <p>Nothing is automated. Every batch moves through the same five slow steps — the way it has always been done. No preservatives, no shortcuts, just time and care.</p>
+          <div className="cld-process-note">
+            <div className="tiny">Shelf life</div>
+            <div>1 year when stored in a dry place.<br /><span>Use a dry spoon — moisture shortens it.</span></div>
+          </div>
+        </div>
+        <div className="steps">
+          {[
+            ["Source", "Fresh ingredients brought in from trusted local mandis each morning.", "Day 0"],
+            ["Sun-cure", "Hand-cut, salted, and sun-dried to pull out moisture and concentrate flavour.", "Day 1–3"],
+            ["Masala", "Curated masalas roasted and blended for each batch.", "Day 3"],
+            ["Fold", "Masala folded into the cured base with mustard oil, salt, and time.", "Day 4"],
+            ["Seal", "Filled hot, sealed, labelled by hand, and dispatched the same week.", "Day 5"]
+          ].map(([title, body, duration], index) => (
+            <article key={title} className="step">
+              <div className="num">{["i", "ii", "iii", "iv", "v"][index]}</div>
+              <div className="body"><strong>{title}</strong><span>{body}</span></div>
+              <div className="dur">{duration}</div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="story" className="cld-story">
+        <article className="cld-story-copy">
+          <div className="cld-eyebrow"><span className="cld-dot" />About</div>
+          <h2>A story of food, care, and the strength of a woman who built a <em>legacy</em> through her kitchen.</h2>
+          <p>Khana Peena Ghar Se was born from the hands of a woman who spent her life bringing people together through food. A woman with years of wisdom, resilience, and tradition behind her, she turned everyday meals into moments of comfort, celebration, and connection.</p>
+          <div className="cld-pull">For her, cooking was never just about feeding people — it was about caring for them.</div>
+          <p>Proudly women-led, every jar is prepared in small batches with carefully selected ingredients and time-honoured methods. This is more than a food brand. It is the story of a strong woman who proved that experience is power, and that the kitchen can build a legacy.</p>
+        </article>
+        <aside className="cld-story-aside">
+          <div className="cld-portrait">
             <img
-              src={HOME_HERO_IMAGE}
-              alt="Khana Peena Ghar Se signature table spread"
+              src={ABOUT_OWNER_IMAGE}
+              alt="Founder portrait"
               onError={(event) => {
-                event.currentTarget.closest(".hero-image-frame")?.classList.add("is-empty");
+                event.currentTarget.closest(".cld-portrait")?.classList.add("is-empty");
                 event.currentTarget.remove();
               }}
             />
           </div>
-        </motion.div>
-
-      </motion.section>
-
-      <section className="home-chapters">
-        {PRODUCT_CHAPTERS.map((chapter, index) => (
-          <motion.article
-            key={chapter.id}
-            className="home-chapter-band"
-            initial={{ opacity: 0, y: 44 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.22 }}
-            transition={{ duration: 0.65, delay: index * 0.04 }}
-          >
-            <div className="chapter-band-copy">
-              <span className="chapter-band-index">{chapter.index}</span>
-              <p className="eyebrow">{chapter.label}</p>
-              <h2>{chapter.title}</h2>
-              <p>{chapter.copy}</p>
-            </div>
-            <div className="chapter-band-panels">
-              {productCatalog
-                .filter((product) => product.categoryKey === chapter.id)
-                .map((product) => (
-                  <Link key={product.slug} to={`/product/${product.slug}`} className="chapter-mini-panel">
-                    <div className="chapter-mini-media">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        loading="lazy"
-                        onError={(event) => {
-                          event.currentTarget.src = "/images/logo.png";
-                        }}
-                      />
-                    </div>
-                    <div className="chapter-mini-copy">
-                      <strong>{product.name}</strong>
-                      <span>{product.tagline}</span>
-                    </div>
-                  </Link>
-                ))}
-            </div>
-          </motion.article>
-        ))}
+          <div className="cld-values">
+            <div className="v-card"><strong>Women-led</strong><span>Built on resilience, instinct, and years of lived experience in the kitchen.</span></div>
+            <div className="v-card"><strong>Batch-made</strong><span>Small batches so every jar keeps its personal, homemade character.</span></div>
+            <div className="v-card"><strong>Curated masalas</strong><span>Time-honoured flavour built around carefully selected ingredients.</span></div>
+          </div>
+        </aside>
       </section>
 
-      <footer className="site-footer-react">
-        <div className="footer-brand-block">
+      <section className="cld-section">
+        <div className="cld-section-head">
+          <div>
+            <div className="cld-eyebrow"><span className="cld-dot" />From the table</div>
+            <h2>What <em>customers</em> say.</h2>
+          </div>
+          <p>Small kitchen, honest jars. Here is what the people who keep coming back have said, in their own words.</p>
+        </div>
+        <div className="cld-quotes">
+          {testimonials.map((item) => (
+            <article key={item.name} className="cld-quote">
+              <div className="mark">"</div>
+              <p>{item.quote}</p>
+              <div className="who"><strong>{item.name}</strong><span>{item.meta}</span></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="faq" className="cld-faq">
+        <div className="head">
+          <div className="cld-eyebrow"><span className="cld-dot" />Answered</div>
+          <h2>Things people <em>ask</em>.</h2>
+          <p>Shipping, shelf life, returns. If something else is unclear, the contact section is the fastest way to reach the kitchen.</p>
+        </div>
+        <div className="list">
+          {faqs.map((item, index) => (
+            <details key={item.q} open={index === 0}>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="cld-cta-banner">
+        <div>
+          <div className="cld-eyebrow"><span className="cld-dot" />Batch 04 · April</div>
+          <h2>Four jars. One <em>shared table</em>.</h2>
+          <p>Pick a range, or take the full set. Batch 04 is fresh out of the Bahadurgarh kitchen — sealed hot, shipping this week.</p>
+          <div className="cld-hero-actions">
+            <Link className="button button-primary" to="/achar">Shop the achar menu</Link>
+            <a className="button button-secondary" href={ZOMATO_URL} target="_blank" rel="noreferrer">Order on Zomato</a>
+          </div>
+        </div>
+      </section>
+
+      <footer className="cld-footer">
+        <div className="cld-footer-brand">
           <Link className="brand" to="/">
             <img src="/images/logo.png" alt="" />
             <span className="brand-copy">
               <strong>Khana Peena Ghar Se</strong>
-              <span>Homemade achar and Indian food</span>
+              <span>Homemade achar · Bahadurgarh</span>
             </span>
           </Link>
-          <p>
-            Homemade food prepared with care, curated masalas, and the warmth of a kitchen that still believes food should feel personal.
-          </p>
+          <p>Homemade food prepared with care, curated masalas, and the warmth of a kitchen that still believes food should feel personal.</p>
         </div>
-        <div className="footer-links-grid">
+        <div className="cld-footer-links">
           <div>
-            <h3>About</h3>
-            <Link to="/about">Our story</Link>
-            <span>Brand story</span>
-            <span>Homemade food</span>
-          </div>
-          <div>
-            <h3>Shop</h3>
+            <h4>Shop</h4>
             <Link to="/achar">Achar menu</Link>
             <Link to="/cart">Cart</Link>
-            <Link to="/account">My account</Link>
+            <Link to="/account">Account</Link>
           </div>
           <div>
-            <h3>Account</h3>
-            <Link to="/account">My account</Link>
-            <Link to="/track-order">Track order</Link>
+            <h4>About</h4>
+            <Link to="/about">Our story</Link>
+            <a href="#process">Process</a>
+            <a href="#faq">FAQ</a>
           </div>
           <div>
-            <h3>Order</h3>
+            <h4>Order</h4>
             <a href={ZOMATO_URL} target="_blank" rel="noreferrer">Zomato</a>
-            <span>Online ordering</span>
-            <span>Dispatch updates</span>
+            <Link to="/track-order">Track order</Link>
+            <Link to="/orders">My orders</Link>
+          </div>
+          <div>
+            <h4>Care</h4>
+            <span>Shipping</span>
+            <span>Returns</span>
+            <span>Contact</span>
           </div>
         </div>
       </footer>
@@ -1002,7 +1057,9 @@ function CartPage({ cart, updateCartQuantity }) {
       unavailable: entry.product.stock <= 0
     }))
     .filter((entry) => entry.quantity > 0);
-  const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const shipping = items.length ? (subtotal >= 799 ? 0 : 79) : 0;
+  const total = subtotal + shipping;
   const [status, setStatus] = useState("");
 
   const placeOrder = async (event) => {
@@ -1044,64 +1101,105 @@ function CartPage({ cart, updateCartQuantity }) {
 
   return (
     <section className="checkout-shell">
-      <div className="checkout-column">
+      <div className="checkout-main">
         <div className="product-system-head">
           <div>
             <p className="eyebrow">Checkout</p>
-            <h1>Delivery details, order data, payment placeholder.</h1>
+            <h1>Review your jars and delivery details.</h1>
           </div>
         </div>
-        <div className="checkout-summary">
+        <div className="checkout-summary checkout-list-card">
+          <div className="checkout-section-title">
+            <strong>Shopping cart</strong>
+            <span>{items.length} item{items.length === 1 ? "" : "s"}</span>
+          </div>
           {items.length ? (
             items.map((item) => (
-              <div key={item.product.slug} className="cart-line-react">
-                <div>
+              <article key={item.product.slug} className="cart-line-react cart-product-card">
+                <img
+                  className="cart-product-image"
+                  src={item.product.image}
+                  alt={item.product.name}
+                  onError={(event) => {
+                    event.currentTarget.src = "/images/logo.png";
+                  }}
+                />
+                <div className="cart-product-copy">
                   <strong>{item.product.name}</strong>
                   <span>{item.product.size}</span>
                   <span>{item.product.stock > 0 ? `${item.product.stock} available now` : "Out of stock"}</span>
+                  <span>{item.product.note}</span>
                 </div>
-                <div className="qty-buttons">
-                  <button onClick={() => updateCartQuantity(item.product.slug, item.quantity - 1, item.product.stock)}>-</button>
+                <div className="cart-product-actions">
+                  <div className="qty-buttons">
+                  <button type="button" onClick={() => updateCartQuantity(item.product.slug, item.quantity - 1, item.product.stock)}>-</button>
                   <span>{item.quantity}</span>
                   <button
+                    type="button"
                     disabled={item.quantity >= item.product.stock}
                     onClick={() => updateCartQuantity(item.product.slug, item.quantity + 1, item.product.stock)}
                   >
                     +
                   </button>
                 </div>
-                <strong>INR {item.product.price * item.quantity}</strong>
-              </div>
+                  <strong className="cart-line-price">INR {item.product.price * item.quantity}</strong>
+                </div>
+              </article>
             ))
           ) : (
             <p>Your cart is empty.</p>
           )}
-          <div className="summary-total">
-            <strong>Total</strong>
-            <strong>INR {total}</strong>
-          </div>
         </div>
+
+        <form id="checkout-form" className="checkout-form-react checkout-address-card" onSubmit={placeOrder}>
+          <div className="checkout-section-title">
+            <strong>Delivery address</strong>
+            <span>Use a complete address for faster confirmation</span>
+          </div>
+          <div className="checkout-form-grid">
+            <label>Full name<input type="text" name="customerName" required /></label>
+            <label>Phone<input type="tel" name="phone" required /></label>
+            <label>Email<input type="email" name="email" /></label>
+            <label>Pincode<input type="text" name="pincode" required /></label>
+            <label className="checkout-span-2">Address line 1<input type="text" name="addressLine1" required /></label>
+            <label className="checkout-span-2">Address line 2<input type="text" name="addressLine2" /></label>
+            <label>City<input type="text" name="city" required /></label>
+            <label>State<input type="text" name="state" required /></label>
+            <label className="checkout-span-2">Delivery notes<textarea name="notes" rows="4" /></label>
+          </div>
+          <div className="payment-placeholder-react">
+            <strong>Online payment coming soon</strong>
+            <p>Razorpay will be connected here for secure online payments. For now, this checkout records the order request and delivery details so the team can confirm the order directly.</p>
+          </div>
+          <p className="inline-status">{status}</p>
+        </form>
       </div>
 
-      <form className="checkout-form-react" onSubmit={placeOrder}>
-        <label>Full name<input type="text" name="customerName" required /></label>
-        <label>Phone<input type="tel" name="phone" required /></label>
-        <label>Email<input type="email" name="email" /></label>
-        <label>Address line 1<input type="text" name="addressLine1" required /></label>
-        <label>Address line 2<input type="text" name="addressLine2" /></label>
-        <label>City<input type="text" name="city" required /></label>
-        <label>State<input type="text" name="state" required /></label>
-        <label>Pincode<input type="text" name="pincode" required /></label>
-        <label>Delivery notes<textarea name="notes" rows="4" /></label>
-        <div className="payment-placeholder-react">
-          <strong>Online payment coming soon</strong>
-          <p>Razorpay will be connected here for secure online payments. Until then, this checkout records the order request and customer details so the team can confirm the order directly.</p>
+      <aside className="checkout-sidebar">
+        <div className="checkout-summary checkout-sticky-summary">
+          <div className="checkout-section-title">
+            <strong>Order summary</strong>
+            <span>{items.length ? "Ready to place order" : "Cart is empty"}</span>
+          </div>
+          <div className="checkout-summary-lines">
+            <div><span>Subtotal</span><strong>INR {subtotal}</strong></div>
+            <div><span>Shipping</span><strong>{shipping ? `INR ${shipping}` : "Free"}</strong></div>
+            <div><span>Payment</span><strong>Pay on confirmation</strong></div>
+          </div>
+          <div className="summary-total">
+            <strong>Order total</strong>
+            <strong>INR {total}</strong>
+          </div>
+          <button className="button button-primary button-full" type="submit" form="checkout-form">
+            Place order request
+          </button>
+          <div className="checkout-trust-notes">
+            <span>Small-batch dispatch</span>
+            <span>Sealed jars</span>
+            <span>Manual tracking updates for now</span>
+          </div>
         </div>
-        <button className="button button-primary button-full" type="submit">
-          Place order request
-        </button>
-        <p className="inline-status">{status}</p>
-      </form>
+      </aside>
     </section>
   );
 }
@@ -1120,6 +1218,42 @@ function useAuthorizedJson(session, path, options = {}) {
   });
 }
 
+const MEMBER_TIERS = [
+  { id: "seed", label: "Seed", minOrders: 0, accent: "seed", rewards: ["Member pricing previews", "Order history access"] },
+  { id: "spice", label: "Spice", minOrders: 3, accent: "spice", rewards: ["Free sample jar", "Priority support"] },
+  { id: "flame", label: "Flame", minOrders: 6, accent: "flame", rewards: ["Priority shipping", "Early access flavours"] },
+  { id: "legend", label: "Legend", minOrders: 10, accent: "legend", rewards: ["VIP-only bundles", "Founders club offers"] }
+];
+
+const ACCOUNT_SECTIONS = [
+  ["dashboard", "Dashboard"],
+  ["orders", "Orders"],
+  ["tracking", "Track Order"],
+  ["addresses", "Addresses"],
+  ["profile", "Profile"],
+  ["rewards", "Rewards Club"],
+  ["referrals", "Referrals"],
+  ["support", "Support"],
+  ["security", "Security"]
+];
+
+function getTier(totalOrders = 0) {
+  return MEMBER_TIERS.reduce((current, tier) => (totalOrders >= tier.minOrders ? tier : current), MEMBER_TIERS[0]);
+}
+
+function getNextTier(totalOrders = 0) {
+  return MEMBER_TIERS.find((tier) => tier.minOrders > totalOrders) || null;
+}
+
+function formatDate(value) {
+  if (!value) return "Not yet";
+  return new Date(value).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function getOrderTimelineIndex(status) {
+  return ["placed", "packed", "shipped", "out_for_delivery", "delivered"].indexOf(status);
+}
+
 function AccountPage({ session, refreshSession, wishlist, addToCart }) {
   const location = useLocation();
   const [loginState, setLoginState] = useState({ email: "", password: "" });
@@ -1128,6 +1262,7 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
   const [resetState, setResetState] = useState({ password: "", confirmPassword: "" });
   const [rememberMe, setRememberMe] = useState(true);
   const [authMode, setAuthMode] = useState(() => (location.search.includes("recovery") ? "reset" : "login"));
+  const [activeSection, setActiveSection] = useState("dashboard");
   const [status, setStatus] = useState("");
   const [profile, setProfile] = useState(null);
   const [dashboard, setDashboard] = useState({ addresses: [], orders: [], rewards: [], referrals: [], notifications: [], insights: null });
@@ -1157,6 +1292,27 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
     supportOptIn: true
   });
   const productCatalog = useCatalogProducts();
+  const fullName = profile?.full_name || session?.user?.user_metadata?.full_name || "Customer";
+  const firstName = fullName.split(" ")[0] || "Customer";
+  const totalOrders = dashboard.orders.length || Number(profile?.total_orders || 0);
+  const currentTier = getTier(totalOrders);
+  const nextTier = getNextTier(totalOrders);
+  const ordersUntilNextTier = nextTier ? Math.max(0, nextTier.minOrders - totalOrders) : 0;
+  const lastOrder = dashboard.orders[0] || null;
+  const recentItems = (lastOrder?.items || []).slice(0, 3);
+  const flavorsTried = new Set(dashboard.orders.flatMap((order) => (order.items || []).map((item) => item.product_slug))).size;
+  const lifetimeJars = dashboard.orders.reduce((sum, order) => sum + (order.items || []).reduce((inner, item) => inner + Number(item.quantity || 0), 0), 0);
+  const rotatingMessages = [
+    "Your usual jar is ready for a quick reorder.",
+    nextTier ? `${ordersUntilNextTier} order${ordersUntilNextTier === 1 ? "" : "s"} until ${nextTier.label} tier.` : "You have unlocked our highest member tier.",
+    "Members get early access to weekly flavour drops.",
+    "Claim your next reward from the Rewards Club section.",
+    "New flavour stories and limited batches land here first."
+  ];
+  const rotatingMessage = rotatingMessages[totalOrders % rotatingMessages.length];
+  const recommendedProducts = productCatalog
+    .filter((product) => !dashboard.orders.some((order) => (order.items || []).some((item) => item.product_slug === product.slug)))
+    .slice(0, 3);
 
   useEffect(() => {
     let cancelled = false;
@@ -1412,37 +1568,238 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
 
   if (session) {
     const wishlistItems = productCatalog.filter((product) => wishlist.includes(product.slug));
-    const fullName = profile?.full_name || session.user.user_metadata?.full_name || "Customer";
     const addressSummary = [profile?.address_line_1, profile?.address_line_2, profile?.city, profile?.state, profile?.pincode]
       .filter(Boolean)
       .join(", ");
+    const stats = {
+      activeOrders: dashboard.orders.filter((order) => !["delivered", "cancelled"].includes(order.status)).length,
+      deliveredOrders: dashboard.orders.filter((order) => order.status === "delivered").length,
+      refundRequests: dashboard.orders.filter((order) => order.status === "refund_requested").length,
+      lifetimeOrders: totalOrders
+    };
+    const tierProgress = nextTier
+      ? ((totalOrders - currentTier.minOrders) / Math.max(nextTier.minOrders - currentTier.minOrders, 1)) * 100
+      : 100;
 
     return (
-      <section className="account-shell">
-        <div className="account-overview-card">
-          <div>
-            <p className="eyebrow">My account</p>
-            <h1>{fullName}</h1>
-            <p>{profile?.email || session.user.email}</p>
+      <section className="account-shell account-premium-shell">
+        <div className={`account-overview-card tier-${currentTier.accent}`}>
+          <div className="account-hero-copy">
+            <p className="eyebrow">Welcome back</p>
+            <div className="account-identity">
+              <div className="account-avatar">
+                {profileForm.avatarUrl ? <img src={profileForm.avatarUrl} alt={fullName} /> : <span>{firstName.slice(0, 1)}</span>}
+              </div>
+              <div>
+                <h1>{firstName}, your flavour club is active.</h1>
+                <p>{profile?.email || session.user.email}</p>
+              </div>
+            </div>
+            <div className="account-message-band">
+              <span className="account-tier-badge">{currentTier.label}</span>
+              <strong>{rotatingMessage}</strong>
+              <span>{lastOrder ? `Last order ${lastOrder.order_number} is ${lastOrder.status.replaceAll("_", " ")}.` : "Your first order unlocks personalised recommendations."}</span>
+            </div>
+            <div className="account-hero-actions">
+              <Link className="button button-primary" to="/orders">Quick reorder</Link>
+              <button className="button button-secondary" type="button" onClick={() => setActiveSection("rewards")}>
+                Rewards Club
+              </button>
+            </div>
           </div>
-          <div className="account-overview-metrics">
+          <div className="account-overview-metrics account-hero-metrics">
             <div>
-              <span>Saved jars</span>
-              <strong>{wishlistItems.length}</strong>
+              <span>Points balance</span>
+              <strong>{profile?.reward_points || 0}</strong>
             </div>
             <div>
-              <span>Phone</span>
-              <strong>{profile?.phone || "Add number"}</strong>
+              <span>Orders to next reward</span>
+              <strong>{nextTier ? ordersUntilNextTier : 0}</strong>
             </div>
             <div>
-              <span>Delivery profile</span>
-              <strong>{addressSummary || "Complete address details"}</strong>
+              <span>Last delivery</span>
+              <strong>{lastOrder ? lastOrder.status.replaceAll("_", " ") : "No orders yet"}</strong>
             </div>
           </div>
         </div>
 
-        <div className="account-dashboard-grid">
-          <section className="account-section-card">
+        <div className="account-layout">
+          <aside className="account-sidebar">
+            <div className="account-sidebar-top">
+              <strong>My account</strong>
+              <span>{currentTier.label} member</span>
+            </div>
+            <nav className="account-sidebar-nav">
+              {ACCOUNT_SECTIONS.map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={`account-sidebar-link ${activeSection === key ? "active" : ""}`}
+                  onClick={() => setActiveSection(key)}
+                >
+                  {label}
+                </button>
+              ))}
+              <button type="button" className="account-sidebar-link" onClick={() => supabase?.auth.signOut()}>
+                Logout
+              </button>
+            </nav>
+          </aside>
+
+          <div className="account-main">
+          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Quick reorder</p>
+                <h2>Recent jars, ready again</h2>
+              </div>
+              <p>Reduce purchase friction by bringing the last favourites back to the front.</p>
+            </div>
+            <div className="account-reorder-grid">
+              {recentItems.length ? recentItems.map((item) => {
+                const product = productCatalog.find((entry) => entry.slug === item.product_slug);
+                return (
+                  <article key={item.id} className="account-reorder-card">
+                    <img src={product?.image || "/images/logo.png"} alt={item.product_name} />
+                    <div>
+                      <strong>{item.product_name}</strong>
+                      <span>Last ordered {formatDate(lastOrder?.created_at)}</span>
+                    </div>
+                    <div className="account-card-actions">
+                      <button className="button button-primary" type="button" onClick={() => addToCart(item.product_slug, item.quantity || 1, product?.stock || 50)}>Buy again</button>
+                      <button className="button button-secondary" type="button" onClick={() => addToCart(item.product_slug, 1, product?.stock || 50)}>Add to basket</button>
+                    </div>
+                  </article>
+                );
+              }) : (
+                <div className="empty-panel">
+                  <h2>Your first reorder will appear here.</h2>
+                  <p>Once a customer completes an order, this area becomes the fastest route back to checkout.</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className={`account-section-card ${activeSection === "dashboard" || activeSection === "orders" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Orders snapshot</p>
+                <h2>Momentum at a glance</h2>
+              </div>
+              <Link className="button button-secondary" to="/orders">View all orders</Link>
+            </div>
+            <div className="account-stats-grid">
+              {Object.entries(stats).map(([key, value]) => (
+                <article key={key} className="account-stat-card">
+                  <span>{key.replace(/([A-Z])/g, " $1")}</span>
+                  <strong>{value}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className={`account-section-card ${activeSection === "rewards" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Rewards Club</p>
+                <h2>{currentTier.label} tier with a clear next milestone</h2>
+              </div>
+              <p>{nextTier ? `${ordersUntilNextTier} order${ordersUntilNextTier === 1 ? "" : "s"} until ${nextTier.label}.` : "Top tier unlocked."}</p>
+            </div>
+            <div className="tier-progress-card">
+              <div className="tier-progress-head">
+                <strong>{currentTier.label}</strong>
+                <span>{nextTier ? `Next: ${nextTier.label}` : "Legend reached"}</span>
+              </div>
+              <div className="tier-progress-bar"><span style={{ width: `${tierProgress}%` }} /></div>
+              <div className="tier-progress-meta">
+                <span>{Math.round(tierProgress)}% complete</span>
+                <span>{nextTier ? `${ordersUntilNextTier} orders needed` : "All rewards unlocked"}</span>
+              </div>
+            </div>
+            <div className="account-benefits-grid">
+              {currentTier.rewards.map((reward) => (
+                <article key={reward} className="account-benefit-card">
+                  <strong>{reward}</strong>
+                  <span>Unlocked in your current tier.</span>
+                </article>
+              ))}
+              {nextTier ? (
+                <article className="account-benefit-card next-tier-card">
+                  <strong>{nextTier.rewards[0]}</strong>
+                  <span>Next milestone reward in {ordersUntilNextTier} orders.</span>
+                </article>
+              ) : null}
+            </div>
+            {nextTier && ordersUntilNextTier === 1 ? <div className="celebration-banner">One more order unlocks your next tier.</div> : null}
+          </section>
+
+          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Recommended for you</p>
+                <h2>Based on your taste so far</h2>
+              </div>
+            </div>
+            <div className="account-recommendation-grid">
+              {recommendedProducts.map((product) => (
+                <article key={product.slug} className="account-recommendation-card">
+                  <img src={product.image} alt={product.name} />
+                  <strong>{product.name}</strong>
+                  <span>{product.tagline}</span>
+                  <button className="button button-secondary" type="button" onClick={() => addToCart(product.slug, 1, product.stock)}>Add to basket</button>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className={`account-section-card seasonal-drop-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Member drop</p>
+                <h2>Limited weekly flavour release</h2>
+              </div>
+            </div>
+            <div className="seasonal-drop-grid">
+              <div>
+                <strong>Winter Garlic Reserve</strong>
+                <p>Friday member-exclusive batch with early access for logged-in customers.</p>
+              </div>
+              <div>
+                <strong>02 : 18 : 44</strong>
+                <span>Countdown placeholder until live drops are connected.</span>
+              </div>
+            </div>
+          </section>
+
+          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Milestones</p>
+                <h2>Emotional retention and progress</h2>
+              </div>
+            </div>
+            <div className="account-stats-grid">
+              <article className="account-stat-card">
+                <span>Lifetime jars purchased</span>
+                <strong>{lifetimeJars}</strong>
+              </article>
+              <article className="account-stat-card">
+                <span>Flavours tried</span>
+                <strong>{flavorsTried} / {productCatalog.length}</strong>
+              </article>
+              <article className="account-stat-card">
+                <span>Lifetime savings</span>
+                <strong>INR {(profile?.reward_points || 0) * 2}</strong>
+              </article>
+              <article className="account-stat-card">
+                <span>Achievement badge</span>
+                <strong>{totalOrders > 4 ? "Table Favourite" : "First Pour"}</strong>
+              </article>
+            </div>
+          </section>
+
+          <section className={`account-section-card ${activeSection === "profile" ? "" : "section-muted"}`}>
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Profile</p>
@@ -1470,13 +1827,13 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             </form>
           </section>
 
-          <section className="account-section-card">
+          <section className={`account-section-card ${activeSection === "security" ? "" : "section-muted"}`}>
             <div className="account-section-head">
               <div>
-                <p className="eyebrow">Payment</p>
-                <h2>Payment methods</h2>
+                <p className="eyebrow">Security</p>
+                <h2>Login safety and future payment vault</h2>
               </div>
-              <p>Razorpay will be connected here for online payments. Card details are not being stored yet.</p>
+              <p>Protected account state now. Payment methods and secure saved cards can be connected later without redesigning this area.</p>
             </div>
             <div className="account-payment-stack">
               <article className="account-payment-card">
@@ -1491,10 +1848,9 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
               </article>
             </div>
           </section>
-        </div>
+        
 
-        <div className="account-dashboard-grid">
-          <section className="account-section-card">
+          <section className={`account-section-card ${activeSection === "addresses" ? "" : "section-muted"}`}>
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Addresses</p>
@@ -1532,35 +1888,34 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             </div>
           </section>
 
-          <section className="account-section-card">
+          <section className={`account-section-card ${activeSection === "referrals" ? "" : "section-muted"}`}>
             <div className="account-section-head">
               <div>
-                <p className="eyebrow">Rewards</p>
-                <h2>Referrals and retention</h2>
+                <p className="eyebrow">Referrals</p>
+                <h2>Give a reward, earn a reward</h2>
               </div>
-              <p>Reward-driven repeat orders and referrals help grow loyalty without needing heavy support.</p>
+              <p>Build organic growth with a premium referral offer and visible customer rewards.</p>
             </div>
             <div className="account-reward-stack">
               <article className="account-payment-card">
                 <span className="account-chip">Referral code</span>
                 <strong>{profile?.referral_code || dashboard.referrals[0]?.referral_code || "Generating..."}</strong>
-                <p>Share this code with friends. Rewards are recorded in Supabase and can later plug into your checkout discount rules.</p>
+                <p>Give £5, get £5 style offer placeholder. Rewards are already modelled in Supabase and can later plug into checkout discounts.</p>
               </article>
               <article className="account-payment-card subtle">
-                <span className="account-chip">Reward points</span>
-                <strong>{profile?.reward_points || 0} points</strong>
-                <p>{dashboard.insights?.reorderHint || "Your next order and referral completions will show here."}</p>
+                <span className="account-chip">Successful referrals</span>
+                <strong>{dashboard.referrals.filter((item) => item.status === "completed").length}</strong>
+                <p>{dashboard.referrals.length ? "Referral activity is being tracked in your account." : "Your first referral will appear here."}</p>
               </article>
-              <article className="account-delete-card">
-                <strong>Delete account</strong>
-                <p>Before leaving, offer a reason to stay and route destructive requests through support.</p>
-                <button className="button button-ghost" type="button" onClick={handleDeleteRequest}>Request deletion</button>
+              <article className="account-payment-card subtle">
+                <span className="account-chip">Share link</span>
+                <strong>{`${window.location.origin}/signup?ref=${profile?.referral_code || ""}`}</strong>
+                <p>Ready for WhatsApp, Instagram bio, or direct sharing.</p>
               </article>
             </div>
           </section>
-        </div>
 
-        <section className="account-section-card">
+          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
           <div className="account-section-head">
             <div>
               <p className="eyebrow">Wishlist</p>
@@ -1609,9 +1964,10 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
               <p>Save products from the achar menu to keep them ready here for your next order.</p>
             </div>
           )}
-        </section>
+          </section>
+
         {dashboard.notifications.length ? (
-          <section className="account-section-card">
+          <section className={`account-section-card ${activeSection === "dashboard" ? "" : "section-muted"}`}>
             <div className="account-section-head">
               <div>
                 <p className="eyebrow">Notifications</p>
@@ -1628,6 +1984,44 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
             </div>
           </section>
         ) : null}
+
+          <section className={`account-section-card ${activeSection === "support" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Support</p>
+                <h2>Order help and issue reporting</h2>
+              </div>
+            </div>
+            <div className="account-support-grid">
+              <article className="account-notification-card">
+                <strong>Contact support</strong>
+                <p>For delivery, refund, or flavour queries, use the My Orders page or email support directly.</p>
+                <Link className="button button-secondary" to="/orders">Open order help</Link>
+              </article>
+              <article className="account-notification-card">
+                <strong>Live chat</strong>
+                <p>Live chat placeholder for a future support widget or WhatsApp handoff.</p>
+                <button className="button button-ghost" type="button">Coming soon</button>
+              </article>
+            </div>
+          </section>
+
+          <section className={`account-section-card ${activeSection === "security" ? "" : "section-muted"}`}>
+            <div className="account-section-head">
+              <div>
+                <p className="eyebrow">Account exit</p>
+                <h2>Save the customer before they leave</h2>
+              </div>
+            </div>
+            <article className="account-delete-card">
+              <strong>Thinking of leaving?</strong>
+              <p>Offer a soft retention win before deletion. This reduces churn and creates another ordering moment.</p>
+              <button className="button button-ghost" type="button" onClick={handleDeleteRequest}>Request deletion</button>
+            </article>
+          </section>
+
+          </div>
+        </div>
         <p className="inline-status">{status}</p>
       </section>
     );
@@ -1644,7 +2038,6 @@ function AccountPage({ session, refreshSession, wishlist, addToCart }) {
           <div className="hero-metric-card"><strong>Repeat orders</strong><span>Reorder faster with saved details and favourites.</span></div>
         </div>
         <div className="account-card-actions">
-          <button className={`button ${authMode === "login" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("login")}>Login</button>
           <button className={`button ${authMode === "signup" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("signup")}>Create account</button>
           <button className={`button ${authMode === "forgot" ? "button-primary" : "button-secondary"}`} type="button" onClick={() => setAuthMode("forgot")}>Forgot password</button>
         </div>
