@@ -145,7 +145,7 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
     { to: "/about", label: "About" },
     { to: "/achar", label: "Achar" },
     ...(isLoggedIn ? [{ to: "/orders", label: "Orders" }] : []),
-    { to: "/account", label: isLoggedIn ? "My account" : "Login" },
+    ...(isLoggedIn ? [{ to: "/account", label: "My account" }] : []),
     { to: "/cart", label: `Cart${cartCount ? ` (${cartCount})` : ""}` }
   ];
 
@@ -209,7 +209,11 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
               <button className="nav-admin nav-admin-button" type="button" onClick={onSignOut}>
                 Sign out
               </button>
-            ) : null}
+            ) : (
+              <Link className="nav-admin" to="/account">
+                Login
+              </Link>
+            )}
           </div>
         </motion.nav>
       </AnimatePresence>
