@@ -1,7 +1,7 @@
 # Netlify Redirects for Khana Peena Ghar Se
 
-# WhatsApp Direct Route
+# WhatsApp Direct Routes
 /wa          /whatsapp                302
 
-# Single Page App fallback
+# Single Page App Client-Side Routing
 /*           /index.html              200
