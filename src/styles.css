@@ -1239,8 +1239,8 @@ textarea {
 
 .lifestyle-card {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1.05fr);
+  gap: 28px;
   align-items: center;
 }
 
@@ -1259,21 +1259,101 @@ textarea {
   margin: 0 0 14px;
 }
 
-.lifestyle-media {
+.lifestyle-vertical-showcase {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.lifestyle-carousel-stage {
+  flex: 1;
+  position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(200, 155, 60, 0.3);
-  box-shadow: var(--shadow-md);
-  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(200, 155, 60, 0.35);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  background: var(--heritage-green-dark);
+  aspect-ratio: 16 / 11;
+  max-height: 250px;
+}
+
+.lifestyle-slide-main {
+  width: 100%;
+  height: 100%;
+  position: relative;
   display: flex;
 }
 
-.lifestyle-media img {
+.lifestyle-slide-main img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
+}
+
+.lifestyle-slide-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(15, 40, 30, 0.95) 0%, rgba(15, 40, 30, 0.6) 60%, transparent 100%);
+  padding: 18px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lifestyle-slide-caption strong {
+  font-family: var(--font-serif);
+  font-size: 0.94rem;
+  color: #FFFFFF;
+}
+
+.lifestyle-slide-caption span {
+  font-size: 0.76rem;
+  color: var(--mustard-gold-light);
+}
+
+.lifestyle-vertical-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+
+.lifestyle-thumb-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  opacity: 0.55;
+  transition: all 200ms ease;
+}
+
+.lifestyle-thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lifestyle-thumb-btn:hover {
+  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+.lifestyle-thumb-btn.is-active {
+  opacity: 1;
+  border-color: var(--mustard-gold);
+  box-shadow: 0 0 0 2px rgba(200, 155, 60, 0.4);
+  transform: scale(1.08);
 }
 
 /* --- Customer Reviews Single-Line Carousel Section --- */
@@ -1856,5 +1936,14 @@ textarea {
 
   .footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .lifestyle-vertical-showcase {
+    flex-direction: column;
+  }
+
+  .lifestyle-vertical-nav {
+    flex-direction: row;
+    justify-content: center;
   }
 }

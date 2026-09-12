@@ -434,9 +434,47 @@ function StorySpotlightSection() {
   );
 }
 
+const LIFESTYLE_SLIDES = [
+  {
+    src: "/images/brand/lifestyle-1.jpg",
+    title: "Everyday Comfort",
+    caption: "Crispy layered parathas & slow-cured mango achar"
+  },
+  {
+    src: "/images/brand/lifestyle-2.jpg",
+    title: "Handcrafted Tradition",
+    caption: "Pure kacchi ghani mustard oil & roasted whole masalas"
+  },
+  {
+    src: "/images/brand/lifestyle-3.jpg",
+    title: "Family Feasts",
+    caption: "Sunday poori-aloo with homestyle pickle"
+  },
+  {
+    src: "/images/brand/lifestyle-4.jpg",
+    title: "Authentic Punch",
+    caption: "Spiced green chillies & roasted fenugreek masalas"
+  }
+];
+
 function LifestyleBanner() {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % LIFESTYLE_SLIDES.length);
+    }, 4200);
+    return () => clearInterval(timer);
+  }, [isPaused]);
+
   return (
-    <section className="section-lifestyle">
+    <section
+      className="section-lifestyle"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="content-container">
         <div className="lifestyle-card">
           <motion.div
@@ -456,21 +494,44 @@ function LifestyleBanner() {
             </Link>
           </motion.div>
 
-          <motion.div
-            className="lifestyle-media"
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            <img
-              src={LIFESTYLE_IMAGE}
-              alt="Authentic Indian meal spread with handcrafted achar"
-              onError={(e) => {
-                e.currentTarget.src = "/images/logo.png";
-              }}
-            />
-          </motion.div>
+          <div className="lifestyle-vertical-showcase">
+            <div className="lifestyle-carousel-stage">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeIdx}
+                  className="lifestyle-slide-main"
+                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -24, scale: 0.98 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <img
+                    src={LIFESTYLE_SLIDES[activeIdx].src}
+                    alt={LIFESTYLE_SLIDES[activeIdx].title}
+                  />
+                  <div className="lifestyle-slide-caption">
+                    <strong>{LIFESTYLE_SLIDES[activeIdx].title}</strong>
+                    <span>{LIFESTYLE_SLIDES[activeIdx].caption}</span>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Vertical Thumbnail Indicator Rail */}
+            <div className="lifestyle-vertical-nav" aria-label="Lifestyle slides navigation">
+              {LIFESTYLE_SLIDES.map((slide, idx) => (
+                <button
+                  key={slide.title}
+                  type="button"
+                  className={`lifestyle-thumb-btn ${activeIdx === idx ? "is-active" : ""}`}
+                  onClick={() => setActiveIdx(idx)}
+                  aria-label={`View ${slide.title}`}
+                >
+                  <img src={slide.src} alt={slide.title} />
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
