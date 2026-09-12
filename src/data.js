@@ -175,7 +175,7 @@ export const testimonials = [
     name: "Ritika Sharma",
     location: "New Delhi",
     rating: 5,
-    tag: "Verified Buyer • Repeat Customer"
+    tag: "Repeat Customer"
   },
   {
     quote:
@@ -183,7 +183,7 @@ export const testimonials = [
     name: "Arjun Menon",
     location: "Bengaluru",
     rating: 5,
-    tag: "Verified Buyer • Express Delivery"
+    tag: "Express Delivery"
   },
   {
     quote:
@@ -191,7 +191,7 @@ export const testimonials = [
     name: "Neha Khandelwal",
     location: "Jaipur",
     rating: 5,
-    tag: "Verified Buyer • Heritage Blend"
+    tag: "Heritage Blend"
   },
   {
     quote:
@@ -199,7 +199,7 @@ export const testimonials = [
     name: "Siddharth Deshmukh",
     location: "Mumbai",
     rating: 5,
-    tag: "Verified Buyer • Festive Gift Order"
+    tag: "Festive Gift Order"
   },
   {
     quote:
@@ -207,7 +207,7 @@ export const testimonials = [
     name: "Meenakshi Sundaram",
     location: "Chennai",
     rating: 5,
-    tag: "Verified Buyer • South India Transit"
+    tag: "South India Transit"
   },
   {
     quote:
@@ -215,7 +215,7 @@ export const testimonials = [
     name: "Dr. Rajesh Gupta",
     location: "Gurugram",
     rating: 5,
-    tag: "Verified Buyer • Pure Mustard Oil"
+    tag: "Pure Mustard Oil"
   }
 ];
 

@@ -478,37 +478,35 @@ function LifestyleBanner() {
 }
 
 function ReviewsSection() {
-  const scrollRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const checkScroll = () => {
-    if (!scrollRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-    setCanScrollLeft(scrollLeft > 10);
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
-  };
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    checkScroll();
-    el.addEventListener("scroll", checkScroll, { passive: true });
-    window.addEventListener("resize", checkScroll);
-    return () => {
-      el.removeEventListener("scroll", checkScroll);
-      window.removeEventListener("resize", checkScroll);
-    };
+    function updateVisible() {
+      if (window.innerWidth < 640) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 960) {
+        setVisibleCount(2);
+      } else {
+        setVisibleCount(3);
+      }
+    }
+    updateVisible();
+    window.addEventListener("resize", updateVisible);
+    return () => window.removeEventListener("resize", updateVisible);
   }, []);
 
-  const handleScroll = (direction) => {
-    if (!scrollRef.current) return;
-    const scrollAmount = 330;
-    scrollRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth"
-    });
-  };
+  const maxIndex = Math.max(0, testimonials.length - visibleCount);
+
+  // Keep index within valid range if window resizes
+  useEffect(() => {
+    if (currentIndex > maxIndex) {
+      setCurrentIndex(maxIndex);
+    }
+  }, [maxIndex, currentIndex]);
+
+  const prev = () => setCurrentIndex((cur) => Math.max(0, cur - 1));
+  const next = () => setCurrentIndex((cur) => Math.min(maxIndex, cur + 1));
 
   return (
     <section className="section-reviews">
@@ -523,8 +521,8 @@ function ReviewsSection() {
             <button
               type="button"
               className="review-carousel-btn"
-              onClick={() => handleScroll("left")}
-              disabled={!canScrollLeft}
+              onClick={prev}
+              disabled={currentIndex === 0}
               aria-label="Previous review"
             >
               ←
@@ -532,8 +530,8 @@ function ReviewsSection() {
             <button
               type="button"
               className="review-carousel-btn"
-              onClick={() => handleScroll("right")}
-              disabled={!canScrollRight}
+              onClick={next}
+              disabled={currentIndex >= maxIndex}
               aria-label="Next review"
             >
               →
@@ -541,31 +539,54 @@ function ReviewsSection() {
           </div>
         </div>
 
-        <div className="reviews-carousel-track" ref={scrollRef}>
-          {testimonials.map((rev, idx) => (
-            <motion.div
-              key={rev.name}
-              className="review-card review-card-carousel"
-              initial={{ opacity: 0, scale: 0.97 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.05 }}
-            >
-              <div className="review-top-row">
-                <div className="review-stars">{"★".repeat(rev.rating)}</div>
-                <span className="review-verified-badge">✓ Verified Order</span>
-              </div>
-              <p className="review-quote">"{rev.quote}"</p>
-              <div className="review-author">
-                <strong>{rev.name}</strong>
-                <div className="review-meta">
-                  <span>📍 {rev.location}</span>
-                  <span className="review-tag">{rev.tag}</span>
+        <div className="reviews-carousel-viewport">
+          <motion.div
+            className="reviews-carousel-slider"
+            animate={{
+              x: `calc(-${currentIndex} * ((100% - ${(visibleCount - 1) * 14}px) / ${visibleCount} + 14px))`
+            }}
+            transition={{ type: "spring", stiffness: 280, damping: 28 }}
+          >
+            {testimonials.map((rev) => (
+              <div
+                key={rev.name}
+                className="review-card-carousel"
+                style={{
+                  width: `calc((100% - ${(visibleCount - 1) * 14}px) / ${visibleCount})`,
+                  flex: `0 0 calc((100% - ${(visibleCount - 1) * 14}px) / ${visibleCount})`
+                }}
+              >
+                <div className="review-top-row">
+                  <div className="review-stars">{"★".repeat(rev.rating)}</div>
+                  <span className="review-verified-badge">✓ Verified Order</span>
+                </div>
+                <p className="review-quote">"{rev.quote}"</p>
+                <div className="review-author">
+                  <strong>{rev.name}</strong>
+                  <div className="review-meta">
+                    <span>📍 {rev.location}</span>
+                    <span className="review-tag">{rev.tag}</span>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
+            ))}
+          </motion.div>
         </div>
+
+        {/* Carousel Pagination Dots */}
+        {maxIndex > 0 && (
+          <div className="reviews-dots">
+            {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`review-dot ${currentIndex === idx ? "active" : ""}`}
+                onClick={() => setCurrentIndex(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

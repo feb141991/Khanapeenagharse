@@ -1333,25 +1333,20 @@ textarea {
   box-shadow: none;
 }
 
-.reviews-carousel-track {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding: 4px 2px 14px;
-  -webkit-overflow-scrolling: touch;
+.reviews-carousel-viewport {
+  width: 100%;
+  overflow: hidden;
+  padding: 4px 0 10px;
 }
 
-.reviews-carousel-track::-webkit-scrollbar {
-  display: none;
+.reviews-carousel-slider {
+  display: flex;
+  gap: 14px;
+  width: 100%;
 }
 
 .review-card-carousel {
-  flex: 0 0 320px;
-  width: 320px;
-  scroll-snap-align: start;
+  box-sizing: border-box;
   background: #FFFFFF;
   border-radius: var(--radius);
   border: 1px solid var(--line);
@@ -1425,6 +1420,31 @@ textarea {
   border-radius: 999px;
   font-weight: 600;
   font-size: 0.68rem;
+}
+
+.reviews-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.review-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 200ms ease;
+}
+
+.review-dot.active {
+  width: 24px;
+  border-radius: 999px;
+  background: var(--heritage-green);
 }
 
 /* --- Culinary FAQs --- */
