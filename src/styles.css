@@ -1105,21 +1105,484 @@ textarea {
 }
 
 /* --- How It's Made (Screen 5) --- */
-.how-hero {
-  background: var(--heritage-green);
+/* --- How It's Made / Artisanal Craftsmanship Studio --- */
+.how-page-wrapper {
+  background: var(--warm-cream);
+  min-height: 100vh;
+}
+
+.how-hero-banner {
+  background: linear-gradient(180deg, var(--heritage-green-dark) 0%, var(--heritage-green) 100%);
   color: var(--warm-cream);
-  padding: 36px 0;
+  padding: 44px 0 36px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 2px solid var(--mustard-gold);
+}
+
+.how-hero-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top center, rgba(200, 155, 60, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.how-hero-content {
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.how-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(200, 155, 60, 0.16);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: var(--mustard-gold-light);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.how-main-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
+}
+
+.how-main-subhead {
+  font-size: 0.95rem;
+  color: rgba(247, 241, 231, 0.9);
+  line-height: 1.55;
+  margin: 0 auto 24px;
+  max-width: 620px;
+}
+
+.how-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  background: rgba(15, 40, 30, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(200, 155, 60, 0.3);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-top: 10px;
+}
+
+.how-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.how-stat-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(200, 155, 60, 0.18);
+  border: 1px solid rgba(200, 155, 60, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.how-stat-copy strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.how-stat-copy span {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--mustard-gold-light);
+  line-height: 1.2;
+}
+
+/* Interactive Stepper Navigation Bar with Liquid Timeline */
+.how-stepper-container {
+  position: relative;
+  margin: 32px 0 28px;
+  padding: 8px 0;
+}
+
+.how-timeline-track {
+  position: absolute;
+  top: 26px;
+  left: 5%;
+  right: 5%;
+  height: 3px;
+  background: rgba(200, 155, 60, 0.25);
+  border-radius: 3px;
+  z-index: 0;
+}
+
+.how-timeline-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mustard-gold) 0%, var(--mustard-gold-dark) 100%);
+  border-radius: 3px;
+  transition: width 400ms var(--ease);
+  box-shadow: 0 0 10px rgba(200, 155, 60, 0.6);
+}
+
+.how-stepper-pills {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.how-step-node-btn {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  position: relative;
+  transition: all 220ms var(--ease);
+  box-shadow: var(--shadow-sm);
   text-align: center;
 }
 
-.steps-roadmap {
+.how-step-node-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--mustard-gold);
+  box-shadow: var(--shadow-md);
+}
+
+.how-step-node-btn.is-active {
+  background: var(--warm-cream-pure);
+  border-color: var(--mustard-gold);
+  box-shadow: 0 4px 16px rgba(200, 155, 60, 0.35);
+  transform: translateY(-3px);
+}
+
+.how-node-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--warm-cream);
+  border: 1px solid var(--line-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  position: relative;
+  transition: all 200ms ease;
+}
+
+.how-step-node-btn.is-active .how-node-circle {
+  background: var(--mustard-gold);
+  border-color: var(--mustard-gold-dark);
+  box-shadow: 0 0 10px rgba(200, 155, 60, 0.5);
+}
+
+.how-node-num {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: var(--heritage-green);
+  color: var(--warm-cream);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 999px;
+  border: 1px solid #FFFFFF;
+}
+
+.how-node-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.how-node-title {
+  font-family: var(--font-serif);
+  font-size: 0.82rem;
+  color: var(--text-dark);
+  line-height: 1.2;
+}
+
+.how-step-node-btn.is-active .how-node-title {
+  color: var(--heritage-green);
+  font-weight: 700;
+}
+
+.how-node-duration {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.how-node-glow-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--radius) + 2px);
+  border: 2px solid var(--mustard-gold);
+  pointer-events: none;
+}
+
+/* Large Interactive Spotlight Stage */
+.how-spotlight-stage {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.15fr) minmax(0, 1.35fr);
+  gap: 28px;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+  margin-bottom: 48px;
+  align-items: center;
+}
+
+.how-spotlight-visual-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.how-spotlight-image-card {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-gold);
+  aspect-ratio: 4 / 3;
+  box-shadow: var(--shadow-md);
+  background: var(--warm-cream);
+}
+
+.how-spotlight-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s var(--ease);
+}
+
+.how-spotlight-image-card:hover .how-spotlight-img {
+  transform: scale(1.04);
+}
+
+.how-spotlight-badge-top {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(15, 40, 30, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  color: var(--mustard-gold-light);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.how-spotlight-overlay-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(15, 40, 30, 0.95) 0%, rgba(15, 40, 30, 0.6) 65%, transparent 100%);
+  padding: 20px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.how-spotlight-step-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--mustard-gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.how-spotlight-overlay-bottom h3 {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.how-spotlight-info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.how-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.how-phase-eyebrow {
+  color: var(--mustard-gold-dark);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.how-duration-chip {
+  background: var(--mustard-gold-soft);
+  color: var(--mustard-gold-dark);
+  border: 1px solid rgba(200, 155, 60, 0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.how-stage-headline {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+  line-height: 1.2;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.how-stage-tagline {
+  font-style: italic;
+  color: var(--heritage-green);
+  font-size: 0.86rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.how-stage-narrative {
+  font-size: 0.86rem;
+  color: var(--text-soft);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.how-wisdom-box {
+  background: var(--warm-cream);
+  border-left: 3px solid var(--mustard-gold);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 10px 14px;
+  display: flex;
+  gap: 8px;
+  margin: 2px 0;
+}
+
+.how-wisdom-quote-mark {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  line-height: 1;
+  color: var(--mustard-gold);
+}
+
+.how-wisdom-content p {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--text-dark);
+  line-height: 1.45;
+  margin: 0 0 2px;
+}
+
+.how-wisdom-content small {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.how-tags-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.how-tags-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  letter-spacing: 0.02em;
+}
+
+.how-tags-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.how-craft-tag {
+  background: #FFFFFF;
+  border: 1px solid var(--line-gold);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 0.7rem;
+  color: var(--heritage-green);
+  font-weight: 600;
+}
+
+.how-stage-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  margin-top: 4px;
+}
+
+.how-stage-indicator {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.how-stage-indicator strong {
+  color: var(--text-dark);
+}
+
+/* 5-Card Full Journey Roadmap Grid */
+.how-roadmap-section {
+  margin-bottom: 48px;
+}
+
+.how-cards-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  margin: 32px 0;
+  margin-top: 20px;
 }
 
-.step-card {
+.how-roadmap-card {
   background: #FFFFFF;
   border-radius: var(--radius);
   border: 1px solid var(--line);
@@ -1127,83 +1590,338 @@ textarea {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  cursor: pointer;
+  transition: all 220ms var(--ease);
 }
 
-.step-card:hover {
-  transform: translateY(-2px);
+.how-roadmap-card:hover {
+  border-color: var(--mustard-gold);
   box-shadow: var(--shadow-md);
 }
 
-.step-number {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--mustard-gold);
-  color: var(--text-dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.84rem;
-  margin: 12px auto 6px;
+.how-roadmap-card.is-selected {
+  border-color: var(--mustard-gold);
+  box-shadow: 0 0 0 2px var(--mustard-gold-soft), 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
 }
 
-.step-title {
-  font-family: var(--font-serif);
-  font-size: 0.98rem;
-  text-align: center;
-  color: var(--text-dark);
-  margin: 0 0 8px;
-}
-
-.step-media {
+.how-card-thumb-wrap {
+  position: relative;
   height: 110px;
   background: var(--warm-cream);
   overflow: hidden;
 }
 
-.step-media img {
+.how-card-thumb-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
 }
 
-.step-body {
+.how-roadmap-card:hover .how-card-thumb-wrap img {
+  transform: scale(1.06);
+}
+
+.how-card-step-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--mustard-gold);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.how-card-duration-tag {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(15, 40, 30, 0.85);
+  color: var(--mustard-gold-light);
+  font-size: 0.64rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.how-card-body {
   padding: 10px;
-  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 6px;
+}
+
+.how-card-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.how-card-icon {
+  font-size: 0.95rem;
+}
+
+.how-card-icon-title h4 {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.how-card-desc {
+  font-size: 0.74rem;
   color: var(--text-soft);
-  line-height: 1.45;
-  text-align: center;
+  line-height: 1.4;
   margin: 0;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
+.how-card-footer {
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+}
+
+.how-card-btn-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--mustard-gold-dark);
+}
+
+/* Heritage Craft vs Industrial Mass Market Section */
+.how-comparison-section {
+  margin-bottom: 48px;
+}
+
+.how-comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.how-comparison-card {
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.how-comparison-card.heritage-card {
+  background: var(--heritage-green-dark);
+  color: var(--warm-cream);
+  border-color: rgba(200, 155, 60, 0.4);
+}
+
+.how-comparison-card.industrial-card {
+  background: #FFFFFF;
+  color: var(--text-dark);
+  border-color: #E2E8F0;
+}
+
+.comparison-card-head {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comp-badge {
+  background: rgba(200, 155, 60, 0.2);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  color: var(--mustard-gold-light);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.comp-badge-alt {
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  color: #64748B;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.comparison-card-head h3 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.comp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.comp-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.comp-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--mustard-gold);
+  color: var(--heritage-green-dark);
+  font-weight: 800;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.comp-cross {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FEE2E2;
+  color: #DC2626;
+  font-weight: 800;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.comp-list li strong {
+  display: block;
+  font-size: 0.86rem;
+  margin-bottom: 2px;
+}
+
+.comp-list li p {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Interactive Craft FAQ Section */
+.how-faq-section {
+  margin-bottom: 48px;
+}
+
+.how-faq-list {
+  max-width: 740px;
+  margin: 20px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.how-faq-item {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 200ms ease;
+}
+
+.how-faq-item.is-open {
+  border-color: var(--mustard-gold);
+}
+
+.how-faq-question-btn {
+  width: 100%;
+  padding: 14px 18px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.faq-toggle-icon {
+  font-family: monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--mustard-gold-dark);
+}
+
+.how-faq-answer {
+  padding: 0 18px 14px;
+  font-size: 0.84rem;
+  color: var(--text-soft);
+  line-height: 1.55;
+}
+
+.how-faq-answer p {
+  margin: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+/* Patience Banner */
 .patience-banner {
   background: var(--heritage-green-dark);
   color: var(--warm-cream);
-  padding: 32px;
+  padding: 32px 28px;
   border-radius: var(--radius-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
-  margin: 32px 0 44px;
-  border: 1px solid rgba(200, 155, 60, 0.3);
+  gap: 24px;
+  margin: 24px 0 36px;
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  box-shadow: var(--shadow-md);
+}
+
+.patience-badge {
+  color: var(--mustard-gold-light);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
 }
 
 .patience-banner h2 {
   font-family: var(--font-serif);
-  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
-  font-style: italic;
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
   color: #FFFFFF;
   margin: 0 0 6px;
+  letter-spacing: -0.01em;
 }
 
 .patience-banner p {
-  color: rgba(247, 241, 231, 0.85);
+  color: rgba(247, 241, 231, 0.88);
   font-size: 0.88rem;
+  line-height: 1.5;
   margin: 0;
+  max-width: 520px;
 }
 
 /* --- Story Section (Split Layout on Home) --- */
@@ -2135,6 +2853,24 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .how-spotlight-stage {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 18px;
+  }
+
+  .how-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .how-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .how-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
   .patience-banner {
     flex-direction: column;
     text-align: center;
@@ -2176,8 +2912,44 @@ textarea {
     align-items: stretch;
   }
 
-  .steps-roadmap {
+  .how-stats-strip {
     grid-template-columns: 1fr;
+  }
+
+  .how-stepper-container {
+    margin: 20px 0;
+  }
+
+  .how-timeline-track {
+    display: none;
+  }
+
+  .how-stepper-pills {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    gap: 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .how-step-node-btn {
+    flex: 0 0 135px;
+    scroll-snap-align: start;
+    padding: 8px 6px;
+  }
+
+  .how-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .how-stage-controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .how-stage-controls button {
+    width: 100%;
   }
 
   .trust-grid {

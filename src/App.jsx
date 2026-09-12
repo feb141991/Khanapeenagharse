@@ -1561,86 +1561,500 @@ function AboutPage() {
   );
 }
 
+const CRAFT_STEPS = [
+  {
+    num: "01",
+    phase: "Phase 1: Raw Harvest & Selection",
+    title: "Select Ingredients",
+    headline: "Seasonal Raw Ramkela Mangoes & First-Grade Whole Spices",
+    duration: "Day 1 • Morning Harvest",
+    tagline: "No bruised fruit. No shortcuts. Sourced directly in peak season.",
+    desc: "We handpick seasonal raw mangoes, sun-ripened chillies, and aromatic whole spices directly from trusted regional farms. Every single mango is inspected by hand for firmness, tartness, and zero blemishes before entering our kitchen.",
+    wisdom: "“A great achar starts weeks before it touches oil. If the raw mango lacks firmness, the pickle loses its crunch in months.”",
+    tags: ["Raw Ramkela Mangoes", "Whole Yellow Mustard", "Methi Seeds", "Sendha Namak"],
+    icon: "🌿",
+    badge: "100% Farm Fresh",
+    img: "/images/process/step-1-ingredients.jpg"
+  },
+  {
+    num: "02",
+    phase: "Phase 2: Slicing & Sun-Drying",
+    title: "Prepare & Sun-Dry",
+    headline: "Hand-Sliced & Moisture-Evaporated Under Golden Sunlight",
+    duration: "Days 2–3 • Golden Afternoon",
+    tagline: "Moisture is the enemy of shelf-life. The sun is our natural preserver.",
+    desc: "Mangoes and vegetables are washed in fresh water, cut uniformly into traditional bite-sized pieces, and spread out across clean muslin cloth on bamboo wicker trays (tokris) to bask under the warm afternoon sun. Whole spices are lightly dry-roasted on cast iron to awaken their natural oils.",
+    wisdom: "“We never use mechanical dehydrators. Solar evaporation concentrates the natural fruit pectins and seals the aroma inside.”",
+    tags: ["Solar Dehydration", "Cast Iron Roasting", "Zero Moisture", "Coarse Crushing"],
+    icon: "☀️",
+    badge: "Solar Evaporation",
+    img: "/images/process/step-2-prepare.jpg"
+  },
+  {
+    num: "03",
+    phase: "Phase 3: The Golden Infusion",
+    title: "Spice & Oil Infusion",
+    headline: "Pure Cold-Pressed Kacchi Ghani Mustard Oil & Hand-Ground Masalas",
+    duration: "Day 4 • The Family Blend",
+    tagline: "100% pure cold-pressed oil that naturally preserves without synthetic acids.",
+    desc: "In large brass urlis, the sun-dried ingredients are enveloped in pure, pungent kacchi ghani mustard oil. Hand-ground spices—fenugreek, fennel, turmeric, nigella, and asafoetida (hing)—are folded in with lived intuition, ensuring every crevice is richly coated.",
+    wisdom: "“The oil must sting the eyes with its purity. That pungent mustard aroma is the shield that preserves the achar for over a year.”",
+    tags: ["Cold-Pressed Mustard Oil", "Pure Hing (Asafoetida)", "Turmeric Root", "Kalonji"],
+    icon: "🫒",
+    badge: "Kacchi Ghani Infusion",
+    img: "/images/process/step-3-mix.jpg"
+  },
+  {
+    num: "04",
+    phase: "Phase 4: Solar Maturation",
+    title: "Rest in Ceramic Barnis",
+    headline: "21 to 30 Days of Slow Natural Sun-Fermentation in Martabans",
+    duration: "21–30 Days • Rooftop Courtyard",
+    tagline: "Ceramic martabans regulate thermal temperature day and night.",
+    desc: "The spiced blend is transferred into traditional glazed porcelain martabans (barnis) tied tightly with clean white muslin cloths. Placed on our rooftop courtyard in Bahadurgarh, the jars absorb daytime warmth and cool down at night, allowing flavors to marry slowly and deeply.",
+    wisdom: "“Plastic drums ruin the soul of achar. Only glazed ceramic allows the pickle to breathe and ferment naturally without chemical vinegar.”",
+    tags: ["Glazed Ceramic Barnis", "Muslin Cloth Tied", "Rooftop Solar Heat", "Daily Stirring"],
+    icon: "🏺",
+    badge: "Solar Fermentation",
+    img: "/images/process/step-4-rest.jpg"
+  },
+  {
+    num: "05",
+    phase: "Phase 5: Bottling & Dispatch",
+    title: "Hand-Packed with Care",
+    headline: "Small Batch Bottling in Food-Safe Glass Jars for Your Table",
+    duration: "Day 35 • Final Taste Approval",
+    tagline: "Direct from our family kitchen in Bahadurgarh to homes across India.",
+    desc: "Once mature, the achar is filled by hand into sterile glass jars, crowned with a top layer of golden mustard oil to seal freshness, and sealed with tamper-evident caps. Every batch is tasted by Rachna Sharma before dispatch to ensure heirloom quality.",
+    wisdom: "“When you open the jar at your table, the aroma should instantly take you back to your grandmother’s courtyard.”",
+    tags: ["Sterile Glass Jars", "Oil-Top Freshness Seal", "Batch Inspected", "Safe Transit Pack"],
+    icon: "📦",
+    badge: "Hand-Sealed Fresh",
+    img: "/images/process/step-5-pack.jpg"
+  }
+];
+
+const CRAFT_FAQS = [
+  {
+    q: "Why do you use traditional ceramic barnis instead of stainless steel or plastic tanks?",
+    a: "Ceramic porcelain martabans are natural thermal insulators. During sunny days, they gently absorb solar heat without scorching the spices; at night, they cool slowly, allowing beneficial natural fermentation. Plastic vats can leach chemicals and trap harmful condensation."
+  },
+  {
+    q: "How does the achar last 12 months without chemical preservatives?",
+    a: "We rely on ancient Indian preservation science: complete sun-drying of fruit to zero free moisture, therapeutic sendha namak (rock salt), and 100% pure cold-pressed mustard oil. The top layer of mustard oil forms a natural airtight oxygen barrier that prevents spoilage."
+  },
+  {
+    q: "Is there any synthetic vinegar or artificial acetic acid added?",
+    a: "Never. All tartness in our achars comes naturally from sun-ripened green Ramkela mangoes, amchur, and slow fermentation. We do not use commercial vinegar, artificial acidity regulators (INS 260), or chemical stabilizers."
+  },
+  {
+    q: "How should I store and handle my achar jar at home?",
+    a: "Store in a cool, dry place away from direct humidity. Always use a clean, completely dry spoon when serving. Ensure the achar pieces remain submerged under the top layer of mustard oil for maximum flavor longevity."
+  }
+];
+
 function HowItsMadePage() {
   useDocumentMeta({
-    title: "How It's Made | 5-Step Artisanal Process | Khana Peena Ghar Se",
-    description: "Discover the 5-step traditional slow-curing process behind our small-batch homemade achars."
+    title: "How It's Made | 5-Step Artisanal Craftsmanship | Khana Peena Ghar Se",
+    description: "Discover the 5-step traditional slow-curing process behind our handcrafted small-batch homemade achars."
   });
 
-  const steps = [
-    {
-      num: "1",
-      title: "Select Ingredients",
-      desc: "We handpick the freshest seasonal raw mangoes, chillies, and whole spices directly from trusted growers.",
-      img: "/images/achars/aam-ka-achar/Aam Ka Achar.png"
-    },
-    {
-      num: "2",
-      title: "Prepare",
-      desc: "Ingredients are cleaned, sun-dried, sliced, and whole spices are dry-roasted the traditional way.",
-      img: "/images/achars/hing-ka-achar/Hing Aachar.png"
-    },
-    {
-      num: "3",
-      title: "Mix",
-      desc: "We blend everything with pure cold-pressed kacchi ghani mustard oil and hand-ground spice blends.",
-      img: "/images/achars/mirch-ka-achar/Mirch Achar.png"
-    },
-    {
-      num: "4",
-      title: "Rest",
-      desc: "The pickle is left to mature slowly in traditional ceramic barnis under the natural warmth of the sun.",
-      img: "/images/achars/mix-veg-achar/Mix Veg.png"
-    },
-    {
-      num: "5",
-      title: "Pack",
-      desc: "Finally, it is hand-packed and sealed in clean, food-safe glass jars with love for safe delivery.",
-      img: HOME_HERO_IMAGE
-    }
-  ];
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [openFaq, setOpenFaq] = useState(null);
+  const activeStep = CRAFT_STEPS[activeIdx];
+
+  const prevStep = () => {
+    setActiveIdx((cur) => (cur === 0 ? CRAFT_STEPS.length - 1 : cur - 1));
+  };
+
+  const nextStep = () => {
+    setActiveIdx((cur) => (cur === CRAFT_STEPS.length - 1 ? 0 : cur + 1));
+  };
 
   return (
-    <div>
-      <div className="how-hero">
+    <div className="how-page-wrapper">
+      {/* Editorial Craft Hero Header */}
+      <div className="how-hero-banner">
         <div className="content-container">
-          <p className="hero-eyebrow">Artisanal Craftsmanship</p>
-          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)" }}>From Our Kitchen to Your Table</h1>
-          <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>The same traditional process. The same care. In every jar.</p>
+          <motion.div
+            className="how-hero-content"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="how-hero-badge">
+              <span className="pulse-dot" />
+              <span>Artisanal Heritage Craftsmanship</span>
+            </div>
+            <h1 className="how-main-title">From Our Kitchen to Your Table</h1>
+            <p className="how-main-subhead">
+              The 5 sacred steps of traditional Indian small-batch pickle crafting. Same heirloom recipes, pure cold-pressed mustard oil, and patient sun-curing.
+            </p>
+
+            {/* Quick Craft Credentials Bar */}
+            <div className="how-stats-strip">
+              <div className="how-stat-item">
+                <span className="how-stat-icon">☀️</span>
+                <div className="how-stat-copy">
+                  <strong>21–30 Days</strong>
+                  <span>Natural Sun-Curing</span>
+                </div>
+              </div>
+              <div className="how-stat-item">
+                <span className="how-stat-icon">🌿</span>
+                <div className="how-stat-copy">
+                  <strong>100% Kacchi Ghani</strong>
+                  <span>Cold-Pressed Mustard Oil</span>
+                </div>
+              </div>
+              <div className="how-stat-item">
+                <span className="how-stat-icon">🏺</span>
+                <div className="how-stat-copy">
+                  <strong>Ceramic Barnis</strong>
+                  <span>Traditional Maturation</span>
+                </div>
+              </div>
+              <div className="how-stat-item">
+                <span className="how-stat-icon">✨</span>
+                <div className="how-stat-copy">
+                  <strong>Zero Chemicals</strong>
+                  <span>12-Month Shelf Life</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 
       <div className="page-shell">
         <div className="content-container">
-          <div className="steps-roadmap">
-            {steps.map((step, idx) => (
-              <motion.div
-                key={step.num}
-                className="step-card"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.08 }}
-              >
-                <div className="step-number">{step.num}</div>
-                <h3 className="step-title">{step.title}</h3>
-                <div className="step-media">
-                  <img src={step.img} alt={step.title} onError={(e) => { e.currentTarget.src = "/images/logo.png"; }} />
-                </div>
-                <p className="step-body">{step.desc}</p>
-              </motion.div>
-            ))}
+          {/* Interactive Stepper Navigation Bar with Connected Liquid Beam */}
+          <div className="how-stepper-container">
+            <div className="how-timeline-track">
+              <div
+                className="how-timeline-progress"
+                style={{ width: `${(activeIdx / (CRAFT_STEPS.length - 1)) * 100}%` }}
+              />
+            </div>
+            <div className="how-stepper-pills">
+              {CRAFT_STEPS.map((step, idx) => {
+                const isActive = activeIdx === idx;
+                const isPassed = idx <= activeIdx;
+                return (
+                  <button
+                    key={step.num}
+                    type="button"
+                    className={`how-step-node-btn ${isActive ? "is-active" : ""} ${isPassed ? "is-passed" : ""}`}
+                    onClick={() => setActiveIdx(idx)}
+                    aria-label={`Jump to Step ${step.num}: ${step.title}`}
+                  >
+                    <div className="how-node-circle">
+                      <span className="how-node-icon">{step.icon}</span>
+                      <span className="how-node-num">{step.num}</span>
+                    </div>
+                    <div className="how-node-labels">
+                      <strong className="how-node-title">{step.title}</strong>
+                      <span className="how-node-duration">{step.duration.split("•")[0].trim()}</span>
+                    </div>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeStepGlow"
+                        className="how-node-glow-ring"
+                        transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="patience-banner">
-            <div>
-              <h2>Patience makes better pickles.</h2>
-              <p>Some good things take time. Handcrafted slow-cured achars made the way they always were.</p>
+          {/* Large Interactive Spotlight Stage */}
+          <motion.div
+            key={activeStep.num}
+            className="how-spotlight-stage"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Left: Large High-Definition Craft Visual */}
+            <div className="how-spotlight-visual-wrap">
+              <div className="how-spotlight-image-card">
+                <img
+                  src={activeStep.img}
+                  alt={activeStep.title}
+                  className="how-spotlight-img"
+                  onError={(e) => {
+                    e.currentTarget.src = HOME_HERO_IMAGE;
+                  }}
+                />
+                <div className="how-spotlight-badge-top">
+                  <span>{activeStep.icon}</span>
+                  <strong>{activeStep.badge}</strong>
+                </div>
+                <div className="how-spotlight-overlay-bottom">
+                  <span className="how-spotlight-step-tag">{activeStep.phase}</span>
+                  <h3>{activeStep.title}</h3>
+                </div>
+              </div>
             </div>
-            <Link to="/achar" className="button button-primary">
-              Shop Our Achar →
-            </Link>
+
+            {/* Right: Rich Culinary Wisdom Card */}
+            <div className="how-spotlight-info-panel">
+              <div className="how-info-header">
+                <span className="how-phase-eyebrow">{activeStep.phase}</span>
+                <span className="how-duration-chip">⏱️ {activeStep.duration}</span>
+              </div>
+
+              <h2 className="how-stage-headline">{activeStep.headline}</h2>
+              <p className="how-stage-tagline">{activeStep.tagline}</p>
+              <p className="how-stage-narrative">{activeStep.desc}</p>
+
+              {/* Founder Kitchen Wisdom Box */}
+              <div className="how-wisdom-box">
+                <div className="how-wisdom-quote-mark">“</div>
+                <div className="how-wisdom-content">
+                  <p>{activeStep.wisdom}</p>
+                  <small>— Rachna Sharma, Founder &amp; Kitchen Head</small>
+                </div>
+              </div>
+
+              {/* Key Ingredients & Craft Techniques Tag Cloud */}
+              <div className="how-tags-section">
+                <span className="how-tags-label">Key Techniques &amp; Ingredients:</span>
+                <div className="how-tags-list">
+                  {activeStep.tags.map((tag) => (
+                    <span key={tag} className="how-craft-tag">
+                      ✓ {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Step Stage Navigation Controls */}
+              <div className="how-stage-controls">
+                <button
+                  type="button"
+                  className="button button-cream-secondary button-sm"
+                  onClick={prevStep}
+                  aria-label="Previous step"
+                >
+                  ← Previous Step
+                </button>
+                <span className="how-stage-indicator">
+                  Step <strong>{activeStep.num}</strong> of <strong>05</strong>
+                </span>
+                <button
+                  type="button"
+                  className="button button-primary button-sm"
+                  onClick={nextStep}
+                  aria-label="Next step"
+                >
+                  Next Step →
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 5-Card Full Journey Roadmap Grid */}
+          <div className="how-roadmap-section">
+            <div className="section-head-center">
+              <p className="section-eyebrow">Complete 5-Step Journey</p>
+              <h2 className="section-title">The Master Craftsman Roadmap</h2>
+              <p className="section-subtitle">Click any step card below to inspect culinary techniques and secret tips.</p>
+            </div>
+
+            <div className="how-cards-grid">
+              {CRAFT_STEPS.map((step, idx) => {
+                const isSelected = activeIdx === idx;
+                return (
+                  <motion.div
+                    key={step.num}
+                    className={`how-roadmap-card ${isSelected ? "is-selected" : ""}`}
+                    onClick={() => setActiveIdx(idx)}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.4, delay: idx * 0.06 }}
+                    whileHover={{ y: -4 }}
+                  >
+                    <div className="how-card-thumb-wrap">
+                      <img
+                        src={step.img}
+                        alt={step.title}
+                        onError={(e) => {
+                          e.currentTarget.src = HOME_HERO_IMAGE;
+                        }}
+                      />
+                      <span className="how-card-step-badge">{step.num}</span>
+                      <span className="how-card-duration-tag">{step.duration.split("•")[0].trim()}</span>
+                    </div>
+
+                    <div className="how-card-body">
+                      <div className="how-card-icon-title">
+                        <span className="how-card-icon">{step.icon}</span>
+                        <h4>{step.title}</h4>
+                      </div>
+                      <p className="how-card-desc">{step.desc}</p>
+                      <div className="how-card-footer">
+                        <span className="how-card-btn-text">
+                          {isSelected ? "Currently Viewing ✓" : "Explore Phase →"}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
+
+          {/* Heritage Craft vs Industrial Mass Market Section */}
+          <div className="how-comparison-section">
+            <div className="section-head-center">
+              <p className="section-eyebrow">The Homemade Difference</p>
+              <h2 className="section-title">Why Small-Batch Patience Matters</h2>
+              <p className="section-subtitle">A side-by-side look at traditional Indian home preservation versus factory production.</p>
+            </div>
+
+            <div className="how-comparison-grid">
+              <div className="how-comparison-card heritage-card">
+                <div className="comparison-card-head">
+                  <span className="comp-badge">🏡 The Khana Peena Way</span>
+                  <h3>Traditional Kitchen Craft</h3>
+                </div>
+                <ul className="comp-list">
+                  <li>
+                    <span className="comp-check">✓</span>
+                    <div>
+                      <strong>100% Cold-Pressed Kacchi Ghani Mustard Oil</strong>
+                      <p>Naturally pungent, unadulterated oil that preserves flavor &amp; crunch.</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="comp-check">✓</span>
+                    <div>
+                      <strong>21–30 Days Solar Fermentation</strong>
+                      <p>Slowly sun-ripened in glazed ceramic martabans under real sun heat.</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="comp-check">✓</span>
+                    <div>
+                      <strong>Zero Artificial Vinegar or Acids</strong>
+                      <p>Natural tartness exclusively from raw Ramkela mangoes &amp; amchur.</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="comp-check">✓</span>
+                    <div>
+                      <strong>Hand-Pounded Whole Masalas</strong>
+                      <p>Cast iron roasted whole fenugreek, mustard, and fragrant hing.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="how-comparison-card industrial-card">
+                <div className="comparison-card-head">
+                  <span className="comp-badge-alt">🏭 Mass-Market Commercial Pickles</span>
+                  <h3>Industrial Factory Processing</h3>
+                </div>
+                <ul className="comp-list">
+                  <li>
+                    <span className="comp-cross">✗</span>
+                    <div>
+                      <strong>Refined Palm Oil &amp; Cottonseed Oil Blends</strong>
+                      <p>Heated to high temperatures, stripping away essential aromatics.</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="comp-cross">✗</span>
+                    <div>
+                      <strong>24-Hour Chemical Acceleration</strong>
+                      <p>Forced ripening in giant plastic vats using industrial heat and steam.</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="comp-cross">✗</span>
+                    <div>
+                      <strong>Synthetic Acetic Acid &amp; Chemical Vinegar</strong>
+                      <p>Sharp artificial chemical burn with Sodium Benzoate (INS 211).</p>
+                    </div>
+                  </li>
+                  <li>
+                    <span className="comp-cross">✗</span>
+                    <div>
+                      <strong>Machine-Ground Dust &amp; Artificial Colors</strong>
+                      <p>Commercial spice powders with preservatives and anti-caking agents.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Interactive Craft FAQ Accordion */}
+          <div className="how-faq-section">
+            <div className="section-head-center">
+              <p className="section-eyebrow">Frequently Asked Questions</p>
+              <h2 className="section-title">The Secrets of Our Kitchen</h2>
+              <p className="section-subtitle">Everything you need to know about our natural preservation and storage.</p>
+            </div>
+
+            <div className="how-faq-list">
+              {CRAFT_FAQS.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div key={faq.q} className={`how-faq-item ${isOpen ? "is-open" : ""}`}>
+                    <button
+                      type="button"
+                      className="how-faq-question-btn"
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      aria-expanded={isOpen}
+                    >
+                      <span>{faq.q}</span>
+                      <span className="faq-toggle-icon">{isOpen ? "−" : "+"}</span>
+                    </button>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          className="how-faq-answer"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <p>{faq.a}</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Patience Makes Better Pickles Banner */}
+          <motion.div
+            className="patience-banner"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="patience-banner-copy">
+              <div className="patience-badge">🏺 Small-Batch Family Kitchen</div>
+              <h2>Patience makes better pickles.</h2>
+              <p>
+                Some good things take time. Handcrafted slow-cured achars made the way they always were in Bahadurgarh.
+              </p>
+            </div>
+            <div className="patience-banner-cta">
+              <Link to="/achar" className="button button-primary">
+                Shop The Pickle Chapter →
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
