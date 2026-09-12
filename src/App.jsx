@@ -4,6 +4,18 @@ import { AnimatePresence, motion } from "motion/react";
 import { faqs, products, testimonials } from "./data";
 import { hasSupabaseClientEnv, supabase } from "./supabaseClient";
 import { getCart, getWishlist, setCart, setWishlist } from "./store";
+import {
+  trackPageView,
+  trackEvent,
+  trackViewItem,
+  trackAddToCart,
+  trackRemoveFromCart,
+  trackBeginCheckout,
+  trackPurchase,
+  trackPincodeCheck,
+  trackZomatoClick,
+  trackQuickView
+} from "./analytics";
 
 const ZOMATO_URL =
   "https://www.zomato.com/bahadurgarh/khana-peena-ghar-se-bahadurgarh-locality/order";
@@ -394,6 +406,8 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
     setSelectedImgIdx(0);
     setQuantity(1);
     setIsQuickViewOpen(true);
+    trackQuickView(product);
+    trackViewItem(product);
   };
 
   const closeQuickView = () => {
@@ -2304,6 +2318,7 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
       saveToRecent(clean, estimate);
       setIsChanging(false);
       setShowPopular(false);
+      trackPincodeCheck(clean, estimate?.valid, estimate?.state, estimate?.region);
 
       if (onSelectPincode) {
         onSelectPincode(clean, estimate);
@@ -2752,7 +2767,10 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   });
 
   useEffect(() => {
-    setSelectedImage(product?.images?.[0] || product?.image || "");
+    if (product) {
+      setSelectedImage(product?.images?.[0] || product?.image || "");
+      trackViewItem(product);
+    }
   }, [product]);
 
   const relatedProducts = useMemo(() => {
@@ -3640,6 +3658,12 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
   const shippingFee = items.length ? (isFreeShipping ? 0 : 60) : 0;
   const total = subtotal + shippingFee;
 
+  useEffect(() => {
+    if (items.length) {
+      trackBeginCheckout(items, subtotal);
+    }
+  }, []);
+
   const placeOrder = async (event) => {
     event.preventDefault();
     if (!items.length) {
@@ -3665,6 +3689,13 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Order could not be placed.");
+
+      trackPurchase({
+        orderId: result.order?.order_number || `KP-${Date.now().toString().slice(-6)}`,
+        items: payloadItems,
+        value: total,
+        shipping: shippingFee
+      });
 
       localStorage.removeItem("kp_cart_v3");
       if (onClearCart) onClearCart();
@@ -5095,6 +5126,8 @@ function useShopState() {
         return [...current, { slug, quantity: nextQuantity }];
       });
 
+      trackAddToCart(product || { slug, price: product?.price || 0, name: product?.name || slug }, quantity);
+
       showToast({
         type: "cart",
         badge: "Added to Cart ✓",
@@ -5105,23 +5138,62 @@ function useShopState() {
       });
     },
     updateCartQuantity(slug, quantity, maxStock = Number.POSITIVE_INFINITY) {
-      setCartState((current) =>
-        current
+      setCartState((current) => {
+        const existing = current.find((item) => item.slug === slug);
+        if (existing && quantity < existing.quantity) {
+          trackRemoveFromCart({ slug }, existing.quantity - quantity);
+        }
+        return current
           .map((item) => (
             item.slug === slug
               ? { ...item, quantity: Math.min(Math.max(quantity, 0), maxStock) }
               : item
           ))
-          .filter((item) => item.quantity > 0)
-      );
+          .filter((item) => item.quantity > 0);
+      });
     }
   };
+}
+
+function NotFoundPage() {
+  useDocumentMeta({
+    title: "Page Not Found | Khana Peena Ghar Se",
+    description: "The page you are looking for might have been moved or does not exist. Explore our authentic homemade achars."
+  });
+
+  return (
+    <div className="page-shell" style={{ minHeight: "65vh", display: "flex", alignItems: "center" }}>
+      <div className="content-container" style={{ textAlign: "center", maxWidth: "600px", margin: "0 auto", padding: "60px 20px" }}>
+        <div style={{ fontSize: "3.5rem", marginBottom: "12px" }}>🏺</div>
+        <span className="hero-eyebrow-pill" style={{ marginBottom: "12px" }}>Error 404</span>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "2.4rem", color: "var(--heritage-green)", margin: "8px 0 16px" }}>
+          This Page Has Wandered Off
+        </h1>
+        <p style={{ color: "var(--text-soft)", fontSize: "1rem", lineHeight: 1.6, marginBottom: "28px" }}>
+          We couldn't find the page you were looking for. Perhaps you'd like to explore our handcrafted sun-cured achars or learn about Rachna's kitchen stories?
+        </p>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+          <Link to="/achar" className="button button-primary">
+            Explore All Achars →
+          </Link>
+          <Link to="/" className="button button-cream-secondary">
+            Return to Homepage
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function App() {
   const shop = useShopState();
   const location = useLocation();
   const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     if (!supabase) return undefined;
@@ -5216,7 +5288,27 @@ export default function App() {
                 }
               />
               <Route
+                path="/achar/:slug"
+                element={
+                  <ProductPage
+                    addToCart={shop.addToCart}
+                    wishlist={shop.wishlist}
+                    toggleWishlist={shop.toggleWishlist}
+                  />
+                }
+              />
+              <Route
                 path="/cart"
+                element={
+                  <CartPage
+                    cart={shop.cart}
+                    updateCartQuantity={shop.updateCartQuantity}
+                    onClearCart={shop.clearCart}
+                  />
+                }
+              />
+              <Route
+                path="/checkout"
                 element={
                   <CartPage
                     cart={shop.cart}
@@ -5236,6 +5328,7 @@ export default function App() {
               <Route path="/returns" element={<RefundPolicyPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/contact-us" element={<ContactPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
