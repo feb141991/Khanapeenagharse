@@ -10,54 +10,6 @@ const ZOMATO_URL =
 const HOME_HERO_IMAGE = "/images/brand/home-hero.jpg";
 const ABOUT_OWNER_IMAGE = "/images/brand/about-owner.jpg";
 
-const PRODUCT_CHAPTERS = [
-  {
-    id: "combo",
-    index: "01",
-    label: "The Signature Box",
-    title: "The Ghar Ka Achar Box (4-Jar Family Combo)",
-    copy:
-      "Our complete homestyle collection — Aam, Mirch, Hing, and Mix Veg in one gifting-ready 4-jar box. The best of our kitchen, bundled with extra value.",
-    accent: "gold"
-  },
-  {
-    id: "aam",
-    index: "02",
-    label: "Aam (Mango)",
-    title: "Traditional raw mango achar, sun-cured with homestyle warmth.",
-    copy:
-      "Sun-cured raw mango slices infused with hand-ground masalas and pure kacchi ghani mustard oil. The familiar taste of home.",
-    accent: "blue"
-  },
-  {
-    id: "hing",
-    index: "03",
-    label: "Hing (Asafoetida)",
-    title: "Aromatic hing-led achar for the everyday table.",
-    copy:
-      "Rich, aromatic asafoetida blended with hand-roasted spices to elevate everyday dal, paratha, and rice.",
-    accent: "violet"
-  },
-  {
-    id: "mirch",
-    index: "04",
-    label: "Mirch (Green Chilli)",
-    title: "Spicier green chilli achar with a bold homemade punch.",
-    copy:
-      "Fresh green chillies slit and stuffed with roasted whole masalas and pure mustard oil. Crafted for bold spice lovers.",
-    accent: "amber"
-  },
-  {
-    id: "mixveg",
-    index: "05",
-    label: "Mix Veg",
-    title: "Crunchy mixed vegetable achar for shared family dining.",
-    copy:
-      "A comforting blend of seasonal vegetables, hand-roasted spices, and cold-pressed mustard oil for the family thali.",
-    accent: "teal"
-  }
-];
-
 function mergeProductsWithMedia(items) {
   return items.map((product) => {
     const images = (product.images && product.images.length ? product.images : [product.image]).filter(Boolean);
@@ -167,6 +119,7 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
     { to: "/", label: "Home" },
     { to: "/achar", label: "Shop" },
     { to: "/about", label: "Our Story" },
+    { to: "/how-its-made", label: "How It's Made" },
     { to: "/account", label: isLoggedIn ? "My Account" : "Login" },
     { to: "/cart", label: `Cart${cartCount ? ` (${cartCount})` : ""}` }
   ];
@@ -225,34 +178,58 @@ function TrustStrip() {
     <div className="trust-strip">
       <div className="content-container">
         <div className="trust-grid">
-          <div className="trust-item">
+          <motion.div
+            className="trust-item"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+          >
             <div className="trust-icon" aria-hidden="true">🌿</div>
             <div className="trust-item-copy">
               <strong>Traditional Recipes</strong>
               <span>Passed down through generations</span>
             </div>
-          </div>
-          <div className="trust-item">
+          </motion.div>
+          <motion.div
+            className="trust-item"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <div className="trust-icon" aria-hidden="true">🏺</div>
             <div className="trust-item-copy">
               <strong>Small Batches</strong>
               <span>Handcrafted in our family kitchen</span>
             </div>
-          </div>
-          <div className="trust-item">
+          </motion.div>
+          <motion.div
+            className="trust-item"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+          >
             <div className="trust-icon" aria-hidden="true">🏡</div>
             <div className="trust-item-copy">
               <strong>Made with Care</strong>
               <span>Pure mustard oil, zero chemicals</span>
             </div>
-          </div>
-          <div className="trust-item">
+          </motion.div>
+          <motion.div
+            className="trust-item"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+          >
             <div className="trust-icon" aria-hidden="true">🚚</div>
             <div className="trust-item-copy">
               <strong>Ships Across India</strong>
               <span>Safe glass jar transit guarantee</span>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
@@ -264,7 +241,12 @@ function HeroSection() {
     <section className="heritage-hero">
       <div className="content-container">
         <div className="hero-grid">
-          <div className="hero-copy-wrap">
+          <motion.div
+            className="hero-copy-wrap"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <span className="hero-eyebrow">Artisanal Indian Pickles</span>
             <h1 className="hero-headline">
               Recipes passed down.<br />Pickles made today.
@@ -289,9 +271,14 @@ function HeroSection() {
                 Order local delivery on Zomato ↗
               </a>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="hero-media-wrap">
+          <motion.div
+            className="hero-media-wrap"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="hero-image-card">
               <img
                 src={HOME_HERO_IMAGE}
@@ -301,7 +288,7 @@ function HeroSection() {
                 }}
               />
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -319,8 +306,15 @@ function SignatureProductsSection({ catalog, wishlist, toggleWishlist, addToCart
         </div>
 
         <div className="products-grid">
-          {catalog.map((product) => (
-            <article key={product.slug} className="product-card">
+          {catalog.map((product, idx) => (
+            <motion.article
+              key={product.slug}
+              className="product-card"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: idx * 0.06 }}
+            >
               <div className="product-card-visual">
                 <span className="product-card-tag">{product.category}</span>
                 <button
@@ -365,7 +359,7 @@ function SignatureProductsSection({ catalog, wishlist, toggleWishlist, addToCart
                   View
                 </Link>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
 
@@ -384,7 +378,13 @@ function StorySpotlightSection() {
     <section className="section-story">
       <div className="content-container">
         <div className="story-split">
-          <div className="story-image-panel">
+          <motion.div
+            className="story-image-panel"
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             <div className="story-portrait-frame">
               <img
                 src={ABOUT_OWNER_IMAGE}
@@ -397,9 +397,15 @@ function StorySpotlightSection() {
             <div className="story-badge-quote">
               “Same recipes. Same care. A taste of home.”
             </div>
-          </div>
+          </motion.div>
 
-          <div className="story-copy-panel">
+          <motion.div
+            className="story-copy-panel"
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
             <p className="section-eyebrow">The Woman Behind the Kitchen</p>
             <h2>Food tastes better when it comes from love.</h2>
             <p>
@@ -416,7 +422,7 @@ function StorySpotlightSection() {
                 Read Our Story →
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -428,7 +434,13 @@ function LifestyleBanner() {
     <section className="section-lifestyle">
       <div className="content-container">
         <div className="lifestyle-card">
-          <div className="lifestyle-copy">
+          <motion.div
+            className="lifestyle-copy"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
             <p className="hero-eyebrow">A Taste of Tradition</p>
             <h2>Not just a pickle.<br />A piece of home.</h2>
             <p>
@@ -437,9 +449,15 @@ function LifestyleBanner() {
             <Link to="/achar" className="button button-primary">
               Shop The Pickle Chapter →
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="lifestyle-media">
+          <motion.div
+            className="lifestyle-media"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
             <img
               src={HOME_HERO_IMAGE}
               alt="Authentic Indian meal spread with handcrafted achar"
@@ -447,7 +465,7 @@ function LifestyleBanner() {
                 e.currentTarget.src = "/images/logo.png";
               }}
             />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -465,8 +483,15 @@ function ReviewsSection() {
         </div>
 
         <div className="reviews-grid">
-          {testimonials.map((rev) => (
-            <div key={rev.name} className="review-card">
+          {testimonials.map((rev, idx) => (
+            <motion.div
+              key={rev.name}
+              className="review-card"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.08 }}
+            >
               <div className="review-stars">{"★".repeat(rev.rating)}</div>
               <p className="review-quote">"{rev.quote}"</p>
               <div className="review-author">
@@ -476,7 +501,7 @@ function ReviewsSection() {
                   <span className="review-tag">{rev.tag}</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -569,7 +594,7 @@ function Footer() {
             <ul className="footer-links">
               <li><Link to="/about">About Rachna Gattani</Link></li>
               <li><Link to="/about">Our Family Kitchen</Link></li>
-              <li><Link to="/about">How It's Made</Link></li>
+              <li><Link to="/how-its-made">How It's Made</Link></li>
               <li><a href={ZOMATO_URL} target="_blank" rel="noreferrer">Order on Zomato</a></li>
             </ul>
           </div>
@@ -736,6 +761,135 @@ function HomePage({ wishlist, toggleWishlist, addToCart }) {
   );
 }
 
+function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
+  useDocumentMeta({
+    title: "The Pickle Chapter | Homemade Achars | Khana Peena Ghar Se",
+    description: "Browse our collection of authentic homemade Aam, Hing, Mirch, and Mix Veg achars."
+  });
+
+  const catalog = useCatalogProducts();
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("featured");
+
+  const filterCategories = [
+    { key: "all", label: "All Achars" },
+    { key: "aam", label: "Aam (Mango)" },
+    { key: "hing", label: "Heeng (Asafoetida)" },
+    { key: "mirch", label: "Hari Mirch" },
+    { key: "mixveg", label: "Mix Veg" },
+    { key: "combo", label: "The Signature Box" }
+  ];
+
+  const filteredProducts = useMemo(() => {
+    let items = selectedCategory === "all"
+      ? catalog
+      : catalog.filter((p) => p.categoryKey === selectedCategory);
+
+    if (sortBy === "price-asc") {
+      items = [...items].sort((a, b) => a.price - b.price);
+    } else if (sortBy === "price-desc") {
+      items = [...items].sort((a, b) => b.price - a.price);
+    }
+    return items;
+  }, [catalog, selectedCategory, sortBy]);
+
+  return (
+    <div>
+      <div className="shop-hero">
+        <div className="content-container">
+          <p className="hero-eyebrow">Our Complete Collection</p>
+          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)" }}>The Pickle Chapter</h1>
+          <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>Traditional recipes. Honest ingredients. Made in small batches, just like home.</p>
+        </div>
+      </div>
+
+      <div className="page-shell">
+        <div className="content-container">
+          <div className="shop-filter-bar">
+            <div className="shop-filter-tabs">
+              {filterCategories.map((cat) => (
+                <button
+                  key={cat.key}
+                  type="button"
+                  className={`filter-pill ${selectedCategory === cat.key ? "active" : ""}`}
+                  onClick={() => setSelectedCategory(cat.key)}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="shop-sort-wrap">
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="featured">Sort by: Featured</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="products-grid">
+            {filteredProducts.map((product, idx) => (
+              <motion.article
+                key={product.slug}
+                className="product-card"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: idx * 0.05 }}
+              >
+                <div className="product-card-visual">
+                  <span className="product-card-tag">{product.category}</span>
+                  <button
+                    type="button"
+                    className={`product-wishlist-btn ${wishlist.includes(product.slug) ? "is-active" : ""}`}
+                    aria-label={`Save ${product.name} to wishlist`}
+                    onClick={() => toggleWishlist(product.slug)}
+                  >
+                    ♥
+                  </button>
+                  <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      loading="lazy"
+                      onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
+                    />
+                  </Link>
+                </div>
+
+                <div className="product-card-info">
+                  <h3>{product.name}</h3>
+                  <p className="product-card-tagline">{product.tagline}</p>
+                  <div className="product-card-price-row">
+                    <span className="product-card-price">₹{product.price}</span>
+                    <span className="product-card-size">{product.size}</span>
+                  </div>
+                </div>
+
+                <div className="product-card-actions">
+                  <button
+                    type="button"
+                    className="button button-primary button-sm"
+                    disabled={product.stock <= 0}
+                    onClick={() => addToCart(product.slug, 1, product.stock)}
+                  >
+                    {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                  </button>
+                  <Link to={`/product/${product.slug}`} className="button button-cream-secondary button-sm">
+                    View
+                  </Link>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <LifestyleBanner />
+    </div>
+  );
+}
+
 function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const { slug } = useParams();
   const productCatalog = useCatalogProducts();
@@ -743,6 +897,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
+  const [activeTab, setActiveTab] = useState("ingredients");
   const maxSelectableQuantity = Math.max(1, Math.min(product?.stock || 0, 4));
 
   useDocumentMeta({
@@ -753,6 +908,11 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   useEffect(() => {
     setSelectedImage(product?.images?.[0] || product?.image || "");
   }, [product]);
+
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    return productCatalog.filter((item) => item.slug !== product.slug).slice(0, 3);
+  }, [productCatalog, product]);
 
   if (!product) {
     return (
@@ -768,6 +928,14 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   return (
     <div className="page-shell">
       <div className="content-container">
+        <div className="breadcrumbs">
+          <Link to="/">Home</Link>
+          <span>/</span>
+          <Link to="/achar">Shop</Link>
+          <span>/</span>
+          <span>{product.name}</span>
+        </div>
+
         <div className="product-page-grid">
           <div>
             <div className="product-gallery-main">
@@ -796,26 +964,32 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
           <div className="product-details-wrap">
             <p className="section-eyebrow">{product.category}</p>
             <h1>{product.name}</h1>
+            <div className="product-rating-row">
+              <span className="product-rating-stars">★★★★★</span>
+              <span><strong>4.9</strong> (124+ customer reviews)</span>
+            </div>
             <p style={{ color: "var(--mustard-gold-dark)", fontWeight: "600", margin: 0 }}>{product.tagline}</p>
             <p style={{ color: "var(--text-soft)", lineHeight: 1.65, margin: 0 }}>{product.description}</p>
             <div className="product-price-large">₹{product.price} <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: "normal" }}>({product.size})</span></div>
 
-            <div className="why-love-it-card">
-              <strong>Why you'll love it</strong>
-              <ul className="why-love-it-list">
-                <li><span>✓</span> Small-batch artisanal preparation in Bahadurgarh</li>
-                <li><span>✓</span> Time-tested family recipe by Rachna Gattani</li>
-                <li><span>✓</span> 100% pure cold-pressed kacchi ghani mustard oil</li>
-                <li><span>✓</span> Sun-cured spices with zero chemical preservatives</li>
-                <li><span>✓</span> Hygienically packed in food-grade glass jars</li>
-                <li><span>✓</span> Pan-India express dispatch (Free above ₹499)</li>
-              </ul>
+            <div className="product-value-strip">
+              <div className="product-value-item">
+                <span>🏺</span>
+                <span>Small-batch</span>
+              </div>
+              <div className="product-value-item">
+                <span>📦</span>
+                <span>Packed with care</span>
+              </div>
+              <div className="product-value-item">
+                <span>🚚</span>
+                <span>Ships across India</span>
+              </div>
+              <div className="product-value-item">
+                <span>🌿</span>
+                <span>Zero preservatives</span>
+              </div>
             </div>
-
-            <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-soft)" }}><strong>Note:</strong> {product.note}</p>
-            <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-soft)" }}><strong>Shelf Life:</strong> {product.shelfLife}</p>
-
-            <PincodeChecker />
 
             <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
               <label style={{ fontSize: "0.9rem", fontWeight: "600" }}>
@@ -855,79 +1029,133 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
             </div>
             {message ? <p style={{ color: "var(--heritage-green)", fontWeight: "600", margin: 0 }}>{message}</p> : null}
 
+            <PincodeChecker />
             <SafeDeliveryGuarantee />
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
-  useDocumentMeta({
-    title: "The Pickle Chapter | Homemade Achars | Khana Peena Ghar Se",
-    description: "Browse our collection of authentic homemade Aam, Hing, Mirch, and Mix Veg achars."
-  });
+        {/* Tabbed Product Details */}
+        <div className="product-tabs-wrap">
+          <div className="product-tabs-header">
+            <button
+              type="button"
+              className={`product-tab-btn ${activeTab === "ingredients" ? "is-active" : ""}`}
+              onClick={() => setActiveTab("ingredients")}
+            >
+              Ingredients &amp; Masalas
+            </button>
+            <button
+              type="button"
+              className={`product-tab-btn ${activeTab === "pairings" ? "is-active" : ""}`}
+              onClick={() => setActiveTab("pairings")}
+            >
+              Serving Suggestions
+            </button>
+            <button
+              type="button"
+              className={`product-tab-btn ${activeTab === "quality" ? "is-active" : ""}`}
+              onClick={() => setActiveTab("quality")}
+            >
+              Quality &amp; Storage
+            </button>
+            <button
+              type="button"
+              className={`product-tab-btn ${activeTab === "reviews" ? "is-active" : ""}`}
+              onClick={() => setActiveTab("reviews")}
+            >
+              Verified Reviews
+            </button>
+          </div>
 
-  const catalog = useCatalogProducts();
-
-  return (
-    <div className="page-shell">
-      <div className="content-container">
-        <div className="section-head-center">
-          <p className="section-eyebrow">The Pickle Chapter</p>
-          <h1 className="section-title">Traditional Recipes. Honest Ingredients.</h1>
-          <p className="section-subtitle">Made in small batches, just like home.</p>
-        </div>
-
-        <div className="products-grid">
-          {catalog.map((product) => (
-            <article key={product.slug} className="product-card">
-              <div className="product-card-visual">
-                <span className="product-card-tag">{product.category}</span>
-                <button
-                  type="button"
-                  className={`product-wishlist-btn ${wishlist.includes(product.slug) ? "is-active" : ""}`}
-                  aria-label={`Save ${product.name} to wishlist`}
-                  onClick={() => toggleWishlist(product.slug)}
-                >
-                  ♥
-                </button>
-                <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
-                  />
-                </Link>
-              </div>
-
-              <div className="product-card-info">
-                <h3>{product.name}</h3>
-                <p className="product-card-tagline">{product.tagline}</p>
-                <div className="product-card-price-row">
-                  <span className="product-card-price">₹{product.price}</span>
-                  <span className="product-card-size">{product.size}</span>
+          <div className="product-tab-body">
+            {activeTab === "ingredients" && (
+              <div>
+                <p>Handcrafted using pure, unrefined cold-pressed kacchi ghani mustard oil, sun-dried spices, and fresh produce. No artificial colours or chemical preservatives.</p>
+                <div className="badge-tag-list">
+                  {product.ingredients?.map((ing) => (
+                    <span key={ing} className="badge-tag">🌿 {ing}</span>
+                  ))}
                 </div>
               </div>
+            )}
 
-              <div className="product-card-actions">
-                <button
-                  type="button"
-                  className="button button-primary button-sm"
-                  disabled={product.stock <= 0}
-                  onClick={() => addToCart(product.slug, 1, product.stock)}
-                >
-                  {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-                </button>
-                <Link to={`/product/${product.slug}`} className="button button-cream-secondary button-sm">
-                  View
-                </Link>
+            {activeTab === "pairings" && (
+              <div>
+                <p>This homestyle flavour sits naturally beside everyday Indian meals and festive thalis:</p>
+                <div className="badge-tag-list">
+                  {product.pairings?.map((pair) => (
+                    <span key={pair} className="badge-tag">🍽️ {pair}</span>
+                  ))}
+                </div>
               </div>
-            </article>
-          ))}
+            )}
+
+            {activeTab === "quality" && (
+              <div>
+                <p><strong>Shelf Life:</strong> {product.shelfLife}</p>
+                <p><strong>Storage:</strong> Store the glass jar in a cool, dry place. Always use a clean, completely dry spoon when serving to avoid introducing moisture.</p>
+                <p><strong>Packaging:</strong> 100% food-grade glass jar sealed for safe pan-India courier transit.</p>
+              </div>
+            )}
+
+            {activeTab === "reviews" && (
+              <div>
+                <p>Rated <strong>4.9 / 5</strong> by families across New Delhi, Gurugram, Bengaluru, and Mumbai.</p>
+                <div className="reviews-grid" style={{ marginTop: "16px" }}>
+                  {testimonials.slice(0, 2).map((rev) => (
+                    <div key={rev.name} className="review-card">
+                      <div className="review-stars">{"★".repeat(rev.rating)}</div>
+                      <p className="review-quote">"{rev.quote}"</p>
+                      <strong>{rev.name} ({rev.location})</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* You Might Also Like */}
+        {relatedProducts.length ? (
+          <div style={{ marginTop: "56px" }}>
+            <div className="section-head-center">
+              <p className="section-eyebrow">Complementary Jars</p>
+              <h2 className="section-title" style={{ fontSize: "2.2rem" }}>You Might Also Like</h2>
+            </div>
+            <div className="products-grid">
+              {relatedProducts.map((rel) => (
+                <article key={rel.slug} className="product-card">
+                  <div className="product-card-visual">
+                    <span className="product-card-tag">{rel.category}</span>
+                    <Link to={`/product/${rel.slug}`} style={{ width: "100%", height: "100%" }}>
+                      <img src={rel.image} alt={rel.name} loading="lazy" onError={(e) => { e.currentTarget.src = "/images/logo.png"; }} />
+                    </Link>
+                  </div>
+                  <div className="product-card-info">
+                    <h3>{rel.name}</h3>
+                    <p className="product-card-tagline">{rel.tagline}</p>
+                    <div className="product-card-price-row">
+                      <span className="product-card-price">₹{rel.price}</span>
+                      <span className="product-card-size">{rel.size}</span>
+                    </div>
+                  </div>
+                  <div className="product-card-actions">
+                    <button
+                      type="button"
+                      className="button button-primary button-sm"
+                      onClick={() => addToCart(rel.slug, 1, rel.stock)}
+                    >
+                      Add to Cart
+                    </button>
+                    <Link to={`/product/${rel.slug}`} className="button button-cream-secondary button-sm">
+                      View
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -940,11 +1168,158 @@ function AboutPage() {
   });
 
   return (
-    <div className="page-shell">
-      <div className="content-container">
-        <StorySpotlightSection />
-        <div style={{ margin: "48px 0" }}>
+    <div>
+      <div className="story-page-hero">
+        <div className="content-container">
+          <p className="hero-eyebrow">Family Kitchen Legacy</p>
+          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)" }}>
+            Some recipes are written.<br />Some are remembered.
+          </h1>
+          <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>
+            Khana Peena Ghar Se began in our family kitchen, with recipes passed down through generations.
+          </p>
+        </div>
+      </div>
+
+      <div className="page-shell">
+        <div className="content-container">
+          <div className="story-split" style={{ margin: "24px 0" }}>
+            <div className="story-image-panel">
+              <div className="story-portrait-frame">
+                <img
+                  src={ABOUT_OWNER_IMAGE}
+                  alt="Rachna Gattani in her kitchen"
+                  onError={(e) => { e.currentTarget.src = HOME_HERO_IMAGE; }}
+                />
+              </div>
+              <div className="story-badge-quote">
+                “Same Recipes. New Homes.”
+              </div>
+            </div>
+
+            <div className="story-copy-panel">
+              <p className="section-eyebrow">The Founder's Journey</p>
+              <h2>From our kitchen to your family dining table.</h2>
+              <p>
+                Khana Peena Ghar Se began in Rachna Gattani’s kitchen in Bahadurgarh. For decades, spices were never measured by industrial standards, but by years of intuition, family care, and lived culinary wisdom.
+              </p>
+              <p>
+                What started as a daughter's effort to preserve her mother's recipes has grown into a brand that brings authentic, homemade Indian pickles to tables across the country.
+              </p>
+              <p>
+                We make small-batch pickles using traditional methods and honest ingredients, so that every jar carries a bit of home to your table.
+              </p>
+              <div className="story-signature">
+                — Rachna Gattani
+              </div>
+            </div>
+          </div>
+
+          <div className="story-pillars-grid">
+            <div className="pillar-card">
+              <span className="pillar-icon">🌿</span>
+              <h3>Authentic Recipes</h3>
+              <p>Time-tested homestyle proportions, roasted whole masalas, and pure cold-pressed mustard oil.</p>
+            </div>
+            <div className="pillar-card">
+              <span className="pillar-icon">🏡</span>
+              <h3>Family Values</h3>
+              <p>Prepared with the same care and patience we give to our own family dining table every day.</p>
+            </div>
+            <div className="pillar-card">
+              <span className="pillar-icon">🌟</span>
+              <h3>A Tastier Tomorrow</h3>
+              <p>Preserving regional Indian culinary wisdom without shortcuts, artificial colours, or chemicals.</p>
+            </div>
+          </div>
+
           <TrustStrip />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HowItsMadePage() {
+  useDocumentMeta({
+    title: "How It's Made | 5-Step Artisanal Process | Khana Peena Ghar Se",
+    description: "Discover the 5-step traditional slow-curing process behind our small-batch homemade achars."
+  });
+
+  const steps = [
+    {
+      num: "1",
+      title: "Select Ingredients",
+      desc: "We handpick the freshest seasonal raw mangoes, chillies, and whole spices directly from trusted growers.",
+      img: "/images/achars/aam-ka-achar/Aam Ka Achar.png"
+    },
+    {
+      num: "2",
+      title: "Prepare",
+      desc: "Ingredients are cleaned, sun-dried, sliced, and whole spices are dry-roasted the traditional way.",
+      img: "/images/achars/hing-ka-achar/Hing Aachar.png"
+    },
+    {
+      num: "3",
+      title: "Mix",
+      desc: "We blend everything with pure cold-pressed kacchi ghani mustard oil and hand-ground spice blends.",
+      img: "/images/achars/mirch-ka-achar/Mirch Achar.png"
+    },
+    {
+      num: "4",
+      title: "Rest",
+      desc: "The pickle is left to mature slowly in traditional ceramic barnis under the natural warmth of the sun.",
+      img: "/images/achars/mix-veg-achar/Mix Veg.png"
+    },
+    {
+      num: "5",
+      title: "Pack",
+      desc: "Finally, it is hand-packed and sealed in clean, food-safe glass jars with love for safe delivery.",
+      img: HOME_HERO_IMAGE
+    }
+  ];
+
+  return (
+    <div>
+      <div className="how-hero">
+        <div className="content-container">
+          <p className="hero-eyebrow">Artisanal Craftsmanship</p>
+          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)" }}>From Our Kitchen to Your Table</h1>
+          <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>The same traditional process. The same care. In every jar.</p>
+        </div>
+      </div>
+
+      <div className="page-shell">
+        <div className="content-container">
+          <div className="steps-roadmap">
+            {steps.map((step, idx) => (
+              <motion.div
+                key={step.num}
+                className="step-card"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.08 }}
+              >
+                <div className="step-number">{step.num}</div>
+                <h3 className="step-title">{step.title}</h3>
+                <div className="step-media">
+                  <img src={step.img} alt={step.title} onError={(e) => { e.currentTarget.src = "/images/logo.png"; }} />
+                </div>
+                <p className="step-body">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="patience-banner">
+            <div>
+              <h2>Patience makes better pickles.</h2>
+              <p>Some good things take time. Handcrafted slow-cured achars made the way they always were.</p>
+            </div>
+            <Link to="/achar" className="button button-primary">
+              Shop Our Achar →
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -1293,8 +1668,19 @@ export default function App() {
                 }
               />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/how-its-made" element={<HowItsMadePage />} />
               <Route
                 path="/achar"
+                element={
+                  <CatalogPage
+                    wishlist={shop.wishlist}
+                    toggleWishlist={shop.toggleWishlist}
+                    addToCart={shop.addToCart}
+                  />
+                }
+              />
+              <Route
+                path="/shop"
                 element={
                   <CatalogPage
                     wishlist={shop.wishlist}
