@@ -1388,32 +1388,72 @@ function FAQSection() {
   return (
     <section className="section-faq">
       <div className="content-container">
-        <div className="section-head-center">
-          <p className="section-eyebrow">Common Questions</p>
-          <h2 className="section-title">Frequently Asked Questions</h2>
-          <p className="section-subtitle">Everything you need to know about our ingredients, 12-month shelf life, and safe pan-India shipping.</p>
-        </div>
+        <div className="faq-split-grid">
+          {/* Left Editorial Sidebar */}
+          <div className="faq-sidebar">
+            <div
+              className="hero-eyebrow-pill"
+              style={{
+                color: "var(--heritage-green-dark)",
+                background: "rgba(200, 155, 60, 0.2)",
+                borderColor: "var(--mustard-gold)"
+              }}
+            >
+              ✦ Common Questions
+            </div>
+            <h2 className="faq-main-title">
+              Frequently Asked<br />Questions
+            </h2>
+            <p className="faq-main-desc">
+              Everything you need to know about our heirloom recipes, 100% pure cold-pressed mustard oil, natural 12-month shelf life, and guaranteed safe pan-India glass jar transit.
+            </p>
 
-        <div className="faq-accordion">
-          {faqs.map((faq, idx) => {
-            const isOpen = openIdx === idx;
-            return (
-              <div key={faq.q} className={`faq-item ${isOpen ? "is-open" : ""}`}>
-                <button
-                  type="button"
-                  className="faq-question-btn"
-                  onClick={() => toggle(idx)}
-                  aria-expanded={isOpen}
-                >
-                  <span>{faq.q}</span>
-                  <span className="faq-icon">{isOpen ? "−" : "+"}</span>
-                </button>
-                {isOpen ? (
-                  <p className="faq-answer">{faq.a}</p>
-                ) : null}
+            <div className="faq-help-card">
+              <span style={{ fontSize: "1.5rem", display: "block", marginBottom: "4px" }}>💬</span>
+              <strong>Have a question not answered here?</strong>
+              <p>Rachna and our Bahadurgarh kitchen team are always happy to help with ingredients, allergies, and recipes.</p>
+              <div className="faq-help-links">
+                <a href={ZOMATO_URL} target="_blank" rel="noreferrer" className="faq-help-btn">
+                  Order on Zomato ↗
+                </a>
+                <Link to="/contact" className="faq-help-link">
+                  Contact Kitchen &amp; Support →
+                </Link>
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          {/* Right Accordion List */}
+          <div className="faq-accordion-list">
+            {faqs.map((faq, idx) => {
+              const isOpen = openIdx === idx;
+              return (
+                <div key={faq.q} className={`faq-item ${isOpen ? "is-open" : ""}`}>
+                  <button
+                    type="button"
+                    className="faq-question-btn"
+                    onClick={() => toggle(idx)}
+                    aria-expanded={isOpen}
+                  >
+                    <span>{faq.q}</span>
+                    <span className="faq-icon">{isOpen ? "−" : "+"}</span>
+                  </button>
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <p className="faq-answer">{faq.a}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
