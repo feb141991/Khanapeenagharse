@@ -1047,7 +1047,7 @@ function HeroCarousel() {
                 className={`hero-tab-btn ${isActive ? "active" : ""}`}
                 onClick={() => goToSlide(idx)}
               >
-                <span className="hero-tab-num">0{idx + 1} / Story</span>
+                <span className="hero-tab-num">Chapter 0{idx + 1}</span>
                 <span className="hero-tab-title">{s.tabTitle}</span>
                 {isActive && (
                   <div className="hero-tab-progress-bar">
