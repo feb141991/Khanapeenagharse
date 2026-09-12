@@ -32,4 +32,4 @@ User-agent: CCBot
 Allow: /
 
 # Sitemaps and LLM Discovery
-Sitemap: https://khanapeenagharse.com/sitemap.xml
+Sitemap: https://khanapeenagharse.in/sitemap.xml

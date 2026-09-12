@@ -1100,8 +1100,8 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
       "@type": "Product",
       name: product.name,
       image: product.images?.length
-        ? product.images.map((img) => (img.startsWith("http") ? img : `https://khanapeenagharse.com${img}`))
-        : [`https://khanapeenagharse.com${product.image}`],
+        ? product.images.map((img) => (img.startsWith("http") ? img : `https://khanapeenagharse.in${img}`))
+        : [`https://khanapeenagharse.in${product.image}`],
       description: product.description || product.shortDescription,
       sku: product.slug,
       brand: {
@@ -1110,7 +1110,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
       },
       offers: {
         "@type": "Offer",
-        url: `https://khanapeenagharse.com/product/${product.slug}`,
+        url: `https://khanapeenagharse.in/product/${product.slug}`,
         priceCurrency: "INR",
         price: product.price,
         availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
