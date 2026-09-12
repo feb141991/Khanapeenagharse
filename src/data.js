@@ -11,9 +11,9 @@ export const products = [
     size: "1,850 g box (4 full glass jars)",
     stock: 15,
     spice: "Assorted (Mild to Bold)",
-    image: "/images/preview.png",
+    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
     images: [
-      "/images/preview.png",
+      "/images/achars/combo-box/ghar-ka-achar-box.jpg",
       "/images/achars/aam-ka-achar/Aam ka aachar.png",
       "/images/achars/hing-ka-achar/Hing Aachar.png",
       "/images/achars/mirch-ka-achar/MirchKa aachar.png",
