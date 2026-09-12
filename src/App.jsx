@@ -1001,45 +1001,52 @@ function HeroCarousel() {
                 </motion.div>
               </AnimatePresence>
 
-              {/* Bottom Floating Story Glass Card */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={slide.id + "-bottomCard"}
-                  className="hero-scene-bottom-card"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.45, delay: 0.1 }}
-                >
-                  <div className="hero-scene-bottom-tag">
-                    <span>{slide.badgeBottom.icon}</span>
-                    <strong>{slide.badgeBottom.title}</strong>
-                    <span>• {slide.badgeBottom.sub}</span>
-                  </div>
-                  <p className="hero-scene-bottom-quote">“{slide.subhead}”</p>
-                  <Link to={slide.ctaPrimary.to} className="hero-scene-explore-btn">
-                    {slide.ctaPrimary.label}
-                  </Link>
-                </motion.div>
-              </AnimatePresence>
+              {/* Bottom Floating Story Glass Card & Nav Controls */}
+              <div className="hero-scene-bottom-group">
+                {/* Carousel Controls Capsule */}
+                <div className="hero-scene-nav-widget">
+                  <button
+                    type="button"
+                    className="hero-scene-nav-btn prev"
+                    onClick={prevSlide}
+                    aria-label="Previous story"
+                  >
+                    ‹
+                  </button>
+                  <span className="hero-scene-nav-counter">
+                    <strong>0{currentSlide + 1}</strong> / 0{HERO_SLIDES.length}
+                  </span>
+                  <button
+                    type="button"
+                    className="hero-scene-nav-btn next"
+                    onClick={nextSlide}
+                    aria-label="Next story"
+                  >
+                    ›
+                  </button>
+                </div>
 
-              {/* Carousel Next/Prev Nav Buttons */}
-              <button
-                type="button"
-                className="hero-scene-nav-btn prev"
-                onClick={prevSlide}
-                aria-label="Previous slide"
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                className="hero-scene-nav-btn next"
-                onClick={nextSlide}
-                aria-label="Next slide"
-              >
-                ›
-              </button>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={slide.id + "-bottomCard"}
+                    className="hero-scene-bottom-card"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.45, delay: 0.1 }}
+                  >
+                    <div className="hero-scene-bottom-tag">
+                      <span>{slide.badgeBottom.icon}</span>
+                      <strong>{slide.badgeBottom.title}</strong>
+                      <span>• {slide.badgeBottom.sub}</span>
+                    </div>
+                    <p className="hero-scene-bottom-quote">“{slide.subhead}”</p>
+                    <Link to={slide.ctaPrimary.to} className="hero-scene-explore-btn">
+                      {slide.ctaPrimary.label}
+                    </Link>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>

@@ -565,11 +565,11 @@ textarea {
 .transparent-luxury-hero {
   position: relative;
   background:
-    radial-gradient(circle at 10% 20%, rgba(200, 155, 60, 0.16), transparent 50%),
-    radial-gradient(circle at 45% 85%, rgba(200, 155, 60, 0.12), transparent 45%),
+    radial-gradient(circle at 15% 30%, rgba(200, 155, 60, 0.18), transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(200, 155, 60, 0.12), transparent 45%),
     linear-gradient(165deg, #071710 0%, #0B2218 35%, #102F22 70%, #153D2D 100%);
   color: var(--warm-cream);
-  padding: 110px 0 48px;
+  padding: 110px 0 44px;
   overflow: hidden;
   border-bottom: 1px solid rgba(200, 155, 60, 0.25);
   min-height: 680px;
@@ -577,13 +577,13 @@ textarea {
   align-items: center;
 }
 
-/* Full-Bleed Atmospheric Scene on the Right (No card box, no borders) */
+/* Full-Bleed Atmospheric Scene on the Right */
 .hero-atmospheric-scene {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 62%;
+  width: 68%;
   height: 100%;
   pointer-events: none;
   z-index: 1;
@@ -601,18 +601,15 @@ textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 40%;
+  object-position: 46% 36%;
   display: block;
   /* Organic Multi-Stop Mask: Dissolves seamlessly into the green hero on the left and bottom */
   -webkit-mask-image:
-    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.8) 45%, #000 70%, #000 100%),
-    linear-gradient(to bottom, #000 82%, transparent 100%),
-    radial-gradient(circle at 80% 50%, #000 50%, rgba(0, 0, 0, 0.5) 80%, transparent 100%);
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 10%, rgba(0, 0, 0, 0.75) 28%, #000 50%, #000 100%),
+    linear-gradient(to bottom, #000 84%, transparent 100%);
   mask-image:
-    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.8) 45%, #000 70%, #000 100%),
-    linear-gradient(to bottom, #000 82%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 10%, rgba(0, 0, 0, 0.75) 28%, #000 50%, #000 100%),
+    linear-gradient(to bottom, #000 84%, transparent 100%);
   filter: saturate(1.08) contrast(1.04);
 }
 
@@ -621,23 +618,24 @@ textarea {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 75% 30%, rgba(200, 155, 60, 0.28), transparent 55%),
-    radial-gradient(circle at 30% 60%, rgba(11, 34, 24, 0.85), transparent 60%),
-    linear-gradient(180deg, rgba(7, 23, 16, 0.4) 0%, transparent 30%, rgba(7, 23, 16, 0.6) 80%, rgba(7, 23, 16, 0.95) 100%),
-    linear-gradient(90deg, #071710 0%, rgba(7, 23, 16, 0.75) 20%, transparent 55%);
+    radial-gradient(circle at 70% 30%, rgba(200, 155, 60, 0.24), transparent 55%),
+    radial-gradient(circle at 25% 60%, rgba(11, 34, 24, 0.8), transparent 60%),
+    linear-gradient(180deg, rgba(7, 23, 16, 0.35) 0%, transparent 30%, rgba(7, 23, 16, 0.6) 80%, rgba(7, 23, 16, 0.92) 100%),
+    linear-gradient(90deg, #071710 0%, rgba(7, 23, 16, 0.7) 18%, transparent 50%);
   pointer-events: none;
 }
 
 .hero-carousel-wrap {
   position: relative;
   z-index: 2;
-  width: 100%;
+  width: min(calc(100% - clamp(28px, 5vw, 96px)), 1440px);
+  margin: 0 auto;
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 36px;
+  grid-template-columns: minmax(460px, 1.15fr) minmax(400px, 1fr);
+  gap: clamp(28px, 4vw, 56px);
   align-items: center;
   position: relative;
   min-height: 480px;
@@ -646,8 +644,9 @@ textarea {
 .hero-copy-wrap {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 580px;
+  gap: 14px;
+  max-width: 620px;
+  padding-left: clamp(4px, 1.5vw, 20px);
   z-index: 3;
 }
 
@@ -711,6 +710,64 @@ textarea {
   font-size: 0.72rem;
   color: var(--mustard-gold-light);
   font-weight: 500;
+}
+
+/* Bottom Story & Controls Group */
+.hero-scene-bottom-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Nav Controls Capsule */
+.hero-scene-nav-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(7, 23, 16, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  border-radius: 999px;
+  padding: 4px 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.hero-scene-nav-counter {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 0 4px;
+  letter-spacing: 0.05em;
+}
+
+.hero-scene-nav-counter strong {
+  color: var(--mustard-gold-light);
+  font-size: 0.84rem;
+}
+
+.hero-scene-nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(200, 155, 60, 0.3);
+  color: var(--warm-cream);
+  font-size: 1.15rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hero-scene-nav-btn:hover {
+  background: var(--mustard-gold);
+  color: #071710;
+  border-color: var(--mustard-gold-light);
+  transform: scale(1.08);
 }
 
 /* Floating Bottom Story Card */
@@ -787,45 +844,6 @@ textarea {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(200, 155, 60, 0.55);
   color: #FFFFFF;
-}
-
-/* Nav Buttons positioned softly on the right edge */
-.hero-scene-nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(7, 23, 16, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(200, 155, 60, 0.4);
-  color: var(--warm-cream);
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.hero-scene-nav-btn:hover {
-  background: var(--mustard-gold);
-  color: #071710;
-  border-color: var(--mustard-gold-light);
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 8px 24px rgba(200, 155, 60, 0.5);
-}
-
-.hero-scene-nav-btn.prev {
-  left: 0;
-}
-
-.hero-scene-nav-btn.next {
-  right: 0;
 }
 
 @media (max-width: 980px) {
