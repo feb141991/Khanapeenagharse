@@ -844,68 +844,230 @@ function HeroCarousel() {
 
 const KITCHEN_MOMENTS = [
   {
+    id: "bahadurgarh-craft",
     image: "/images/brand/about-owner.jpg",
     tag: "Kitchen Master",
     title: "Handcrafted in Bahadurgarh",
-    subtitle: "Rachna carefully measuring whole roasted masalas"
+    subtitle: "Rachna carefully measuring whole roasted masalas",
+    category: "Kitchen Craft",
+    readTime: "2 min story",
+    linkText: "Meet Rachna & Story",
+    linkUrl: "/about",
+    targetType: "page",
+    storyHeadline: "The Heart of Khana Peena Ghar Se",
+    storyQuote: "“When I roast whole fenugreek and yellow mustard in our heavy iron kadhai, the entire lane in Bahadurgarh knows a fresh batch is brewing.”",
+    storyBody: "Every single jar of achar begins in Rachna Gattani's family kitchen in Bahadurgarh, Haryana. We reject automated industrial blending in favor of sensory craftsmanship—hand-sorting raw mangoes, sun-drying chillies on muslin sheets, and slow-roasting spices at exact temperatures to awaken their natural essential oils.",
+    highlightBadge: "Handcrafted in Bahadurgarh, Haryana",
+    relatedProductSlug: "aam-ka-achar",
+    relatedProductLabel: "Taste Rachna's Aam Ka Achar",
+    relatedProductPrice: 299
   },
   {
+    id: "balcony-curing",
     image: "/images/brand/lifestyle-1.jpg",
     tag: "Balcony Sun-Curing",
     title: "Ceramic Barnis in the Sun",
-    subtitle: "Natural warmth develops rich heirloom tang"
+    subtitle: "Natural warmth develops rich heirloom tang",
+    category: "Kitchen Craft",
+    readTime: "3 min story",
+    linkText: "Discover Sun-Curing Craft",
+    linkUrl: "/how-its-made",
+    targetType: "page",
+    storyHeadline: "The Patience of Traditional Martabans",
+    storyQuote: "“You cannot rush fermentation. The Delhi NCR sun through our ceramic barnis gives that distinct golden tang no chemical vinegar can ever replicate.”",
+    storyBody: "Our pickles sit in traditional ceramic martabans under direct morning sunlight for 14 to 21 days. The breathable clay maintains an ideal microclimate, allowing natural lactic fermentation to gently soften the mango wedges and infuse the spices deep into every fibre.",
+    highlightBadge: "14–21 Days Sun Fermentation",
+    relatedProductSlug: "mix-veg-achar",
+    relatedProductLabel: "Explore Mix Veg Sun-Cured Jar",
+    relatedProductPrice: 289
   },
   {
+    id: "morning-parathas",
     image: "/images/brand/lifestyle-2.jpg",
     tag: "Morning Parathas",
     title: "Hot Parathas & Mirch Achar",
-    subtitle: "The quintessence of hearty Indian mornings"
+    subtitle: "The quintessence of hearty Indian mornings",
+    category: "Family Table",
+    readTime: "1 min story",
+    linkText: "View Mirch Ka Achar",
+    linkUrl: "/product/mirch-ka-achar",
+    targetType: "product",
+    storyHeadline: "The Quintessential Desi Breakfast",
+    storyQuote: "“A crispy ghee-laden ajwain paratha, a dollop of white butter, and a spoonful of spicy green chilli achar—nothing in the world beats this start to the day.”",
+    storyBody: "Plump green chillies slit down the centre, stuffed with freshly ground yellow mustard seeds, roasted fenugreek, and cold-pressed mustard oil. It provides an immediate, punchy warmth that cuts right through rich morning parathas, poha, and dal-chawal.",
+    highlightBadge: "Bold Roasted Methi-Rai Masala",
+    relatedProductSlug: "mirch-ka-achar",
+    relatedProductLabel: "Order Mirch Ka Achar (400g)",
+    relatedProductPrice: 259
   },
   {
+    id: "kacchi-ghani",
     image: "/images/brand/lifestyle-3.jpg",
     tag: "Pure Ingredients",
     title: "Cold-Pressed Mustard Oil",
-    subtitle: "Golden Kacchi Ghani acting as natural preservative"
+    subtitle: "Golden Kacchi Ghani acting as natural preservative",
+    category: "Heirloom Recipes",
+    readTime: "2 min story",
+    linkText: "Learn About Zero Palm Oil",
+    linkUrl: "/how-its-made",
+    targetType: "page",
+    storyHeadline: "Why We Strictly Use 100% Pure Kacchi Ghani",
+    storyQuote: "“Industrial pickles use cheap palm oil and synthetic acetic acid to cut costs. We use only pure cold-pressed sarson ka tel—it is food, medicine, and preservative combined.”",
+    storyBody: "Real cold-pressed mustard oil contains natural antimicrobial compounds and antioxidants that preserve the achar naturally for 12+ months without needing artificial chemical sodium benzoate or synthetic vinegars. The pungent aroma mellows over time into a rich, buttery depth.",
+    highlightBadge: "Zero Palm Oil • 100% Cold Pressed",
+    relatedProductSlug: "ghar-ka-achar-box",
+    relatedProductLabel: "Explore All 4 Pure Oil Achars",
+    relatedProductPrice: 999
   },
   {
+    id: "family-spread",
     image: "/images/brand/lifestyle-dining.jpg",
     tag: "Family Table",
     title: "Grand Dining Spread",
-    subtitle: "Bringing families together around home cooked food"
+    subtitle: "Bringing families together around home cooked food",
+    category: "Family Table",
+    readTime: "2 min story",
+    linkText: "Shop Ghar Ka Achar Box",
+    linkUrl: "/product/ghar-ka-achar-box",
+    targetType: "product",
+    storyHeadline: "The Centerpiece of Indian Dining",
+    storyQuote: "“A meal without achar feels incomplete. It is the golden thread connecting everyday dinners with our deepest childhood memories.”",
+    storyBody: "Whether it is a simple weekday dal-khichdi dinner or an elaborate Sunday feast with pooris, paneer, and raita, having a glass jar of authentic homestyle achar on the table elevates every single bite. Our Ghar Ka Achar Box brings all 4 iconic jars to your family table in one luxury hamper.",
+    highlightBadge: "Complete 4-Jar Family Set",
+    relatedProductSlug: "ghar-ka-achar-box",
+    relatedProductLabel: "Shop Ghar Ka Achar Box (₹999)",
+    relatedProductPrice: 999
   },
   {
+    id: "hing-digestive",
     image: "/images/brand/lifestyle-4.jpg",
     tag: "Heirloom Recipe",
-    title: "Oil-Free Hing Mango",
-    subtitle: "Traditional digestive spice blend"
+    title: "Aromatic Hing Magic",
+    subtitle: "Traditional digestive spice blend & raw mango",
+    category: "Heirloom Recipes",
+    readTime: "2 min story",
+    linkText: "View Hing Ka Achar",
+    linkUrl: "/product/hing-ka-achar",
+    targetType: "product",
+    storyHeadline: "Heirloom Digestive Heritage",
+    storyQuote: "“Pure compounded asafoetida with sundried spices is not just a pickle—it has been our grandmother's digestive remedy for generations.”",
+    storyBody: "Hing Ka Achar is revered for its intensely savoury, comforting aroma and digestive qualities. Carefully blended with raw mango cubes and unrefined spices, it has a distinct umami sharpness that awakens your palate and settles the stomach after hearty meals.",
+    highlightBadge: "Pure Compounded Hing & Digestive Spices",
+    relatedProductSlug: "hing-ka-achar",
+    relatedProductLabel: "Order Hing Ka Achar (450g)",
+    relatedProductPrice: 279
   }
 ];
 
-function KitchenMomentsSection() {
+function KitchenMomentsSection({ addToCart }) {
+  const navigate = useNavigate();
+  const trackRef = useRef(null);
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeStory, setActiveStory] = useState(null);
+  const catalog = useCatalogProducts();
+
+  const categories = [
+    { key: "all", label: "All Stories" },
+    { key: "Kitchen Craft", label: "Kitchen Craft" },
+    { key: "Heirloom Recipes", label: "Heirloom Recipes" },
+    { key: "Family Table", label: "Family Table" }
+  ];
+
+  const filteredMoments =
+    activeCategory === "all"
+      ? KITCHEN_MOMENTS
+      : KITCHEN_MOMENTS.filter((m) => m.category === activeCategory);
+
+  const scroll = (direction) => {
+    if (trackRef.current) {
+      const offset = direction === "left" ? -360 : 360;
+      trackRef.current.scrollBy({ left: offset, behavior: "smooth" });
+    }
+  };
+
+  const handleOpenProduct = (slug) => {
+    setActiveStory(null);
+    navigate(`/product/${slug}`);
+  };
+
+  const handleQuickAdd = (slug) => {
+    const product = catalog.find((p) => p.slug === slug);
+    if (product && addToCart) {
+      addToCart(product, 1);
+    }
+  };
+
   return (
     <section className="kitchen-moments-section">
       <div className="content-container">
-        <div className="moments-header-wrap">
-          <div>
-            <p className="section-eyebrow" style={{ color: "var(--mustard-gold-dark)" }}>
-              Visual Kitchen Stories
-            </p>
+        {/* Unified Header with Clear Reading Hierarchy */}
+        <div className="moments-header-container">
+          <div className="moments-header-main">
+            <div
+              className="hero-eyebrow-pill"
+              style={{
+                color: "var(--heritage-green-dark)",
+                background: "rgba(200, 155, 60, 0.2)",
+                borderColor: "var(--mustard-gold)",
+                display: "inline-flex",
+                marginBottom: "8px"
+              }}
+            >
+              ✦ Visual Kitchen Stories
+            </div>
             <h2>Ghar Ka Nazara & Kitchen Moments</h2>
+            <p className="moments-header-desc">
+              Take a peek into our Bahadurgarh family kitchen, sunny balconies lined with ceramic barnis, and everyday dining memories. Click any story to read the journal or explore the recipe.
+            </p>
           </div>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", maxWidth: "420px", margin: 0 }}>
-            Take a peek into our Bahadurgarh family kitchen, sunny balconies lined with ceramic barnis, and everyday dining memories.
-          </p>
+
+          {/* Interactive Filter Pills & Carousel Navigation */}
+          <div className="moments-header-actions">
+            <div className="moments-category-filters">
+              {categories.map((cat) => (
+                <button
+                  key={cat.key}
+                  type="button"
+                  className={`moments-filter-btn ${activeCategory === cat.key ? "is-active" : ""}`}
+                  onClick={() => setActiveCategory(cat.key)}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="moments-nav-controls">
+              <button
+                type="button"
+                className="moments-nav-btn"
+                onClick={() => scroll("left")}
+                aria-label="Previous Stories"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="moments-nav-btn"
+                onClick={() => scroll("right")}
+                aria-label="Next Stories"
+              >
+                ›
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="moments-carousel-track">
-          {KITCHEN_MOMENTS.map((moment, idx) => (
+        {/* Carousel Track with Deep Interactive Cards */}
+        <div className="moments-carousel-track" ref={trackRef}>
+          {filteredMoments.map((moment, idx) => (
             <motion.div
-              key={idx}
+              key={moment.id}
               className="moment-card"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.08 }}
+              transition={{ duration: 0.35, delay: idx * 0.06 }}
+              onClick={() => setActiveStory(moment)}
             >
               <img
                 src={moment.image}
@@ -916,16 +1078,112 @@ function KitchenMomentsSection() {
                 }}
               />
               <div className="moment-card-overlay">
-                <span className="moment-tag">{moment.tag}</span>
-                <strong style={{ fontSize: "0.95rem", lineHeight: 1.25 }}>{moment.title}</strong>
-                <p style={{ fontSize: "0.78rem", color: "rgba(247, 241, 231, 0.85)", margin: "4px 0 0", lineHeight: 1.3 }}>
-                  {moment.subtitle}
-                </p>
+                <div className="moment-tag-row">
+                  <span className="moment-tag">{moment.tag}</span>
+                  <span className="moment-read-time">{moment.readTime}</span>
+                </div>
+                <h3 className="moment-title">{moment.title}</h3>
+                <p className="moment-subtitle">{moment.subtitle}</p>
+
+                <div className="moment-card-footer" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    className="moment-view-story-btn"
+                    onClick={() => setActiveStory(moment)}
+                  >
+                    📖 Read Story
+                  </button>
+                  <Link
+                    to={moment.linkUrl}
+                    className="moment-deeplink-pill"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {moment.linkText} →
+                  </Link>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Interactive Story Spotlight Modal */}
+      <AnimatePresence>
+        {activeStory && (
+          <motion.div
+            className="story-modal-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveStory(null)}
+          >
+            <motion.div
+              className="story-modal-card"
+              initial={{ scale: 0.92, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 20 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="story-modal-close"
+                onClick={() => setActiveStory(null)}
+                aria-label="Close Story"
+              >
+                ✕
+              </button>
+
+              <div className="story-modal-image-col">
+                <img
+                  src={activeStory.image}
+                  alt={activeStory.title}
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/brand/home-hero.jpg";
+                  }}
+                />
+                <div className="story-modal-badge">
+                  ✦ {activeStory.highlightBadge}
+                </div>
+              </div>
+
+              <div className="story-modal-content-col">
+                <div>
+                  <span className="story-modal-eyebrow">
+                    {activeStory.category} • {activeStory.readTime}
+                  </span>
+                  <h2 className="story-modal-title">{activeStory.storyHeadline}</h2>
+                </div>
+
+                <blockquote className="story-modal-quote">
+                  {activeStory.storyQuote}
+                </blockquote>
+
+                <p className="story-modal-body">{activeStory.storyBody}</p>
+
+                <div className="story-modal-actions">
+                  {activeStory.relatedProductSlug && (
+                    <button
+                      type="button"
+                      className="button button-mustard-primary"
+                      onClick={() => handleOpenProduct(activeStory.relatedProductSlug)}
+                    >
+                      {activeStory.relatedProductLabel} (₹{activeStory.relatedProductPrice}) →
+                    </button>
+                  )}
+                  <Link
+                    to={activeStory.linkUrl}
+                    className="button button-outline-dark"
+                    onClick={() => setActiveStory(null)}
+                  >
+                    {activeStory.linkText} ↗
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
@@ -1672,7 +1930,7 @@ function HomePage({ wishlist, toggleWishlist, addToCart }) {
         toggleWishlist={toggleWishlist}
         addToCart={addToCart}
       />
-      <KitchenMomentsSection />
+      <KitchenMomentsSection addToCart={addToCart} />
       <StorySpotlightSection />
       <LifestyleBanner />
       <ReviewsSection />
