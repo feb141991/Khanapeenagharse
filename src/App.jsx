@@ -20,48 +20,57 @@ const ABOUT_OWNER_IMAGE = "/images/brand/about-owner.jpg";
 
 const PRODUCT_CHAPTERS = [
   {
-    id: "signature",
+    id: "combo",
     index: "01",
-    label: "Signature Range",
-    title: "Homemade achars with a premium table presence.",
+    label: "The Signature Box",
+    title: "The Ghar Ka Achar Box (4-Jar Family Combo)",
     copy:
-      "This range carries the heart of the brand: homemade achar prepared in batches with curated masalas and presented with a more premium, luxury feel.",
+      "Our complete homestyle collection — Aam, Mirch, Hing, and Mix Veg in one gifting-ready 4-jar box. The best of our kitchen, bundled with extra value.",
+    accent: "gold"
+  },
+  {
+    id: "aam",
+    index: "02",
+    label: "Aam (Mango)",
+    title: "Traditional raw mango achar, sun-cured with homestyle warmth.",
+    copy:
+      "Sun-cured raw mango slices infused with hand-ground masalas and pure kacchi ghani mustard oil. The familiar taste of home.",
     accent: "blue"
   },
   {
-    id: "daily",
-    index: "02",
-    label: "Everyday Table",
-    title: "Made for the meals people actually eat every day.",
+    id: "hing",
+    index: "03",
+    label: "Hing (Asafoetida)",
+    title: "Aromatic hing-led achar for the everyday table.",
     copy:
-      "These are flavours designed to sit naturally beside paratha and everyday Indian food, with the comfort and familiarity of food made at home.",
+      "Rich, aromatic asafoetida blended with hand-roasted spices to elevate everyday dal, paratha, and rice.",
     accent: "violet"
   },
   {
-    id: "bold",
-    index: "03",
-    label: "Heat Forward",
-    title: "For the plate that wants more spice and more presence.",
+    id: "mirch",
+    index: "04",
+    label: "Mirch (Green Chilli)",
+    title: "Spicier green chilli achar with a bold homemade punch.",
     copy:
-      "Stronger profiles, fuller spice, and the same batch-made, homemade character for people who like their achar to show up properly on the table.",
+      "Fresh green chillies slit and stuffed with roasted whole masalas and pure mustard oil. Crafted for bold spice lovers.",
     accent: "amber"
   },
   {
-    id: "family",
-    index: "04",
-    label: "Shared Table",
-    title: "Built for the shared table and family-style serving.",
+    id: "mixveg",
+    index: "05",
+    label: "Mix Veg",
+    title: "Crunchy mixed vegetable achar for shared family dining.",
     copy:
-      "These jars are made to complement Indian meals served together, where one achar should feel familiar, generous, and easy to return to.",
+      "A comforting blend of seasonal vegetables, hand-roasted spices, and cold-pressed mustard oil for the family thali.",
     accent: "teal"
   }
 ];
 
 const FEATURE_METRICS = [
-  { value: "Woman-led", label: "Homestyle culinary heritage with mother's care" },
-  { value: "Batch-made", label: "Handcrafted in small batches with curated masalas" },
-  { value: "Pure Mustard Oil", label: "Cold-pressed kacchi ghani, zero palm oil" },
-  { value: "100% Natural", label: "Sun-cured traditional recipe, zero chemicals" }
+  { value: "Woman-Led", label: "Rachna Gattani's family kitchen heritage in Bahadurgarh" },
+  { value: "Small-Batch", label: "Handcrafted in limited batches with hand-roasted spices" },
+  { value: "Pure Mustard Oil", label: "Cold-pressed kacchi ghani, zero refined or palm oil" },
+  { value: "100% Sun-Cured", label: "Traditional slow sun-curing with zero chemical preservatives" }
 ];
 
 function mergeProductsWithMedia(items) {
@@ -551,22 +560,22 @@ function SafeDeliveryGuarantee() {
       <div className="guarantee-item">
         <span className="g-icon">🛡️</span>
         <div>
-          <strong>100% Jar Breakage Protection</strong>
-          <span>Instant free replacement if courier damage occurs</span>
+          <strong>Broken or Leaking Jar? Free Instant Replacement</strong>
+          <span>100% transit guarantee — if courier damage occurs, we send a replacement jar immediately.</span>
         </div>
       </div>
       <div className="guarantee-item">
         <span className="g-icon">🫙</span>
         <div>
-          <strong>Food-Grade Glass Jars</strong>
-          <span>Preserves authentic sun-cured aroma without plastic</span>
+          <strong>Hygienically Packed in Food-Grade Glass</strong>
+          <span>Sealed glass jars preserve authentic sun-cured crunch and rich mustard oil aroma without plastic.</span>
         </div>
       </div>
       <div className="guarantee-item">
         <span className="g-icon">⚡</span>
         <div>
-          <strong>Tracked Dispatch in 24–48 Hrs</strong>
-          <span>Fast pan-India delivery with live tracking</span>
+          <strong>Dispatches in 1–2 Working Days</strong>
+          <span>Freshly dispatched from our Bahadurgarh family kitchen with live tracking to your doorstep.</span>
         </div>
       </div>
     </div>
@@ -657,7 +666,7 @@ function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.04 }}
           >
-            Khana Peena Ghar Se began in Rachna Gattani's kitchen—a space where spices were never measured by the gram, but by years of knowing what felt right.
+            Ghar jaisa achar. Made the way it always was.
           </motion.h1>
           <motion.p
             className="hero-copy-text"
@@ -665,10 +674,8 @@ function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.16 }}
           >
-For decades, she's been making achar the way it should be made: by hand, in small batches, with an intuition that only comes from genuine passion.
-No shortcuts. No compromise. Just jars filled with the same care she'd give to her own family's table.
-That dedication hasn't changed. Every batch we make today carries forward Rachna's philosophy—the belief that achar isn't just a condiment, it's a connection. The kind that belongs beside paratha, dal-chawal, and the meals people actually live for. Carefully curated spices. Handcrafted precision. The taste of someone who knows what they're doing.
-Because Khana Peena Ghar Se was never meant to feed the masses. It was always meant to sit on your table, made with the same passion Rachna has given for years.          </motion.p>
+            Small-batch homemade achar from our family kitchen in Bahadurgarh, prepared with carefully selected masalas and shipped across India.
+          </motion.p>
           <motion.div
             className="hero-cta-row"
             initial={{ opacity: 0, y: 20 }}
@@ -676,12 +683,18 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
             transition={{ duration: 0.7, delay: 0.24 }}
           >
             <Link className="button button-primary" to="/achar">
-              Explore the achar menu
+              Shop Achar
             </Link>
-            <a className="button button-secondary" href={ZOMATO_URL} target="_blank" rel="noreferrer">
-              Order on Zomato
-            </a>
+            <Link className="button button-secondary" to="/about">
+              Our Story
+            </Link>
           </motion.div>
+          <div className="hero-local-note">
+            <span>📍 In Bahadurgarh today?</span>
+            <a className="hero-local-link" href={ZOMATO_URL} target="_blank" rel="noreferrer">
+              Order local delivery on Zomato ↗
+            </a>
+          </div>
           <div className="hero-metric-row">
             {FEATURE_METRICS.map((metric) => (
               <motion.div
@@ -758,6 +771,34 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
             </div>
           </motion.article>
         ))}
+      </section>
+
+      <section className="home-founder-spotlight">
+        <div className="founder-spotlight-card">
+          <div className="founder-spotlight-image">
+            <img
+              src={ABOUT_OWNER_IMAGE}
+              alt="Rachna Gattani in her kitchen"
+              onError={(event) => {
+                event.currentTarget.src = "/images/brand/home-hero.jpg";
+              }}
+            />
+          </div>
+          <div className="founder-spotlight-copy">
+            <p className="eyebrow">The Woman Behind The Brand</p>
+            <h2>Her face. Her kitchen. Her recipe. Your table.</h2>
+            <p>
+              Khana Peena Ghar Se was born from the hands of Rachna Gattani, who spent decades bringing her family together through food. Spices were never measured by industrial standards, but by years of intuition and lived culinary wisdom.
+            </p>
+            <p>
+              Every jar is slow sun-cured, prepared in small batches with cold-pressed mustard oil and hand-roasted masalas, bringing the authentic taste of tradition to your dining table.
+            </p>
+            <div className="founder-spotlight-links">
+              <Link to="/about" className="button button-secondary">Our Story →</Link>
+              <Link to="/achar" className="button button-primary">Shop All Jars</Link>
+            </div>
+          </div>
+        </div>
       </section>
 
       <ReviewsSection />
@@ -1188,11 +1229,33 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
         <p className="product-page-tagline">{product.tagline}</p>
         <p>{product.description}</p>
 
+        {product.id === "combo-box-4" ? (
+          <div className="combo-highlight-badge">
+            <span className="combo-star">🌟</span>
+            <div>
+              <strong>Complete 4-Jar Homestyle Combo • Save ₹127</strong>
+              <span>Includes 500g Aam + 450g Hing + 400g Mirch + 500g Mix Veg in one box</span>
+            </div>
+          </div>
+        ) : null}
+
         <div className="product-page-specs">
           <span>{product.size}</span>
           <span>{product.spice}</span>
           <span>INR {product.price}</span>
           <span>{product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}</span>
+        </div>
+
+        <div className="why-love-it-card">
+          <strong>Why you'll love it</strong>
+          <ul className="why-love-it-list">
+            <li><span>✓</span> <strong>Small-batch:</strong> Handcrafted in Bahadurgarh with hand-roasted spices</li>
+            <li><span>✓</span> <strong>Family recipe:</strong> Authentic homestyle formulation by Rachna Gattani</li>
+            <li><span>✓</span> <strong>Pure mustard oil:</strong> Cold-pressed kacchi ghani, zero palm/refined oils</li>
+            <li><span>✓</span> <strong>Hygienically packed:</strong> Sealed in food-grade glass jars for transit</li>
+            <li><span>✓</span> <strong>Pan-India delivery:</strong> Dispatches in 1–2 working days (Free on ₹499+)</li>
+            <li><span>✓</span> <strong>Damage replacement:</strong> Broken or leaking jar? Free instant replacement</li>
+          </ul>
         </div>
 
         <div className="product-page-list">
