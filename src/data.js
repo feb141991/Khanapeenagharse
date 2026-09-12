@@ -14,6 +14,14 @@ export const products = [
     images: [
       "/images/achars/aam-ka-achar/Aam ka aachar.png"
     ],
+    dietaryBadges: [
+      "100% Vegetarian",
+      "Kacchi Ghani Mustard Oil",
+      "Zero Palm Oil",
+      "Sun-Cured",
+      "No Chemical Preservatives"
+    ],
+    heritage: "Traditional North Indian raw mango recipe sun-fermented in small artisanal batches.",
     shortDescription:
       "A home-style mango achar made in small batches with curated masalas, a familiar tang, and the kind of finish that belongs beside everyday Indian meals.",
     description:
@@ -40,6 +48,14 @@ export const products = [
       "/images/achars/hing-ka-achar/Hing Aachar2.png",
       "/images/achars/hing-ka-achar/hing---1.png"
     ],
+    dietaryBadges: [
+      "100% Vegetarian",
+      "Pure Compounded Hing",
+      "Cold-Pressed Mustard Oil",
+      "Zero Palm Oil",
+      "Digestive Spices"
+    ],
+    heritage: "Classic Marwari aromatic hing achar with comforting digestive depth.",
     shortDescription:
       "A hing-led homemade achar with a savoury profile, curated masalas, and a taste that fits naturally into daily Indian meals.",
     description:
@@ -64,6 +80,14 @@ export const products = [
     images: [
       "/images/achars/mirch-ka-achar/MirchKa aachar.png"
     ],
+    dietaryBadges: [
+      "100% Vegetarian",
+      "Whole Yellow Mustard Seeds",
+      "Zero Palm Oil",
+      "Roasted Fenugreek",
+      "Handcrafted Heat"
+    ],
+    heritage: "Traditional spicy slit green chilli recipe cured with coarse roasted methi & rai.",
     shortDescription:
       "A bold homemade mirch achar made in batches with curated masalas for those who want a stronger, spicier side on the plate.",
     description:
@@ -88,6 +112,14 @@ export const products = [
     images: [
       "/images/achars/mix-veg-achar/mix aachar.png"
     ],
+    dietaryBadges: [
+      "100% Vegetarian",
+      "Seasonal Winter Vegetables",
+      "Cold-Pressed Mustard Oil",
+      "Zero Palm Oil",
+      "Homestyle Masalas"
+    ],
+    heritage: "Traditional North Indian winter harvest vegetable medley.",
     shortDescription:
       "A mixed vegetable achar made in batches with curated masalas, created for the kind of family-style Indian meal where one achar serves everyone well.",
     description:
@@ -142,8 +174,13 @@ export const faqs = [
     a: "Yes! We ship pan-India with multi-layered protective bubble wrap and reinforced packaging to ensure glass jars arrive safely at your doorstep. Standard delivery takes 3 to 5 business days, and you can track your shipment live on our Track Order page."
   },
   {
-    q: "Are these suitable for gifting or festive hampers?",
-    a: "Absolutely. Our artisanal glass jars feature a luxury table aesthetic, making them a popular choice for Diwali hampers, corporate gifts, wedding favors, and family dining. For custom gifting or handwritten notes, simply add a note during checkout."
+    q: "Can I place bulk orders for corporate gifting, Diwali hampers, or wedding favors?",
+    a: "Yes! We provide custom-packaged glass jar gift sets and festive dining hampers with customized labels and handwritten cards for weddings, Diwali gifts, and corporate events. Contact us through the order portal for custom gifting inquiries."
+  },
+  {
+    q: "Are these achars 100% vegetarian and vegan-friendly?",
+    a: "Yes, all our achars are 100% vegetarian, plant-based, and vegan. We do not use any animal fats, dairy derivatives, or hidden chemical processing agents."
   }
 ];
+
 

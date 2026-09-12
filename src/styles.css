@@ -1366,3 +1366,81 @@ textarea {
   margin: 0;
 }
 
+/* --- High-Value Quality Badges & Heritage Notes --- */
+.badge-pill.highlight {
+  background: rgba(36, 85, 255, 0.08);
+  color: var(--blue, #2455ff);
+  font-weight: 600;
+  border: 1px solid rgba(36, 85, 255, 0.2);
+}
+
+.product-heritage-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  margin: 8px 0;
+}
+
+.heritage-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.product-heritage-text {
+  font-size: 0.92rem;
+  color: #92400e;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.footer-trust-strip {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+}
+
+.trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-dark, #1c1917);
+}
+
+.fssai-notice {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.84rem;
+  color: var(--text-soft, #78716c);
+}
+
+.fssai-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.76rem;
+  padding: 3px 8px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+

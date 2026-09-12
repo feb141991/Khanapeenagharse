@@ -58,8 +58,10 @@ const PRODUCT_CHAPTERS = [
 ];
 
 const FEATURE_METRICS = [
-  { value: "Woman-led", label: "Run with care by your mother-in-law" },
-  { value: "Batch-made", label: "Homemade food with curated masalas" }
+  { value: "Woman-led", label: "Homestyle culinary heritage with mother's care" },
+  { value: "Batch-made", label: "Handcrafted in small batches with curated masalas" },
+  { value: "Pure Mustard Oil", label: "Cold-pressed kacchi ghani, zero palm oil" },
+  { value: "100% Natural", label: "Sun-cured traditional recipe, zero chemicals" }
 ];
 
 function mergeProductsWithMedia(items) {
@@ -603,6 +605,14 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
       <FAQSection />
 
       <footer className="site-footer-react">
+        <div className="footer-trust-strip">
+          <div className="trust-pill">🌿 100% Vegetarian &amp; Vegan</div>
+          <div className="trust-pill">🫒 Pure Kacchi Ghani Mustard Oil</div>
+          <div className="trust-pill">☀️ Naturally Sun-Cured</div>
+          <div className="trust-pill">🚫 Zero Chemical Preservatives</div>
+          <div className="trust-pill">🏺 Small-Batch Handcrafted</div>
+        </div>
+
         <div className="footer-brand-block">
           <Link className="brand" to="/">
             <img src="/images/logo.png" alt="" />
@@ -614,6 +624,10 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
           <p>
             Homemade food prepared with care, curated masalas, and the warmth of a kitchen that still believes food should feel personal.
           </p>
+          <div className="fssai-notice">
+            <span className="fssai-badge">FSSAI Standards Compliant</span>
+            <span>Food-grade glass jar packaging • Small-batch artisanal kitchen • Bahadurgarh, Haryana</span>
+          </div>
         </div>
         <div className="footer-links-grid">
           <div>
@@ -1031,6 +1045,24 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
             ))}
           </div>
         </div>
+
+        {product.dietaryBadges && product.dietaryBadges.length ? (
+          <div className="product-page-list">
+            <strong>Quality &amp; Dietary Promise</strong>
+            <div className="product-badges">
+              {product.dietaryBadges.map((badge) => (
+                <span key={badge} className="badge-pill highlight">✓ {badge}</span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {product.heritage ? (
+          <div className="product-heritage-box">
+            <span className="heritage-icon" aria-hidden="true">🏺</span>
+            <p className="product-heritage-text">{product.heritage}</p>
+          </div>
+        ) : null}
 
         <p className="product-note">{product.note}</p>
         <p className="product-note">{product.shelfLife}</p>
