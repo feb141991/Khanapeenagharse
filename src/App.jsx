@@ -599,6 +599,9 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
                   </div>
                 )}
 
+                {/* Instant Delivery Check in QuickView */}
+                <PincodeChecker compact={true} />
+
                 {/* Purchase & Action Controls */}
                 <div className="quickview-actions-wrap">
                   <div className="quickview-qty-selector">
@@ -2027,39 +2030,212 @@ function Footer() {
   );
 }
 
-function getPincodeEstimate(pin) {
-  const prefix2 = pin.slice(0, 2);
-  const prefix1 = pin.slice(0, 1);
+const PINCODE_REGION_MAP = {
+  // Region 1 - North
+  "11": { state: "Delhi", region: "New Delhi & Central NCR", minDays: 1, maxDays: 2, express: true, hub: "Delhi NCR Direct Courier" },
+  "12": { state: "Haryana", region: "Bahadurgarh / Gurugram / Faridabad / Rohtak", minDays: 1, maxDays: 2, express: true, hub: "Haryana Origin Hub (Same-Day / Next-Day)" },
+  "13": { state: "Haryana", region: "Ambala / Karnal / Panipat / Kurukshetra", minDays: 1, maxDays: 2, express: true, hub: "Haryana North Express" },
+  "14": { state: "Punjab", region: "Ludhiana / Jalandhar / Amritsar", minDays: 2, maxDays: 3, express: true, hub: "Punjab GT Road Route" },
+  "15": { state: "Punjab", region: "Bathinda / Patiala / Firozpur", minDays: 2, maxDays: 3, express: true, hub: "Punjab Malwa Corridor" },
+  "16": { state: "Chandigarh", region: "Chandigarh UT / Mohali / Panchkula", minDays: 1, maxDays: 2, express: true, hub: "Tricity Express Corridor" },
+  "17": { state: "Himachal Pradesh", region: "Shimla / Solan / Dharamshala / Mandi", minDays: 2, maxDays: 4, express: false, hub: "Himachal Hill Route" },
+  "18": { state: "Jammu & Kashmir", region: "Jammu / Katra / Udhampur", minDays: 3, maxDays: 4, express: false, hub: "J&K Express Line" },
+  "19": { state: "Jammu & Kashmir / Ladakh", region: "Srinagar / Leh / Ladakh", minDays: 4, maxDays: 6, express: false, hub: "Kashmir & Ladakh Route" },
 
-  if (["11", "12", "13", "20"].includes(prefix2)) {
+  // Region 2 - UP & UK
+  "20": { state: "Uttar Pradesh", region: "Noida / Ghaziabad / Meerut / Aligarh", minDays: 1, maxDays: 2, express: true, hub: "UP NCR Express Corridor" },
+  "21": { state: "Uttar Pradesh", region: "Prayagraj / Fatehpur / Pratapgarh", minDays: 2, maxDays: 3, express: true, hub: "UP Central Corridor" },
+  "22": { state: "Uttar Pradesh", region: "Lucknow / Varanasi / Barabanki / Ayodhya", minDays: 2, maxDays: 3, express: true, hub: "UP Capital Express" },
+  "23": { state: "Uttar Pradesh", region: "Mirzapur / Sonbhadra / Ghazipur", minDays: 2, maxDays: 4, express: false, hub: "UP Purvanchal Route" },
+  "24": { state: "Uttarakhand / UP", region: "Dehradun / Haridwar / Moradabad", minDays: 2, maxDays: 3, express: true, hub: "Uttarakhand Express Corridor" },
+  "25": { state: "Uttar Pradesh", region: "Muzaffarnagar / Saharanpur / Bijnor", minDays: 1, maxDays: 2, express: true, hub: "Western UP Route" },
+  "26": { state: "Uttarakhand / UP", region: "Nainital / Haldwani / Bareilly / Pilibhit", minDays: 2, maxDays: 3, express: true, hub: "Kumaon Corridor" },
+  "27": { state: "Uttar Pradesh", region: "Gorakhpur / Basti / Deoria / Azamgarh", minDays: 2, maxDays: 4, express: false, hub: "Eastern UP Corridor" },
+  "28": { state: "Uttar Pradesh", region: "Agra / Mathura / Jhansi / Firozabad", minDays: 2, maxDays: 3, express: true, hub: "Braj & Bundelkhand Corridor" },
+
+  // Region 3 - Rajasthan & Gujarat
+  "30": { state: "Rajasthan", region: "Jaipur / Ajmer / Alwar / Dausa", minDays: 2, maxDays: 3, express: true, hub: "Jaipur Metro Corridor" },
+  "31": { state: "Rajasthan", region: "Udaipur / Bhilwara / Chittorgarh", minDays: 2, maxDays: 3, express: true, hub: "Mewar Express Route" },
+  "32": { state: "Rajasthan", region: "Kota / Bharatpur / Sawai Madhopur", minDays: 2, maxDays: 3, express: true, hub: "Hadoti Corridor" },
+  "33": { state: "Rajasthan", region: "Bikaner / Sri Ganganagar / Sikar / Churu", minDays: 2, maxDays: 3, express: true, hub: "Shekhawati & Desert Route" },
+  "34": { state: "Rajasthan", region: "Jodhpur / Barmer / Jaisalmer / Pali", minDays: 2, maxDays: 4, express: true, hub: "Marwar Route" },
+  "36": { state: "Gujarat", region: "Rajkot / Jamnagar / Junagadh / Bhavnagar", minDays: 2, maxDays: 4, express: true, hub: "Saurashtra Corridor" },
+  "37": { state: "Gujarat", region: "Bhuj / Gandhidham / Kutch", minDays: 3, maxDays: 4, express: false, hub: "Kutch Express" },
+  "38": { state: "Gujarat", region: "Ahmedabad / Gandhinagar / Mehsana / Anand", minDays: 2, maxDays: 3, express: true, hub: "Ahmedabad Metro Corridor" },
+  "39": { state: "Gujarat", region: "Surat / Vadodara / Bharuch / Vapi / Valsad", minDays: 2, maxDays: 3, express: true, hub: "South Gujarat Industrial Hub" },
+
+  // Region 4 - Maharashtra, Goa, MP, CG
+  "40": { state: "Maharashtra / Goa", region: "Mumbai / Navi Mumbai / Thane / Goa", minDays: 2, maxDays: 3, express: true, hub: "Mumbai Metro Air Express" },
+  "41": { state: "Maharashtra", region: "Pune / Kolhapur / Solapur / Satara", minDays: 2, maxDays: 3, express: true, hub: "Pune Metro Hub" },
+  "42": { state: "Maharashtra", region: "Nashik / Dhule / Jalgaon / Ahmednagar", minDays: 2, maxDays: 3, express: true, hub: "North Maharashtra Corridor" },
+  "43": { state: "Maharashtra", region: "Chhatrapati Sambhajinagar / Nanded / Latur", minDays: 2, maxDays: 4, express: true, hub: "Marathwada Corridor" },
+  "44": { state: "Maharashtra", region: "Nagpur / Amravati / Akola / Chandrapur", minDays: 2, maxDays: 3, express: true, hub: "Vidarbha Central Hub" },
+  "45": { state: "Madhya Pradesh", region: "Indore / Ujjain / Khandwa / Ratlam", minDays: 2, maxDays: 3, express: true, hub: "Malwa Central Hub" },
+  "46": { state: "Madhya Pradesh", region: "Bhopal / Hoshangabad / Sehore / Vidisha", minDays: 2, maxDays: 3, express: true, hub: "MP Capital Corridor" },
+  "47": { state: "Madhya Pradesh", region: "Gwalior / Morena / Shivpuri / Bhind", minDays: 2, maxDays: 3, express: true, hub: "Chambal Gwalior Line" },
+  "48": { state: "Madhya Pradesh", region: "Jabalpur / Sagar / Rewa / Satna / Katni", minDays: 2, maxDays: 4, express: true, hub: "Mahakoshal Corridor" },
+  "49": { state: "Chhattisgarh", region: "Raipur / Bilaspur / Durg / Bhilai / Korba", minDays: 3, maxDays: 4, express: true, hub: "Chhattisgarh Central Hub" },
+
+  // Region 5 - South 1 (AP, Telangana, Karnataka)
+  "50": { state: "Telangana", region: "Hyderabad / Secunderabad / Warangal / Nizamabad", minDays: 2, maxDays: 3, express: true, hub: "Hyderabad Air Express Hub" },
+  "51": { state: "Andhra Pradesh", region: "Tirupati / Kurnool / Anantapur / Kadapa", minDays: 3, maxDays: 4, express: true, hub: "Rayalaseema Corridor" },
+  "52": { state: "Andhra Pradesh", region: "Vijayawada / Guntur / Nellore / Ongole", minDays: 2, maxDays: 3, express: true, hub: "AP Coastal Corridor" },
+  "53": { state: "Andhra Pradesh", region: "Visakhapatnam / Kakinada / Rajahmundry", minDays: 2, maxDays: 3, express: true, hub: "Vizag Port Express" },
+  "56": { state: "Karnataka", region: "Bengaluru Urban & Rural / Tumakuru / Kolar", minDays: 2, maxDays: 3, express: true, hub: "Bengaluru Air Express Hub" },
+  "57": { state: "Karnataka", region: "Mysuru / Mandya / Hassan / Mangaluru / Udupi", minDays: 2, maxDays: 4, express: true, hub: "South Karnataka Express" },
+  "58": { state: "Karnataka", region: "Hubballi-Dharwad / Belagavi / Ballari / Davanagere", minDays: 2, maxDays: 4, express: true, hub: "North Karnataka Route" },
+  "59": { state: "Karnataka", region: "Kalaburagi / Raichur / Bidar / Vijayapura", minDays: 3, maxDays: 4, express: false, hub: "Kalyana Karnataka Corridor" },
+
+  // Region 6 - South 2 (TN, Kerala, Puducherry)
+  "60": { state: "Tamil Nadu", region: "Chennai / Kanchipuram / Tiruvallur / Chengalpattu", minDays: 2, maxDays: 3, express: true, hub: "Chennai Air Express Hub" },
+  "61": { state: "Tamil Nadu", region: "Tiruchirappalli / Thanjavur / Pudukkottai / Cuddalore", minDays: 3, maxDays: 4, express: true, hub: "Central TN Route" },
+  "62": { state: "Tamil Nadu", region: "Madurai / Dindigul / Tirunelveli / Thoothukudi", minDays: 3, maxDays: 4, express: true, hub: "South TN Corridor" },
+  "63": { state: "Tamil Nadu", region: "Salem / Vellore / Dharmapuri / Erode / Krishnagiri", minDays: 2, maxDays: 4, express: true, hub: "Kongu & North-West TN Route" },
+  "64": { state: "Tamil Nadu", region: "Coimbatore / Tiruppur / Nilgiris / Pollachi", minDays: 2, maxDays: 3, express: true, hub: "Coimbatore Air Express" },
+  "67": { state: "Kerala", region: "Kozhikode / Kannur / Kasaragod / Wayanad / Malappuram", minDays: 3, maxDays: 4, express: true, hub: "Malabar Express" },
+  "68": { state: "Kerala", region: "Kochi (Ernakulam) / Thrissur / Kottayam / Idukki / Palakkad", minDays: 3, maxDays: 4, express: true, hub: "Central Kerala Air Express" },
+  "69": { state: "Kerala", region: "Thiruvananthapuram / Kollam / Alappuzha / Pathanamthitta", minDays: 3, maxDays: 4, express: true, hub: "South Kerala Corridor" },
+
+  // Region 7 - East & North-East
+  "70": { state: "West Bengal", region: "Kolkata / Howrah / North 24 Parganas / South 24 Parganas", minDays: 2, maxDays: 3, express: true, hub: "Kolkata Metro Air Express" },
+  "71": { state: "West Bengal", region: "Hooghly / Midnapore / Kharagpur", minDays: 2, maxDays: 4, express: true, hub: "Lower Bengal Route" },
+  "72": { state: "West Bengal", region: "Purulia / Bankura / Jhargram", minDays: 3, maxDays: 4, express: false, hub: "Junglemahal Route" },
+  "73": { state: "West Bengal / Sikkim", region: "Siliguri / Darjeeling / Jalpaiguri / Gangtok", minDays: 3, maxDays: 5, express: false, hub: "North Bengal & Sikkim Express" },
+  "74": { state: "West Bengal", region: "Durgapur / Asansol / Burdwan / Nadia / Murshidabad", minDays: 2, maxDays: 3, express: true, hub: "Burdwan Industrial Belt" },
+  "75": { state: "Odisha", region: "Bhubaneswar / Cuttack / Puri / Khordha", minDays: 3, maxDays: 4, express: true, hub: "Odisha Capital Corridor" },
+  "76": { state: "Odisha", region: "Berhampur / Ganjam / Koraput / Sambalpur", minDays: 3, maxDays: 5, express: false, hub: "South Odisha Route" },
+  "77": { state: "Odisha", region: "Rourkela / Balasore / Bargarh / Jharsuguda", minDays: 3, maxDays: 4, express: false, hub: "North Odisha Route" },
+  "78": { state: "Assam", region: "Guwahati / Silchar / Dibrugarh / Jorhat / Tezpur", minDays: 3, maxDays: 5, express: true, hub: "Assam & Brahmaputra Gateway" },
+  "79": { state: "North East States", region: "Meghalaya / Manipur / Mizoram / Nagaland / Tripura / Arunachal", minDays: 4, maxDays: 6, express: false, hub: "North East Express Route" },
+
+  // Region 8 - Bihar & Jharkhand
+  "80": { state: "Bihar", region: "Patna / Nalanda / Bhojpur / Buxar / Vaishali", minDays: 2, maxDays: 3, express: true, hub: "Patna Capital Corridor" },
+  "81": { state: "Bihar", region: "Bhagalpur / Munger / Begusarai / Khagaria", minDays: 3, maxDays: 4, express: false, hub: "Anga Region Corridor" },
+  "82": { state: "Bihar", region: "Gaya / Nawada / Jehanabad / Aurangabad", minDays: 2, maxDays: 4, express: false, hub: "Magadh Region Route" },
+  "83": { state: "Jharkhand", region: "Ranchi / Bokaro / Dhanbad / Deoghar / Jamshedpur", minDays: 2, maxDays: 4, express: true, hub: "Jharkhand Industrial Hub" },
+  "84": { state: "Bihar", region: "Muzaffarpur / Darbhanga / Samastipur / Chapra / Siwan", minDays: 3, maxDays: 4, express: true, hub: "Tirhut & Mithila Corridor" },
+  "85": { state: "Bihar", region: "Purnia / Katihar / Saharsa / Madhepura", minDays: 3, maxDays: 4, express: false, hub: "Kosi & Seemanchal Route" }
+};
+
+const POPULAR_PIN_HUBS = [
+  { pin: "124507", name: "Bahadurgarh (Origin Kitchen)" },
+  { pin: "110001", name: "New Delhi (Connaught Pl.)" },
+  { pin: "122001", name: "Gurugram" },
+  { pin: "201301", name: "Noida" },
+  { pin: "400001", name: "Mumbai" },
+  { pin: "560001", name: "Bengaluru" },
+  { pin: "700001", name: "Kolkata" },
+  { pin: "500001", name: "Hyderabad" },
+  { pin: "302001", name: "Jaipur" },
+  { pin: "160017", name: "Chandigarh" },
+  { pin: "411001", name: "Pune" },
+  { pin: "380001", name: "Ahmedabad" },
+  { pin: "226001", name: "Lucknow" }
+];
+
+function formatEstimatedDeliveryDate(minDays, maxDays) {
+  const now = new Date();
+  const addBusinessDays = (startDate, days) => {
+    let count = 0;
+    let cur = new Date(startDate);
+    while (count < days) {
+      cur.setDate(cur.getDate() + 1);
+      if (cur.getDay() !== 0) { // Skip Sunday
+        count++;
+      }
+    }
+    return cur;
+  };
+
+  const d1 = addBusinessDays(now, minDays);
+  const d2 = addBusinessDays(now, maxDays);
+
+  const formatOpts = { weekday: "short", day: "numeric", month: "short" };
+  if (minDays === maxDays || d1.toDateString() === d2.toDateString()) {
+    return `Arrives by ${d1.toLocaleDateString("en-IN", formatOpts)}`;
+  }
+  return `Arrives between ${d1.toLocaleDateString("en-IN", { weekday: "short", day: "numeric" })} and ${d2.toLocaleDateString("en-IN", formatOpts)}`;
+}
+
+function getPincodeEstimate(rawPin) {
+  const pin = String(rawPin || "").trim();
+  if (!/^\d{6}$/.test(pin)) {
     return {
-      valid: true,
-      eta: "⚡ Estimated Delivery: 1–2 Business Days",
-      zone: "Delhi NCR & Haryana Express Corridor"
+      valid: false,
+      message: "Please enter a valid 6-digit Indian PIN code."
     };
   }
-  if (["40", "41", "56", "50", "60", "70", "30", "22", "38", "16", "14"].includes(prefix2)) {
+
+  // Origin Hub Special Case (Bahadurgarh, Haryana)
+  if (pin === "124507" || pin === "124505") {
     return {
       valid: true,
-      eta: "🚚 Estimated Delivery: 2–3 Business Days",
-      zone: "Major Metro Express Route"
+      pin,
+      state: "Haryana",
+      region: "Bahadurgarh (Origin Kitchen & Batching Hub)",
+      zone: "Local Origin Kitchen Hub (Same-Day / Next-Day Express)",
+      etaDays: "1 Business Day",
+      etaDate: formatEstimatedDeliveryDate(1, 1),
+      courier: "KPGS Express / Delhivery Direct",
+      express: true,
+      cod: true,
+      isOrigin: true
     };
   }
+
+  const prefix2 = pin.slice(0, 2);
+  const match = PINCODE_REGION_MAP[prefix2];
+
+  if (match) {
+    return {
+      valid: true,
+      pin,
+      state: match.state,
+      region: match.region,
+      zone: match.hub,
+      etaDays: `${match.minDays}–${match.maxDays} Business Days`,
+      etaDate: formatEstimatedDeliveryDate(match.minDays, match.maxDays),
+      courier: match.express ? "Bluedart Air / Delhivery Express" : "Delhivery Surface / Speed Post",
+      express: match.express,
+      cod: true,
+      isOrigin: false
+    };
+  }
+
+  const prefix1 = pin.slice(0, 1);
   if (["1", "2", "3", "4", "5", "6", "7", "8"].includes(prefix1)) {
     return {
       valid: true,
-      eta: "📦 Estimated Delivery: 3–5 Business Days",
-      zone: "Standard Pan-India Tracked Courier"
+      pin,
+      state: "India",
+      region: "Pan-India Postal Route",
+      zone: "Tracked Speed Delivery Network",
+      etaDays: "3–5 Business Days",
+      etaDate: formatEstimatedDeliveryDate(3, 5),
+      courier: "India Post Speed Post / Delhivery Priority",
+      express: false,
+      cod: true,
+      isOrigin: false
     };
   }
+
   return {
     valid: false,
-    message: "PIN code not recognized for standard delivery routes."
+    message: "PIN code not recognized for standard courier delivery routes."
   };
 }
 
-function PincodeChecker() {
+function PincodeChecker({ compact = false, onSelectPincode }) {
   const [pincode, setPincode] = useState(() => localStorage.getItem("kp_pincode") || "");
+  const [recentPins, setRecentPins] = useState(() => {
+    try {
+      const saved = localStorage.getItem("kp_recent_pincodes");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [result, setResult] = useState(() => {
     const saved = localStorage.getItem("kp_pincode");
     if (saved && /^\d{6}$/.test(saved)) {
@@ -2068,46 +2244,358 @@ function PincodeChecker() {
     return null;
   });
 
-  const check = (e) => {
-    e?.preventDefault();
-    const clean = pincode.trim();
-    if (!/^\d{6}$/.test(clean)) {
-      setResult({ valid: false, message: "Please enter a valid 6-digit Indian PIN code." });
-      return;
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChanging, setIsChanging] = useState(!result);
+  const [showPopular, setShowPopular] = useState(false);
+
+  // Store in recent list
+  const saveToRecent = useCallback((pin, est) => {
+    if (!est || !est.valid) return;
+    setRecentPins((prev) => {
+      const filtered = prev.filter((p) => p.pin !== pin);
+      const updated = [
+        {
+          pin,
+          region: est.region?.split("/")[0]?.trim() || est.state,
+          state: est.state,
+          etaDays: est.etaDays
+        },
+        ...filtered
+      ].slice(0, 5); // Keep up to 5 recent
+      localStorage.setItem("kp_recent_pincodes", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  // Async Post Office Lookup enhancement
+  const enrichWithIndiaPost = useCallback(async (cleanPin, baseResult) => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1400);
+      const res = await fetch(`https://api.postalpincode.in/pincode/${cleanPin}`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      const data = await res.json();
+      if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice?.length) {
+        const po = data[0].PostOffice[0];
+        setResult((curr) => {
+          if (curr && curr.pin === cleanPin) {
+            return {
+              ...curr,
+              postOffice: `${po.Name} (${po.District})`,
+              district: po.District,
+              state: po.State || curr.state
+            };
+          }
+          return curr;
+        });
+      }
+    } catch {
+      // Fallback stays in place smoothly
+    } finally {
+      setIsLoading(false);
     }
-    localStorage.setItem("kp_pincode", clean);
-    setResult(getPincodeEstimate(clean));
+  }, []);
+
+  const runCheck = useCallback(
+    (pinToCheck) => {
+      const clean = String(pinToCheck || "").replace(/\D/g, "").slice(0, 6);
+      if (!/^\d{6}$/.test(clean)) {
+        setResult({ valid: false, message: "Please enter a valid 6-digit Indian PIN code." });
+        return;
+      }
+
+      setIsLoading(true);
+      const estimate = getPincodeEstimate(clean);
+      setResult(estimate);
+      setPincode(clean);
+      localStorage.setItem("kp_pincode", clean);
+      saveToRecent(clean, estimate);
+      setIsChanging(false);
+      setShowPopular(false);
+
+      if (onSelectPincode) {
+        onSelectPincode(clean, estimate);
+      }
+
+      enrichWithIndiaPost(clean, estimate);
+    },
+    [saveToRecent, enrichWithIndiaPost, onSelectPincode]
+  );
+
+  const handleSubmit = (e) => {
+    e?.preventDefault();
+    runCheck(pincode);
   };
+
+  const handleClear = () => {
+    setPincode("");
+    setIsChanging(true);
+  };
+
+  const removeRecentPin = (e, pinToRemove) => {
+    e.stopPropagation();
+    setRecentPins((prev) => {
+      const updated = prev.filter((p) => p.pin !== pinToRemove);
+      localStorage.setItem("kp_recent_pincodes", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  if (compact) {
+    return (
+      <div className="pincode-compact-bar">
+        {result && result.valid && !isChanging ? (
+          <div className="pincode-compact-display">
+            <span className="pincode-compact-pin">
+              📍 Deliver to: <strong>{result.pin}</strong> ({result.region?.split("/")[0] || result.state})
+            </span>
+            <span className="pincode-compact-eta">⚡ {result.etaDays}</span>
+            <button
+              type="button"
+              className="pincode-compact-change-btn"
+              onClick={() => setIsChanging(true)}
+            >
+              Change
+            </button>
+          </div>
+        ) : (
+          <form className="pincode-compact-form" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              maxLength={6}
+              placeholder="Enter 6-digit PIN"
+              value={pincode}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                setPincode(val);
+                if (val.length === 6) {
+                  runCheck(val);
+                }
+              }}
+            />
+            <button type="submit" className="button button-cream-primary button-xs">
+              Check
+            </button>
+          </form>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="pincode-checker-box">
-      <strong>📍 Check Delivery to your PIN Code</strong>
-      <form className="pincode-form" onSubmit={check}>
-        <input
-          type="text"
-          maxLength={6}
-          placeholder="Enter 6-digit PIN"
-          value={pincode}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "");
-            setPincode(val);
-            if (val.length === 6) {
-              localStorage.setItem("kp_pincode", val);
-              setResult(getPincodeEstimate(val));
-            }
-          }}
-        />
-        <button type="submit" className="button button-cream-primary button-sm">Check</button>
-      </form>
+      <div className="pincode-box-header">
+        <div className="pincode-box-title">
+          <span className="pincode-box-icon" aria-hidden="true">📍</span>
+          <div>
+            <strong>Check Delivery &amp; Express Dispatch</strong>
+            <small>Direct shipping across 19,000+ Indian pincodes</small>
+          </div>
+        </div>
+
+        {result && result.valid && !isChanging && (
+          <button
+            type="button"
+            className="pincode-change-action-btn"
+            onClick={() => {
+              setIsChanging(true);
+            }}
+          >
+            Check Another PIN ↗
+          </button>
+        )}
+      </div>
+
+      {/* Input Form Mode */}
+      {isChanging ? (
+        <div className="pincode-input-section">
+          <form className="pincode-form" onSubmit={handleSubmit}>
+            <div className="pincode-input-field-wrap">
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                placeholder="Enter 6-digit PIN code (e.g. 110001, 560001)"
+                value={pincode}
+                autoFocus={isChanging && !!result}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  setPincode(val);
+                  if (val.length === 6) {
+                    runCheck(val);
+                  }
+                }}
+              />
+              {pincode ? (
+                <button
+                  type="button"
+                  className="pincode-input-clear-btn"
+                  onClick={handleClear}
+                  aria-label="Clear PIN code"
+                >
+                  ✕
+                </button>
+              ) : null}
+            </div>
+
+            <button
+              type="submit"
+              className="button button-mustard-primary button-sm pincode-submit-btn"
+              disabled={isLoading || pincode.length !== 6}
+            >
+              {isLoading ? "Checking..." : "Verify Delivery"}
+            </button>
+          </form>
+
+          {/* Quick Hubs & Recent Pincodes */}
+          <div className="pincode-shortcuts-area">
+            {recentPins.length > 0 && (
+              <div className="pincode-recent-group">
+                <span className="pincode-shortcut-label">Recently Checked:</span>
+                <div className="pincode-shortcut-pills">
+                  {recentPins.map((item) => (
+                    <button
+                      key={item.pin}
+                      type="button"
+                      className={`pincode-chip-btn ${item.pin === pincode ? "is-active" : ""}`}
+                      onClick={() => runCheck(item.pin)}
+                    >
+                      <span>📍 {item.pin}</span>
+                      <small>({item.region})</small>
+                      <span
+                        className="pincode-chip-del"
+                        onClick={(e) => removeRecentPin(e, item.pin)}
+                        title="Remove PIN"
+                        aria-label="Remove"
+                      >
+                        ×
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="pincode-popular-group">
+              <button
+                type="button"
+                className="pincode-popular-toggle-btn"
+                onClick={() => setShowPopular((v) => !v)}
+              >
+                {showPopular ? "▾ Hide Popular Hubs" : "▸ Quick Test Major Cities (Delhi NCR, Mumbai, Bengaluru, etc.)"}
+              </button>
+
+              {showPopular && (
+                <div className="pincode-popular-grid">
+                  {POPULAR_PIN_HUBS.map((hub) => (
+                    <button
+                      key={hub.pin}
+                      type="button"
+                      className="pincode-popular-chip"
+                      onClick={() => runCheck(hub.pin)}
+                    >
+                      <strong>{hub.name}</strong>
+                      <small>{hub.pin}</small>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Verified Delivery Result Card */}
       {result && (
-        <div className={`pincode-result ${result.valid ? "is-success" : "is-error"}`}>
+        <div className={`pincode-result-card ${result.valid ? "is-verified" : "is-error"}`}>
           {result.valid ? (
-            <div>
-              <strong>{result.eta}</strong>
-              <div style={{ fontSize: "0.8rem", marginTop: "2px" }}>{result.zone} • Free delivery on orders ₹499+</div>
+            <div className="pincode-verified-content">
+              <div className="pincode-verified-main-row">
+                <div className="pincode-destination-block">
+                  <div className="pincode-tag-row">
+                    <span className="pincode-badge-verified">✓ Serviceable</span>
+                    {result.isOrigin ? (
+                      <span className="pincode-badge-origin">🏠 Kitchen Origin Hub</span>
+                    ) : result.express ? (
+                      <span className="pincode-badge-express">⚡ Air Express Corridor</span>
+                    ) : (
+                      <span className="pincode-badge-standard">📦 Tracked Pan-India</span>
+                    )}
+                  </div>
+
+                  <h4 className="pincode-destination-heading">
+                    {result.postOffice ? result.postOffice : result.region}
+                  </h4>
+                  <p className="pincode-sub-destination">
+                    {result.state} • PIN: <strong>{result.pin}</strong>
+                  </p>
+                </div>
+
+                <div className="pincode-eta-block">
+                  <div className="pincode-eta-badge">{result.etaDays}</div>
+                  <strong className="pincode-eta-date">{result.etaDate}</strong>
+                </div>
+              </div>
+
+              <div className="pincode-perks-grid">
+                <div className="pincode-perk-item">
+                  <span>🚚</span>
+                  <div>
+                    <strong>{result.courier}</strong>
+                    <small>Real-time live SMS &amp; WhatsApp tracking</small>
+                  </div>
+                </div>
+
+                <div className="pincode-perk-item">
+                  <span>💵</span>
+                  <div>
+                    <strong>Cash on Delivery (COD) Available</strong>
+                    <small>Pay with cash or UPI on doorstep arrival</small>
+                  </div>
+                </div>
+
+                <div className="pincode-perk-item">
+                  <span>🛡️</span>
+                  <div>
+                    <strong>Free Delivery on Orders ₹499+</strong>
+                    <small>Zero breakage risk • Guaranteed safe transit</small>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pincode-footer-actions">
+                <div className="pincode-dispatch-timer">
+                  <span>⚡</span>
+                  <span>Order in next <strong>4h 30m</strong> for same-day batch dispatch from Bahadurgarh!</span>
+                </div>
+
+                <button
+                  type="button"
+                  className="pincode-switch-btn"
+                  onClick={() => setIsChanging(true)}
+                >
+                  Change PIN
+                </button>
+              </div>
             </div>
           ) : (
-            <p style={{ margin: 0 }}>{result.message}</p>
+            <div className="pincode-error-content">
+              <span className="pincode-error-icon">⚠️</span>
+              <div>
+                <strong>Delivery Notice</strong>
+                <p>{result.message}</p>
+                <button
+                  type="button"
+                  className="pincode-retry-btn"
+                  onClick={() => setIsChanging(true)}
+                >
+                  Try Another Pincode
+                </button>
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -3110,6 +3598,42 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkoutPincode, setCheckoutPincode] = useState(() => localStorage.getItem("kp_pincode") || "");
+  const [checkoutCity, setCheckoutCity] = useState("");
+  const [checkoutState, setCheckoutState] = useState("");
+  const [checkoutPinEstimate, setCheckoutPinEstimate] = useState(() => {
+    const saved = localStorage.getItem("kp_pincode");
+    return saved && /^\d{6}$/.test(saved) ? getPincodeEstimate(saved) : null;
+  });
+
+  useEffect(() => {
+    if (checkoutPinEstimate && checkoutPinEstimate.valid) {
+      if (!checkoutState && checkoutPinEstimate.state) {
+        setCheckoutState(checkoutPinEstimate.state);
+      }
+      if (!checkoutCity && checkoutPinEstimate.region) {
+        const guessedCity = checkoutPinEstimate.region.split("/")[0].trim();
+        setCheckoutCity(guessedCity);
+      }
+    }
+  }, [checkoutPinEstimate]);
+
+  const handlePincodeChange = (e) => {
+    const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+    setCheckoutPincode(val);
+    if (val.length === 6) {
+      const est = getPincodeEstimate(val);
+      setCheckoutPinEstimate(est);
+      if (est && est.valid) {
+        localStorage.setItem("kp_pincode", val);
+        setCheckoutState(est.state || "");
+        const guessedCity = est.region ? est.region.split("/")[0].trim() : "";
+        if (guessedCity) setCheckoutCity(guessedCity);
+      }
+    } else {
+      setCheckoutPinEstimate(null);
+    }
+  };
 
   const items = cart
     .map((entry) => ({ ...entry, product: productCatalog.find((item) => item.slug === entry.slug) }))
@@ -3266,9 +3790,55 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
             <label>Phone Number<input type="tel" name="phone" placeholder="10-digit mobile number" required /></label>
             <label>Email Address<input type="email" name="email" placeholder="For order & dispatch updates" /></label>
             <label>Delivery Address<input type="text" name="addressLine1" placeholder="House / Flat / Street / Landmark" required /></label>
-            <label>City<input type="text" name="city" placeholder="e.g. Bahadurgarh / New Delhi" required /></label>
-            <label>State<input type="text" name="state" placeholder="e.g. Haryana" required /></label>
-            <label>Pincode<input type="text" name="pincode" placeholder="6-digit postal code" required /></label>
+            
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+              <label>City
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="e.g. Bahadurgarh"
+                  value={checkoutCity}
+                  onChange={(e) => setCheckoutCity(e.target.value)}
+                  required
+                />
+              </label>
+              <label>State
+                <input
+                  type="text"
+                  name="state"
+                  placeholder="e.g. Haryana"
+                  value={checkoutState}
+                  onChange={(e) => setCheckoutState(e.target.value)}
+                  required
+                />
+              </label>
+            </div>
+
+            <label>
+              Pincode
+              <input
+                type="text"
+                name="pincode"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                placeholder="6-digit postal code"
+                value={checkoutPincode}
+                onChange={handlePincodeChange}
+                required
+              />
+            </label>
+
+            {checkoutPinEstimate && checkoutPinEstimate.valid && (
+              <div className="checkout-pincode-preview-badge">
+                <span className="checkout-badge-icon">⚡</span>
+                <div>
+                  <strong>{checkoutPinEstimate.etaDays} Express Dispatch</strong>
+                  <small>Delivering to {checkoutPinEstimate.region || checkoutPinEstimate.state} via {checkoutPinEstimate.courier}</small>
+                </div>
+              </div>
+            )}
+
             <label>
               Payment Method
               <select name="paymentMethod" defaultValue="COD" style={{ width: "100%", marginTop: "4px" }}>
