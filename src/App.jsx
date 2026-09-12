@@ -3019,72 +3019,257 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
 function AboutPage() {
   useDocumentMeta({
     title: "Our Story | Handcrafted Culinary Heritage | Khana Peena Ghar Se",
-    description: "The story of Rachna Gattani's kitchen, authentic homemade spices, and decades of traditional Indian culinary care in Bahadurgarh."
+    description: "The story of Rachna Gattani's kitchen in Bahadurgarh, authentic homemade spices, and decades of traditional Indian culinary care."
   });
 
   return (
     <div>
+      {/* Hero: Cinematic Heritage Canvas */}
       <div className="story-page-hero">
         <div className="content-container">
-          <div className="hero-eyebrow-pill">✦ Family Kitchen Legacy</div>
-          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)", margin: "0 0 12px" }}>
-            Some recipes are written.<br /><span className="highlight-gold">Some are remembered.</span>
+          <div className="hero-eyebrow-pill">✦ The Soul of Bahadurgarh · Est. 2024</div>
+          <h1 className="hero-headline" style={{ fontSize: "clamp(2.3rem, 4.2vw, 3.5rem)", margin: "8px 0 14px" }}>
+            Some recipes are written.<br /><span className="highlight-gold">Some are remembered by heart.</span>
           </h1>
-          <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>
-            Khana Peena Ghar Se began in our family kitchen, with recipes passed down through generations.
+          <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)", maxWidth: "680px", margin: "0 auto" }}>
+            How a mother’s sun-cured kitchen traditions in Haryana grew into a celebration of authentic Indian homestyle achars.
           </p>
+
+          <div className="about-hero-pills">
+            <div className="about-hero-pill">
+              <span>🏺</span> 100% Sun-Cured in Barnis
+            </div>
+            <div className="about-hero-pill">
+              <span>🌿</span> Pure Kacchi Ghani Mustard Oil
+            </div>
+            <div className="about-hero-pill">
+              <span>🚫</span> Zero Palm Oil & Preservatives
+            </div>
+            <div className="about-hero-pill">
+              <span>🏡</span> Small-Batch Kitchen Handcrafted
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="page-shell">
         <div className="content-container">
-          <div className="story-split" style={{ margin: "24px 0" }}>
-            <div className="story-image-panel">
-              <div className="story-portrait-frame">
+          {/* Founder's Journey Editorial Layout */}
+          <section className="about-founder-section">
+            <div className="about-founder-grid">
+              <div className="about-founder-frame">
                 <img
                   src={ABOUT_OWNER_IMAGE}
-                  alt="Rachna Gattani in her kitchen"
+                  alt="Rachna Gattani preparing traditional homemade pickles in her Bahadurgarh kitchen"
                   onError={(e) => { e.currentTarget.src = HOME_HERO_IMAGE; }}
                 />
+                <div className="about-founder-stamp">
+                  📍 Bahadurgarh Kitchen
+                </div>
+                <div className="about-founder-quote-card">
+                  <p>“Spices were never measured by factory scales, but by years of lived intuition and motherly care.”</p>
+                  <span>— Rachna Gattani, Founder & Head Chef</span>
+                </div>
               </div>
-              <div className="story-badge-quote">
-                “Same Recipes. New Homes.”
+
+              <div className="about-founder-copy">
+                <p className="section-eyebrow">The Founder's Journey</p>
+                <h2>From our family kitchen to your dining table.</h2>
+                <p>
+                  Khana Peena Ghar Se was born from a simple childhood truth: no commercial pickle in a supermarket plastic bottle ever matched the deep, sun-cured aroma of achar fermented on our grandmother's terrace in Bahadurgarh.
+                </p>
+                <p>
+                  For decades, our family recipes were prepared in small seasonal batches. Raw green mangoes from local mandis, hand-sliced on wooden boards, tossed in cast-iron roasted whole spices, and sealed inside glazed ceramic martabans under the golden Haryana sun.
+                </p>
+                <p>
+                  When friends and relatives continually requested jars to take across India, Rachna decided to open her kitchen doors to everyone seeking the pure, nostalgic punch of authentic ghar ka swaad—without industrial shortcuts, palm oil, or chemical vinegar.
+                </p>
+
+                <div className="about-founder-stats">
+                  <div className="about-founder-stat-item">
+                    <span className="about-stat-icon">☀️</span>
+                    <div className="about-stat-text">
+                      <strong>14–30 Days</strong>
+                      <span>Natural Sun Fermentation</span>
+                    </div>
+                  </div>
+                  <div className="about-founder-stat-item">
+                    <span className="about-stat-icon">🏺</span>
+                    <div className="about-stat-text">
+                      <strong>Max 25 Jars</strong>
+                      <span>Per Single Batch</span>
+                    </div>
+                  </div>
+                  <div className="about-founder-stat-item">
+                    <span className="about-stat-icon">🫒</span>
+                    <div className="about-stat-text">
+                      <strong>100% Kacchi Ghani</strong>
+                      <span>Cold-Pressed Mustard Oil</span>
+                    </div>
+                  </div>
+                  <div className="about-founder-stat-item">
+                    <span className="about-stat-icon">🚚</span>
+                    <div className="about-stat-text">
+                      <strong>Pan-India</strong>
+                      <span>Safe Glass Jar Doorstep</span>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+          </section>
+
+          {/* 4 Heirloom Traditions Section */}
+          <section className="about-traditions-section">
+            <div style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto" }}>
+              <p className="section-eyebrow">The 4 Heirloom Pillars</p>
+              <h2 className="section-title">The Four Pillars of Ghar Ka Swaad</h2>
+              <p className="section-description">
+                Every jar of Khana Peena Ghar Se is guided by four unbreakable principles that honour old-world Indian culinary science.
+              </p>
             </div>
 
-            <div className="story-copy-panel">
-              <p className="section-eyebrow">The Founder's Journey</p>
-              <h2>From our kitchen to your family dining table.</h2>
-              <p>
-                Khana Peena Ghar Se began in Rachna Gattani’s kitchen in Bahadurgarh. For decades, spices were never measured by industrial standards, but by years of intuition, family care, and lived culinary wisdom.
-              </p>
-              <p>
-                What started as a daughter's effort to preserve her mother's recipes has grown into a brand that brings authentic, homemade Indian pickles to tables across the country.
-              </p>
-              <p>
-                We make small-batch pickles using traditional methods and honest ingredients, so that every jar carries a bit of home to your table.
-              </p>
-              <div className="story-signature">
-                — Rachna Gattani
+            <div className="about-traditions-grid">
+              <div className="about-tradition-card">
+                <div className="tradition-header">
+                  <span className="tradition-icon">☀️</span>
+                  <div>
+                    <span className="tradition-tag">धूप का जादू</span>
+                    <h3>Solar Fermentation</h3>
+                  </div>
+                </div>
+                <p>
+                  We never use artificial heating chambers. Natural solar rays gently evaporate moisture from raw fruit, concentrating natural pectins and creating a deep, rich cure that lasts over a year.
+                </p>
+              </div>
+
+              <div className="about-tradition-card">
+                <div className="tradition-header">
+                  <span className="tradition-icon">🫒</span>
+                  <div>
+                    <span className="tradition-tag">कच्ची घानी शुद्धता</span>
+                    <h3>1st-Press Mustard Oil</h3>
+                  </div>
+                </div>
+                <p>
+                  100% pure cold-pressed mustard oil with its natural pungent kick. The oil acts as a natural antibacterial shield, preserving our pickles without synthetic chemical acidity regulators.
+                </p>
+              </div>
+
+              <div className="about-tradition-card">
+                <div className="tradition-header">
+                  <span className="tradition-icon">🏺</span>
+                  <div>
+                    <span className="tradition-tag">बरनी की तासीर</span>
+                    <h3>Glazed Ceramic Barnis</h3>
+                  </div>
+                </div>
+                <p>
+                  We rest all our pickles in porcelain martabans tied with breathable white muslin cloth. Ceramic insulates against drastic temperature swings, preventing harmful plastic polymer contamination.
+                </p>
+              </div>
+
+              <div className="about-tradition-card">
+                <div className="tradition-header">
+                  <span className="tradition-icon">🌿</span>
+                  <div>
+                    <span className="tradition-tag">भुने खड़े मसाले</span>
+                    <h3>Cast-Iron Roasted Spices</h3>
+                  </div>
+                </div>
+                <p>
+                  Whole fenugreek, fennel, nigella seeds, and aromatic hing are roasted on cast-iron tawas and coarsely hand-crushed to unleash fresh volatile oils with zero stale fillers.
+                </p>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className="story-pillars-grid">
-            <div className="pillar-card">
-              <span className="pillar-icon">🌿</span>
-              <h3>Authentic Recipes</h3>
-              <p>Time-tested homestyle proportions, roasted whole masalas, and pure cold-pressed mustard oil.</p>
+          {/* Kitchen Moments Visual Gallery */}
+          <section className="about-gallery-section">
+            <div style={{ textAlign: "center", maxWidth: "600px", margin: "0 auto" }}>
+              <p className="section-eyebrow">Ghar Ki Rasoi</p>
+              <h2 className="section-title">A Glimpse Into Our Kitchen</h2>
+              <p className="section-description">
+                Raw ingredients basking in the afternoon sun, spices being hand-blended, and fresh batches packed into glass jars.
+              </p>
             </div>
-            <div className="pillar-card">
-              <span className="pillar-icon">🏡</span>
-              <h3>Family Values</h3>
-              <p>Prepared with the same care and patience we give to our own family dining table every day.</p>
+
+            <div className="about-gallery-grid">
+              <div className="about-gallery-item">
+                <img src="/images/process/step-2-prepare.jpg" alt="Sun drying raw mango slices on terrace" />
+                <div className="about-gallery-caption">
+                  Solar Evaporation on Terrace
+                </div>
+              </div>
+              <div className="about-gallery-item">
+                <img src="/images/process/step-3-mix.jpg" alt="Folding roasted whole masalas into mustard oil" />
+                <div className="about-gallery-caption">
+                  Golden Mustard Oil Infusion
+                </div>
+              </div>
+              <div className="about-gallery-item">
+                <img src="/images/process/step-4-rest.jpg" alt="Ceramic barnis resting in sun" />
+                <div className="about-gallery-caption">
+                  21-Day Solar Maturation in Barnis
+                </div>
+              </div>
+              <div className="about-gallery-item">
+                <img src="/images/brand/lifestyle-dining.jpg" alt="Traditional Indian meal with ghar ka achar" />
+                <div className="about-gallery-caption">
+                  From Our Kitchen to Your Thali
+                </div>
+              </div>
             </div>
-            <div className="pillar-card">
-              <span className="pillar-icon">🌟</span>
-              <h3>A Tastier Tomorrow</h3>
-              <p>Preserving regional Indian culinary wisdom without shortcuts, artificial colours, or chemicals.</p>
+          </section>
+
+          {/* Purity Comparison Matrix */}
+          <section className="about-purity-section">
+            <div style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto" }}>
+              <p className="section-eyebrow">The Purity Promise</p>
+              <h2 className="section-title">Factory Pickle vs. Rachna's Kitchen</h2>
+              <p className="section-description">
+                See why small-batch homemade preparation makes all the difference for your health, digestive comfort, and authentic taste.
+              </p>
+            </div>
+
+            <div className="purity-comparison-grid">
+              <div className="purity-col-factory">
+                <h3><span>❌</span> Commercial Factory Pickles</h3>
+                <ul className="purity-list factory">
+                  <li><span>✕</span> Cheap refined palm oil or cottonseed oil blend</li>
+                  <li><span>✕</span> Synthetic acetic acid (chemical vinegar) for fake tang</li>
+                  <li><span>✕</span> Sodium Benzoate (E211) chemical preservatives</li>
+                  <li><span>✕</span> Bulk machine puree with bruised fruit</li>
+                  <li><span>✕</span> Stored in industrial plastic drums for months</li>
+                </ul>
+              </div>
+
+              <div className="purity-col-ghar">
+                <h3><span>✓</span> Khana Peena Ghar Se</h3>
+                <ul className="purity-list ghar">
+                  <li><span>✓</span> 100% Pure Cold-Pressed Kacchi Ghani Mustard Oil</li>
+                  <li><span>✓</span> Natural solar fermentation & Sendha Namak for authentic punch</li>
+                  <li><span>✓</span> 100% Chemical-Free & Preservative-Free</li>
+                  <li><span>✓</span> Hand-inspected seasonal Ramkela mangoes & chillies</li>
+                  <li><span>✓</span> Fermented in glazed ceramic barnis & packed in glass jars</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* CTA Banner */}
+          <div className="about-cta-banner">
+            <h2>Taste the Nostalgia of Home.</h2>
+            <p>
+              Order our handcrafted achars directly to your doorstep across India, or explore our complete 4-in-1 signature heirloom combo box.
+            </p>
+            <div style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap" }}>
+              <Link to="/achar" className="button button-primary" style={{ padding: "14px 28px", fontSize: "0.95rem" }}>
+                Explore All Achars →
+              </Link>
+              <Link to="/how-its-made" className="button button-cream-secondary" style={{ padding: "14px 28px", fontSize: "0.95rem" }}>
+                See How It's Made
+              </Link>
             </div>
           </div>
 
