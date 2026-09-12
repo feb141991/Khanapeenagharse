@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="greenGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#2D634F"/>
+      <stop offset="100%" stop-color="#15382B"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2B558"/>
+      <stop offset="50%" stop-color="#C89B3C"/>
+      <stop offset="100%" stop-color="#B3862B"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Badge Circle -->
+  <circle cx="256" cy="256" r="236" fill="url(#greenGrad)"/>
+  <circle cx="256" cy="256" r="236" fill="none" stroke="url(#goldGrad)" stroke-width="20"/>
+  <circle cx="256" cy="256" r="218" fill="none" stroke="#E2B558" stroke-width="4" stroke-dasharray="8 6" opacity="0.6"/>
+
+  <!-- Barni Jar Body -->
+  <rect x="144" y="220" width="224" height="200" rx="32" fill="#F7F1E7" stroke="url(#goldGrad)" stroke-width="8"/>
+  
+  <!-- Glazed Mustard Shoulder -->
+  <rect x="156" y="160" width="200" height="76" rx="20" fill="url(#goldGrad)"/>
+  
+  <!-- White Muslin Tied Neck -->
+  <rect x="180" y="128" width="152" height="40" rx="14" fill="#FFFFFF" stroke="url(#goldGrad)" stroke-width="6"/>
+  <line x1="176" y1="156" x2="336" y2="156" stroke="#C89B3C" stroke-width="4"/>
+  
+  <!-- Lid Knob -->
+  <circle cx="256" cy="112" r="22" fill="url(#goldGrad)"/>
+  
+  <!-- KP Monogram Text -->
+  <text x="256" y="348" font-family="'Playfair Display', Georgia, serif" font-size="82" font-weight="bold" fill="#1F4A3A" text-anchor="middle" letter-spacing="2">KP</text>
+  
+  <!-- Small Star Accents -->
+  <path d="M 256 60 L 260 72 L 272 76 L 260 80 L 256 92 L 252 80 L 240 76 L 252 72 Z" fill="#E2B558"/>
+</svg>
