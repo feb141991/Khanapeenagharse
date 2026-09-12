@@ -1677,8 +1677,8 @@ function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
     <div>
       <div className="shop-hero">
         <div className="content-container">
-          <p className="hero-eyebrow">Our Complete Collection</p>
-          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)" }}>The Pickle Chapter</h1>
+          <div className="hero-eyebrow-pill">✦ Our Complete Collection</div>
+          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)", margin: "0 0 10px" }}>The Pickle Chapter</h1>
           <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>Traditional recipes. Honest ingredients. Made in small batches, just like home.</p>
         </div>
       </div>
@@ -2001,9 +2001,9 @@ function AboutPage() {
     <div>
       <div className="story-page-hero">
         <div className="content-container">
-          <p className="hero-eyebrow">Family Kitchen Legacy</p>
-          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)" }}>
-            Some recipes are written.<br />Some are remembered.
+          <div className="hero-eyebrow-pill">✦ Family Kitchen Legacy</div>
+          <h1 className="hero-headline" style={{ fontSize: "clamp(2.4rem, 4.5vw, 3.6rem)", margin: "0 0 12px" }}>
+            Some recipes are written.<br /><span className="highlight-gold">Some are remembered.</span>
           </h1>
           <p className="hero-subhead" style={{ color: "var(--mustard-gold-light)" }}>
             Khana Peena Ghar Se began in our family kitchen, with recipes passed down through generations.
