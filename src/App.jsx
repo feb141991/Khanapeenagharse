@@ -279,7 +279,11 @@ function HeroSection() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="hero-image-card">
+            <motion.div
+              className="hero-image-card"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+            >
               <img
                 src={HOME_HERO_IMAGE}
                 alt="Traditional homemade Indian achar jars on dining table"
@@ -287,7 +291,7 @@ function HeroSection() {
                   e.currentTarget.src = "/images/logo.png";
                 }}
               />
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
