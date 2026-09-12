@@ -1,0 +1,136 @@
+const { getSupabaseAdmin } = require("./_lib/supabase");
+
+const headers = { "Content-Type": "application/json" };
+
+function randomOrderNumber() {
+  const stamp = Date.now().toString().slice(-6);
+  const salt = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `KP-${stamp}-${salt}`;
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+  }
+
+  try {
+    const supabase = getSupabaseAdmin();
+    const { customer, items } = JSON.parse(event.body || "{}");
+
+    if (!customer?.customerName || !customer?.phone || !customer?.addressLine1 || !customer?.city || !customer?.state || !customer?.pincode) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Missing customer fields" }) };
+    }
+    if (!Array.isArray(items) || !items.length) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Cart is empty" }) };
+    }
+
+    const slugs = [...new Set(items.map((item) => item.slug).filter(Boolean))];
+    const { data: liveProducts, error: productsError } = await supabase
+      .from("products")
+      .select("slug, name, price, stock_quantity, active")
+      .in("slug", slugs);
+    if (productsError) throw productsError;
+
+    const liveProductMap = new Map((liveProducts || []).map((product) => [product.slug, product]));
+    for (const item of items) {
+      const liveProduct = liveProductMap.get(item.slug);
+      if (!liveProduct || liveProduct.active === false) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: `${item.name || "This item"} is not available right now.` }) };
+      }
+      if (Number(item.quantity) > Number(liveProduct.stock_quantity || 0)) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: `${liveProduct.name} is out of stock for the requested quantity.` })
+        };
+      }
+    }
+
+    const validatedItems = items.map((item) => {
+      const liveProduct = liveProductMap.get(item.slug);
+      return {
+        ...item,
+        name: liveProduct.name,
+        unitPrice: Number(liveProduct.price)
+      };
+    });
+
+    const totalAmount = validatedItems.reduce((sum, item) => sum + (Number(item.unitPrice) * Number(item.quantity)), 0);
+
+    const customerPayload = {
+      full_name: customer.customerName,
+      phone: customer.phone,
+      email: customer.email || null,
+      address_line_1: customer.addressLine1,
+      address_line_2: customer.addressLine2 || null,
+      city: customer.city,
+      state: customer.state,
+      pincode: customer.pincode
+    };
+
+    const { data: existingCustomer } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("phone", customer.phone)
+      .maybeSingle();
+
+    let customerId = existingCustomer?.id;
+
+    if (!customerId) {
+      const { data: insertedCustomer, error: customerError } = await supabase
+        .from("customers")
+        .insert(customerPayload)
+        .select("id")
+        .single();
+      if (customerError) throw customerError;
+      customerId = insertedCustomer.id;
+    } else {
+      await supabase.from("customers").update(customerPayload).eq("id", customerId);
+    }
+
+    const orderPayload = {
+      order_number: randomOrderNumber(),
+      customer_id: customerId,
+      customer_name: customer.customerName,
+      phone: customer.phone,
+      status: "pending",
+      total_amount: totalAmount,
+      delivery_notes: customer.notes || null,
+      items_summary: validatedItems.map((item) => `${item.name} x${item.quantity}`).join(", ")
+    };
+
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
+      .insert(orderPayload)
+      .select("id, order_number, status, total_amount")
+      .single();
+    if (orderError) throw orderError;
+
+    const orderItems = validatedItems.map((item) => ({
+      order_id: order.id,
+      product_slug: item.slug,
+      product_name: item.name,
+      size_label: item.size,
+      quantity: Number(item.quantity),
+      unit_price: Number(item.unitPrice),
+      line_total: Number(item.unitPrice) * Number(item.quantity)
+    }));
+
+    const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+    if (itemsError) throw itemsError;
+
+    for (const item of validatedItems) {
+      const currentStock = Number(liveProductMap.get(item.slug)?.stock_quantity || 0);
+      const nextStock = Math.max(0, currentStock - Number(item.quantity));
+      const { error: stockError } = await supabase
+        .from("products")
+        .update({ stock_quantity: nextStock })
+        .eq("slug", item.slug);
+      if (stockError) throw stockError;
+    }
+
+    return { statusCode: 200, headers, body: JSON.stringify({ ok: true, order }) };
+  } catch (error) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: error.message || "Internal server error" }) };
+  }
+};
