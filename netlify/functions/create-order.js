@@ -93,6 +93,14 @@ exports.handler = async (event) => {
       customer_id: customerId,
       customer_name: customer.customerName,
       phone: customer.phone,
+      email: customer.email || null,
+      address_line_1: customer.addressLine1,
+      address_line_2: customer.addressLine2 || null,
+      city: customer.city,
+      state: customer.state,
+      pincode: customer.pincode,
+      payment_method: customer.paymentMethod || "COD",
+      payment_status: customer.paymentMethod === "PREPAID_UPI" ? "paid" : "pending",
       status: "pending",
       total_amount: totalAmount,
       delivery_notes: customer.notes || null,
@@ -102,7 +110,7 @@ exports.handler = async (event) => {
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert(orderPayload)
-      .select("id, order_number, status, total_amount")
+      .select("id, order_number, status, total_amount, customer_name, phone, email, address_line_1, city, state, pincode, payment_method, payment_status, created_at")
       .single();
     if (orderError) throw orderError;
 

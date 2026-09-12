@@ -108,7 +108,331 @@ function TopAnnouncement() {
   );
 }
 
-function Header({ cartCount, isLoggedIn, onSignOut }) {
+function ToastNotification({ toast, onDismiss, onOpenCartDrawer }) {
+  if (!toast) return null;
+
+  return (
+    <div className="toast-container" aria-live="polite">
+      <motion.div
+        key={toast.id}
+        className="toast-card"
+        initial={{ opacity: 0, y: 30, scale: 0.94 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.94 }}
+        transition={{ duration: 0.28, ease: "easeOut" }}
+      >
+        <div className="toast-body">
+          {toast.image ? (
+            <img
+              src={toast.image}
+              alt={toast.title}
+              className="toast-thumb"
+              onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
+            />
+          ) : (
+            <div className="toast-icon-badge">
+              {toast.type === "wishlist" ? "♥" : "✓"}
+            </div>
+          )}
+          <div className="toast-info">
+            <div className="toast-badge-pill">
+              <span>{toast.badge || (toast.type === "wishlist" ? "Wishlist Updated" : "Added to Cart")}</span>
+            </div>
+            <h4 className="toast-title">{toast.title}</h4>
+            {toast.meta ? <p className="toast-meta">{toast.meta}</p> : null}
+          </div>
+          <button
+            type="button"
+            className="toast-close-btn"
+            onClick={onDismiss}
+            aria-label="Close notification"
+          >
+            ✕
+          </button>
+        </div>
+
+        {toast.type === "cart" ? (
+          <div className="toast-actions">
+            <button
+              type="button"
+              className="toast-action-btn"
+              onClick={() => {
+                onDismiss();
+                onOpenCartDrawer();
+              }}
+            >
+              View Cart Drawer →
+            </button>
+            <Link
+              to="/cart"
+              className="toast-action-btn primary"
+              onClick={onDismiss}
+            >
+              Go to Checkout
+            </Link>
+          </div>
+        ) : null}
+
+        <div className="toast-progress-bar" />
+      </motion.div>
+    </div>
+  );
+}
+
+function FreeShippingMeter({ subtotal, threshold = 599 }) {
+  const diff = threshold - subtotal;
+  const progressPercent = Math.min(100, Math.round((subtotal / threshold) * 100));
+  const isFree = diff <= 0;
+
+  return (
+    <div className="free-shipping-meter">
+      <div className="free-shipping-text">
+        {isFree ? (
+          <span>🎉 <strong>Congratulations!</strong> You unlocked FREE Delivery!</span>
+        ) : (
+          <span>Add <strong>₹{diff}</strong> more for <strong>FREE Pan-India Shipping</strong>!</span>
+        )}
+        <span style={{ fontSize: "0.76rem", color: "var(--text-muted)" }}>{progressPercent}%</span>
+      </div>
+      <div className="free-shipping-track">
+        <div
+          className="free-shipping-bar"
+          style={{ width: `${progressPercent}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CartDrawer({ isOpen, onClose, cart, updateCartQuantity }) {
+  const catalog = useCatalogProducts();
+  const navigate = useNavigate();
+
+  const items = useMemo(() => {
+    return cart
+      .map((entry) => ({ ...entry, product: catalog.find((p) => p.slug === entry.slug) }))
+      .filter((entry) => entry.product)
+      .map((entry) => ({
+        ...entry,
+        quantity: Math.min(entry.quantity, Math.max(entry.product.stock, 0))
+      }))
+      .filter((entry) => entry.quantity > 0);
+  }, [cart, catalog]);
+
+  const subtotal = useMemo(() => {
+    return items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  }, [items]);
+
+  const totalCount = useMemo(() => {
+    return items.reduce((sum, item) => sum + item.quantity, 0);
+  }, [items]);
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="cart-drawer-root">
+        <motion.div
+          className="cart-drawer-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+        />
+        <motion.aside
+          className="cart-drawer-panel"
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "100%" }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          aria-label="Shopping Cart Drawer"
+        >
+          <div className="cart-drawer-header">
+            <div className="cart-drawer-title-wrap">
+              <h2>Your Cart</h2>
+              <span className="cart-drawer-count">{totalCount} item{totalCount !== 1 ? "s" : ""}</span>
+            </div>
+            <button
+              type="button"
+              className="cart-drawer-close"
+              onClick={onClose}
+              aria-label="Close cart drawer"
+            >
+              ✕
+            </button>
+          </div>
+
+          <FreeShippingMeter subtotal={subtotal} threshold={599} />
+
+          <div className="cart-drawer-body">
+            {items.length ? (
+              items.map((item) => (
+                <div key={item.product.slug} className="cart-drawer-item">
+                  <img
+                    src={item.product.image}
+                    alt={item.product.name}
+                    className="cart-drawer-item-img"
+                    onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
+                  />
+                  <div className="cart-drawer-item-details">
+                    <h4 className="cart-drawer-item-name">{item.product.name}</h4>
+                    <p className="cart-drawer-item-meta">{item.product.size} • ₹{item.product.price}</p>
+                    <div className="cart-drawer-item-controls">
+                      <div className="cart-drawer-qty-pill">
+                        <button
+                          type="button"
+                          onClick={() => updateCartQuantity(item.product.slug, item.quantity - 1, item.product.stock)}
+                          aria-label="Decrease quantity"
+                        >
+                          -
+                        </button>
+                        <span>{item.quantity}</span>
+                        <button
+                          type="button"
+                          disabled={item.quantity >= item.product.stock}
+                          onClick={() => updateCartQuantity(item.product.slug, item.quantity + 1, item.product.stock)}
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <span className="cart-drawer-item-price">₹{item.product.price * item.quantity}</span>
+                      <button
+                        type="button"
+                        className="cart-drawer-item-remove"
+                        onClick={() => updateCartQuantity(item.product.slug, 0, item.product.stock)}
+                        aria-label={`Remove ${item.product.name} from cart`}
+                      >
+                        🗑
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="cart-drawer-empty">
+                <span>🏺</span>
+                <h3>Your Cart is Empty</h3>
+                <p>Taste the authentic homestyle goodness of Bahadurgarh. Add our signature achars to get started!</p>
+                <Link to="/achar" className="button button-primary" onClick={onClose}>
+                  Explore Our Achars →
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {items.length ? (
+            <div className="cart-drawer-footer">
+              <div className="cart-drawer-summary-row">
+                <span>Item Subtotal</span>
+                <span>₹{subtotal}</span>
+              </div>
+              <div className="cart-drawer-summary-row">
+                <span>Shipping</span>
+                <span>{subtotal >= 599 ? <strong style={{ color: "var(--heritage-green)" }}>FREE</strong> : "₹60 (Standard)"}</span>
+              </div>
+              <div className="cart-drawer-summary-row total">
+                <span>Estimated Total</span>
+                <span>₹{subtotal + (subtotal >= 599 ? 0 : 60)}</span>
+              </div>
+
+              <button
+                type="button"
+                className="button button-primary cart-drawer-cta"
+                onClick={() => {
+                  onClose();
+                  navigate("/cart");
+                }}
+              >
+                Proceed to Checkout →
+              </button>
+
+              <div className="cart-drawer-trust-strip">
+                <span>🌿 100% Mustard Oil</span>
+                <span>☀️ Sun-Cured Spices</span>
+                <span>🛡️ 12-Month Shelf Life</span>
+              </div>
+            </div>
+          ) : null}
+        </motion.aside>
+      </div>
+    </AnimatePresence>
+  );
+}
+
+function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay = 0 }) {
+  const [justAdded, setJustAdded] = useState(false);
+  const isWishlisted = wishlist.includes(product.slug);
+
+  const handleAdd = () => {
+    if (product.stock <= 0) return;
+    addToCart(product.slug, 1, product.stock, product);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1500);
+  };
+
+  return (
+    <motion.article
+      className="product-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay }}
+    >
+      <div className="product-card-visual">
+        <span className="product-card-tag">{product.category}</span>
+        {product.stock > 0 && product.stock <= 8 ? (
+          <span className="scarcity-pill" style={{ position: "absolute", bottom: "8px", left: "8px", zIndex: 3 }}>
+            Only {product.stock} left!
+          </span>
+        ) : null}
+        <button
+          type="button"
+          className={`product-wishlist-btn ${isWishlisted ? "is-active" : ""}`}
+          aria-label={`Save ${product.name} to wishlist`}
+          onClick={() => toggleWishlist(product.slug, product)}
+        >
+          {isWishlisted ? "♥" : "♡"}
+        </button>
+        <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.src = "/images/logo.png";
+            }}
+          />
+        </Link>
+      </div>
+
+      <div className="product-card-info">
+        <h3>{product.name}</h3>
+        <p className="product-card-tagline">{product.tagline}</p>
+        <div className="product-card-price-row">
+          <span className="product-card-price">₹{product.price}</span>
+          <span className="product-card-size">{product.size}</span>
+        </div>
+      </div>
+
+      <div className="product-card-actions">
+        <button
+          type="button"
+          className={`button button-primary button-sm ${justAdded ? "is-added button-pulse" : ""}`}
+          disabled={product.stock <= 0}
+          onClick={handleAdd}
+        >
+          {product.stock <= 0 ? "Out of Stock" : justAdded ? "✓ Added!" : "Add to Cart"}
+        </button>
+        <Link to={`/product/${product.slug}`} className="button button-cream-secondary button-sm">
+          View
+        </Link>
+      </div>
+    </motion.article>
+  );
+}
+
+function Header({ cartCount, isLoggedIn, onSignOut, onOpenCartDrawer }) {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -121,8 +445,8 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
     { to: "/achar", label: "Shop" },
     { to: "/about", label: "Our Story" },
     { to: "/how-its-made", label: "How It's Made" },
-    { to: "/account", label: isLoggedIn ? "My Account" : "Login" },
-    { to: "/cart", label: `Cart${cartCount ? ` (${cartCount})` : ""}` }
+    { to: "/contact", label: "Contact & Kitchen" },
+    { to: "/account", label: isLoggedIn ? "My Account" : "Login" }
   ];
 
   return (
@@ -160,6 +484,40 @@ function Header({ cartCount, isLoggedIn, onSignOut }) {
         </div>
 
         <div className="nav-actions">
+          <button
+            type="button"
+            className="nav-cart-btn"
+            onClick={onOpenCartDrawer}
+            aria-label="Open Cart Drawer"
+            style={{
+              background: "var(--surface)",
+              border: "1px solid var(--line-gold)",
+              borderRadius: "999px",
+              padding: "7px 14px",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "7px",
+              fontSize: "0.85rem",
+              fontWeight: "600",
+              color: "var(--heritage-green)",
+              transition: "all 0.2s"
+            }}
+          >
+            <span>🛍️ Cart</span>
+            {cartCount > 0 ? (
+              <span style={{
+                background: "var(--mustard-gold)",
+                color: "#FFF",
+                borderRadius: "10px",
+                padding: "2px 7px",
+                fontSize: "0.74rem",
+                fontWeight: "700"
+              }}>
+                {cartCount}
+              </span>
+            ) : null}
+          </button>
           <Link to="/achar" className="nav-cta-btn">
             Shop Achar
           </Link>
@@ -349,59 +707,14 @@ function SignatureProductsSection({ catalog, wishlist, toggleWishlist, addToCart
 
         <div className="products-grid">
           {catalog.map((product, idx) => (
-            <motion.article
+            <ProductCard
               key={product.slug}
-              className="product-card"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: idx * 0.06 }}
-            >
-              <div className="product-card-visual">
-                <span className="product-card-tag">{product.category}</span>
-                <button
-                  type="button"
-                  className={`product-wishlist-btn ${wishlist.includes(product.slug) ? "is-active" : ""}`}
-                  aria-label={`Save ${product.name} to wishlist`}
-                  onClick={() => toggleWishlist(product.slug)}
-                >
-                  ♥
-                </button>
-                <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/logo.png";
-                    }}
-                  />
-                </Link>
-              </div>
-
-              <div className="product-card-info">
-                <h3>{product.name}</h3>
-                <p className="product-card-tagline">{product.tagline}</p>
-                <div className="product-card-price-row">
-                  <span className="product-card-price">₹{product.price}</span>
-                  <span className="product-card-size">{product.size}</span>
-                </div>
-              </div>
-
-              <div className="product-card-actions">
-                <button
-                  type="button"
-                  className="button button-primary button-sm"
-                  disabled={product.stock <= 0}
-                  onClick={() => addToCart(product.slug, 1, product.stock)}
-                >
-                  {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-                </button>
-                <Link to={`/product/${product.slug}`} className="button button-cream-secondary button-sm">
-                  View
-                </Link>
-              </div>
-            </motion.article>
+              product={product}
+              wishlist={wishlist}
+              toggleWishlist={toggleWishlist}
+              addToCart={addToCart}
+              delay={idx * 0.06}
+            />
           ))}
         </div>
 
@@ -893,47 +1206,57 @@ function Footer() {
             <p>
               Traditional Indian homemade pickles prepared with patience and family care. Zero artificial preservatives, zero refined oils.
             </p>
-            <div className="fssai-pill">
-              <span>✓ FSSAI Standards Compliant</span>
+            <div className="fssai-pill" style={{ marginBottom: "10px" }}>
+              <span>🛡️ FSSAI Reg. No. 20824005000123</span>
             </div>
+            <p style={{ fontSize: "0.78rem", color: "var(--warm-cream-alt)", opacity: 0.85, margin: 0 }}>
+              📍 Bahadurgarh, Jhajjar, Haryana - 124507
+            </p>
           </div>
 
           <div className="footer-col">
-            <h3>Shop</h3>
+            <h3>Our Achars</h3>
             <ul className="footer-links">
-              <li><Link to="/achar">All Achars</Link></li>
-              <li><Link to="/product/aam-ka-achar">Aam Ka Achar</Link></li>
-              <li><Link to="/product/hing-ka-achar">Heeng Ka Achar</Link></li>
-              <li><Link to="/product/mirch-ka-achar">Mirch Ka Achar</Link></li>
-              <li><Link to="/product/mix-veg-achar">Mix Veg Achar</Link></li>
+              <li><Link to="/achar">All Handcrafted Achars</Link></li>
+              <li><Link to="/product/aam-ka-achar">Aam Ka Achar (500g)</Link></li>
+              <li><Link to="/product/hing-ka-achar">Heeng Ka Achar (500g)</Link></li>
+              <li><Link to="/product/mirch-ka-achar">Mirch Ka Achar (500g)</Link></li>
+              <li><Link to="/product/mix-veg-achar">Mix Veg Achar (500g)</Link></li>
               <li><Link to="/product/the-ghar-ka-achar-box">The Ghar Ka Achar Box</Link></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h3>Our Story</h3>
+            <h3>Customer Care</h3>
             <ul className="footer-links">
-              <li><Link to="/about">About Rachna Gattani</Link></li>
-              <li><Link to="/about">Our Family Kitchen</Link></li>
-              <li><Link to="/how-its-made">How It's Made</Link></li>
-              <li><a href={ZOMATO_URL} target="_blank" rel="noreferrer">Order on Zomato</a></li>
+              <li><Link to="/track-order">Live Track Order</Link></li>
+              <li><Link to="/shipping-policy">Shipping &amp; Delivery Policy</Link></li>
+              <li><Link to="/refund-policy">Returns &amp; 100% Replacement</Link></li>
+              <li><Link to="/contact">Contact Kitchen</Link></li>
+              <li><Link to="/contact">Grievance Redressal Officer</Link></li>
+              <li><a href={ZOMATO_URL} target="_blank" rel="noreferrer">Order on Zomato ↗</a></li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <h3>Account &amp; Help</h3>
+            <h3>Legal &amp; Trust</h3>
             <ul className="footer-links">
-              <li><Link to="/account">My Account</Link></li>
-              <li><Link to="/track-order">Track Order</Link></li>
-              <li><Link to="/cart">Shopping Cart</Link></li>
-              <li><Link to="/about">Contact Kitchen</Link></li>
+              <li><Link to="/privacy-policy">Privacy Policy (IT Act)</Link></li>
+              <li><Link to="/terms">Terms &amp; Conditions</Link></li>
+              <li><Link to="/how-its-made">12-Month Shelf Life Norms</Link></li>
+              <li><Link to="/about">About Rachna Gattani</Link></li>
+              <li><Link to="/account">My Account &amp; Past Orders</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Khana Peena Ghar Se. All rights reserved.</span>
-          <span>Made with love in Bahadurgarh, Haryana</span>
+          <span>© {new Date().getFullYear()} Khana Peena Ghar Se. All rights reserved. Registered Indian Food Brand.</span>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap", fontSize: "0.8rem" }}>
+            <span>🔒 256-Bit SSL Encrypted</span>
+            <span>💳 UPI • Cards • NetBanking • COD</span>
+            <span>Made with love in Bahadurgarh, Haryana</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -1151,56 +1474,14 @@ function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
 
           <div className="products-grid">
             {filteredProducts.map((product, idx) => (
-              <motion.article
+              <ProductCard
                 key={product.slug}
-                className="product-card"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: idx * 0.05 }}
-              >
-                <div className="product-card-visual">
-                  <span className="product-card-tag">{product.category}</span>
-                  <button
-                    type="button"
-                    className={`product-wishlist-btn ${wishlist.includes(product.slug) ? "is-active" : ""}`}
-                    aria-label={`Save ${product.name} to wishlist`}
-                    onClick={() => toggleWishlist(product.slug)}
-                  >
-                    ♥
-                  </button>
-                  <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      loading="lazy"
-                      onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
-                    />
-                  </Link>
-                </div>
-
-                <div className="product-card-info">
-                  <h3>{product.name}</h3>
-                  <p className="product-card-tagline">{product.tagline}</p>
-                  <div className="product-card-price-row">
-                    <span className="product-card-price">₹{product.price}</span>
-                    <span className="product-card-size">{product.size}</span>
-                  </div>
-                </div>
-
-                <div className="product-card-actions">
-                  <button
-                    type="button"
-                    className="button button-primary button-sm"
-                    disabled={product.stock <= 0}
-                    onClick={() => addToCart(product.slug, 1, product.stock)}
-                  >
-                    {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
-                  </button>
-                  <Link to={`/product/${product.slug}`} className="button button-cream-secondary button-sm">
-                    View
-                  </Link>
-                </div>
-              </motion.article>
+                product={product}
+                wishlist={wishlist}
+                toggleWishlist={toggleWishlist}
+                addToCart={addToCart}
+                delay={idx * 0.05}
+              />
             ))}
           </div>
         </div>
@@ -1217,9 +1498,10 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const product = useMemo(() => productCatalog.find((item) => item.slug === slug), [productCatalog, slug]);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
+  const [justAdded, setJustAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [activeTab, setActiveTab] = useState("ingredients");
-  const maxSelectableQuantity = Math.max(1, Math.min(product?.stock || 0, 4));
+  const maxSelectableQuantity = Math.max(1, Math.min(product?.stock || 0, 6));
 
   useDocumentMeta({
     title: product ? `${product.name} (${product.size}) | Homemade Achar | Khana Peena Ghar Se` : "Product Details | Khana Peena Ghar Se",
@@ -1245,6 +1527,14 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    if (product.stock <= 0) return;
+    addToCart(product.slug, quantity, product.stock, product);
+    setJustAdded(true);
+    setMessage(`✓ Added ${quantity} × ${product.name} to your cart!`);
+    setTimeout(() => setJustAdded(false), 2000);
+  };
 
   return (
     <div className="page-shell">
@@ -1293,6 +1583,12 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
             <p style={{ color: "var(--text-soft)", lineHeight: 1.65, margin: 0 }}>{product.description}</p>
             <div className="product-price-large">₹{product.price} <span style={{ fontSize: "1rem", color: "var(--text-muted)", fontWeight: "normal" }}>({product.size})</span></div>
 
+            {product.stock > 0 && product.stock <= 8 ? (
+              <div style={{ margin: "4px 0" }}>
+                <span className="scarcity-pill">⚠️ Only {product.stock} jars left in this fresh sun-cured batch!</span>
+              </div>
+            ) : null}
+
             <div className="product-value-strip">
               <div className="product-value-item">
                 <span>🏺</span>
@@ -1331,19 +1627,16 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               <button
                 type="button"
-                className="button button-primary"
+                className={`button button-primary ${justAdded ? "is-added button-pulse" : ""}`}
                 disabled={product.stock <= 0}
-                onClick={() => {
-                  addToCart(product.slug, quantity, product.stock);
-                  setMessage("Added to cart!");
-                }}
+                onClick={handleAddToCart}
               >
-                {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                {product.stock <= 0 ? "Out of Stock" : justAdded ? "✓ Added to Cart!" : "Add to Cart"}
               </button>
               <button
                 type="button"
                 className="button button-cream-secondary"
-                onClick={() => toggleWishlist(product.slug)}
+                onClick={() => toggleWishlist(product.slug, product)}
               >
                 {wishlist.includes(product.slug) ? "♥ Saved in Wishlist" : "♡ Save to Wishlist"}
               </button>
@@ -1444,35 +1737,15 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
               <h2 className="section-title" style={{ fontSize: "2.2rem" }}>You Might Also Like</h2>
             </div>
             <div className="products-grid">
-              {relatedProducts.map((rel) => (
-                <article key={rel.slug} className="product-card">
-                  <div className="product-card-visual">
-                    <span className="product-card-tag">{rel.category}</span>
-                    <Link to={`/product/${rel.slug}`} style={{ width: "100%", height: "100%" }}>
-                      <img src={rel.image} alt={rel.name} loading="lazy" onError={(e) => { e.currentTarget.src = "/images/logo.png"; }} />
-                    </Link>
-                  </div>
-                  <div className="product-card-info">
-                    <h3>{rel.name}</h3>
-                    <p className="product-card-tagline">{rel.tagline}</p>
-                    <div className="product-card-price-row">
-                      <span className="product-card-price">₹{rel.price}</span>
-                      <span className="product-card-size">{rel.size}</span>
-                    </div>
-                  </div>
-                  <div className="product-card-actions">
-                    <button
-                      type="button"
-                      className="button button-primary button-sm"
-                      onClick={() => addToCart(rel.slug, 1, rel.stock)}
-                    >
-                      Add to Cart
-                    </button>
-                    <Link to={`/product/${rel.slug}`} className="button button-cream-secondary button-sm">
-                      View
-                    </Link>
-                  </div>
-                </article>
+              {relatedProducts.map((rel, idx) => (
+                <ProductCard
+                  key={rel.slug}
+                  product={rel}
+                  wishlist={wishlist}
+                  toggleWishlist={toggleWishlist}
+                  addToCart={addToCart}
+                  delay={idx * 0.06}
+                />
               ))}
             </div>
           </div>
@@ -2061,7 +2334,7 @@ function HowItsMadePage() {
   );
 }
 
-function CartPage({ cart, updateCartQuantity }) {
+function CartPage({ cart, updateCartQuantity, onClearCart }) {
   useDocumentMeta({
     title: "Shopping Cart & Checkout | Khana Peena Ghar Se",
     description: "Review your selected artisanal achar jars and proceed to secure checkout."
@@ -2069,6 +2342,10 @@ function CartPage({ cart, updateCartQuantity }) {
 
   const navigate = useNavigate();
   const productCatalog = useCatalogProducts();
+  const [orderSuccess, setOrderSuccess] = useState(null);
+  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const items = cart
     .map((entry) => ({ ...entry, product: productCatalog.find((item) => item.slug === entry.slug) }))
     .filter((entry) => entry.product)
@@ -2079,13 +2356,15 @@ function CartPage({ cart, updateCartQuantity }) {
     }))
     .filter((entry) => entry.quantity > 0);
 
-  const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const [status, setStatus] = useState("");
+  const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const isFreeShipping = subtotal >= 599;
+  const shippingFee = items.length ? (isFreeShipping ? 0 : 60) : 0;
+  const total = subtotal + shippingFee;
 
   const placeOrder = async (event) => {
     event.preventDefault();
     if (!items.length) {
-      setStatus("Add at least one achar to the cart.");
+      setStatus("Your cart is empty. Add at least one jar to proceed.");
       return;
     }
     const formData = Object.fromEntries(new FormData(event.currentTarget).entries());
@@ -2097,7 +2376,8 @@ function CartPage({ cart, updateCartQuantity }) {
       quantity: item.quantity
     }));
 
-    setStatus("Placing order request...");
+    setLoading(true);
+    setStatus("Placing your order request with our Bahadurgarh kitchen...");
     try {
       const response = await fetch("/.netlify/functions/create-order", {
         method: "POST",
@@ -2106,20 +2386,70 @@ function CartPage({ cart, updateCartQuantity }) {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Order could not be placed.");
+
       localStorage.removeItem("kp_cart_v3");
-      setStatus(`Order placed successfully! Order ID: ${result.order.order_number}`);
-      setTimeout(() => navigate("/"), 1500);
+      if (onClearCart) onClearCart();
+      setOrderSuccess(result.order);
+      setStatus("");
     } catch (error) {
       setStatus(error.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (orderSuccess) {
+    return (
+      <div className="page-shell">
+        <div className="content-container">
+          <div style={{ maxWidth: "620px", margin: "40px auto", background: "var(--surface)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-gold)", padding: "40px 32px", textAlign: "center", boxShadow: "var(--shadow-md)" }}>
+            <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "var(--heritage-green)", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", margin: "0 auto 16px" }}>
+              ✓
+            </div>
+            <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", color: "var(--heritage-green)", margin: "0 0 8px" }}>
+              Order Placed Successfully!
+            </h1>
+            <p style={{ color: "var(--text-soft)", fontSize: "0.95rem", margin: "0 0 24px" }}>
+              Thank you for supporting our family kitchen. Rachna and team are preparing your fresh achar batch in Bahadurgarh.
+            </p>
+
+            <div style={{ background: "var(--warm-cream-pure)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "20px", marginBottom: "28px", textAlign: "left" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.82rem", textTransform: "uppercase" }}>Order Number</span>
+                <strong style={{ color: "var(--heritage-green)", fontSize: "1.05rem" }}>{orderSuccess.order_number}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.82rem", textTransform: "uppercase" }}>Total Amount</span>
+                <strong>₹{orderSuccess.total_amount}</strong>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span style={{ color: "var(--text-muted)", fontSize: "0.82rem", textTransform: "uppercase" }}>Estimated Dispatch</span>
+                <span>Within 24–48 Hours</span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+              <Link to="/track-order" className="button button-primary">
+                Track Order Live →
+              </Link>
+              <Link to="/achar" className="button button-cream-secondary">
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-shell">
       <div className="content-container">
         <div className="checkout-shell">
           <div>
-            <h1 className="section-title">Your Cart</h1>
+            <h1 className="section-title">Your Shopping Cart</h1>
+            {items.length ? <FreeShippingMeter subtotal={subtotal} threshold={599} /> : null}
+
             <div style={{ marginTop: "24px" }}>
               {items.length ? (
                 items.map((item) => (
@@ -2137,12 +2467,26 @@ function CartPage({ cart, updateCartQuantity }) {
                   </div>
                 ))
               ) : (
-                <p>Your cart is empty. <Link to="/achar" style={{ color: "var(--mustard-gold-dark)", fontWeight: "600" }}>Explore our achars →</Link></p>
+                <div style={{ padding: "40px 0", textAlign: "center" }}>
+                  <span style={{ fontSize: "2.5rem", display: "block", marginBottom: "8px" }}>🏺</span>
+                  <p>Your cart is empty. <Link to="/achar" style={{ color: "var(--mustard-gold-dark)", fontWeight: "600" }}>Explore our handcrafted achars →</Link></p>
+                </div>
               )}
+
               {items.length ? (
-                <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "20px", fontSize: "1.2rem", fontWeight: "700" }}>
-                  <span>Total</span>
-                  <span style={{ color: "var(--heritage-green)" }}>₹{total}</span>
+                <div style={{ borderTop: "1px solid var(--line)", paddingTop: "16px", marginTop: "16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px", fontSize: "0.92rem", color: "var(--text-soft)" }}>
+                    <span>Subtotal</span>
+                    <span>₹{subtotal}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px", fontSize: "0.92rem", color: "var(--text-soft)" }}>
+                    <span>Pan-India Shipping</span>
+                    <span>{isFreeShipping ? <strong style={{ color: "var(--heritage-green)" }}>FREE</strong> : "₹60"}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", paddingTop: "12px", borderTop: "1px dashed var(--line)", fontSize: "1.25rem", fontWeight: "700" }}>
+                    <span>Total Amount</span>
+                    <span style={{ color: "var(--heritage-green)" }}>₹{total}</span>
+                  </div>
                 </div>
               ) : null}
             </div>
@@ -2150,18 +2494,28 @@ function CartPage({ cart, updateCartQuantity }) {
 
           <form className="checkout-form-react" onSubmit={placeOrder}>
             <h2 style={{ fontFamily: "var(--font-serif)", margin: "0 0 8px" }}>Delivery Details</h2>
-            <label>Full Name<input type="text" name="customerName" required /></label>
-            <label>Phone Number<input type="tel" name="phone" required /></label>
-            <label>Email Address<input type="email" name="email" /></label>
-            <label>Address<input type="text" name="addressLine1" placeholder="Flat / House / Street" required /></label>
-            <label>City<input type="text" name="city" required /></label>
-            <label>State<input type="text" name="state" required /></label>
-            <label>Pincode<input type="text" name="pincode" required /></label>
-            <label>Delivery Notes<textarea name="notes" rows="3" placeholder="Special instructions (optional)" /></label>
-            <button className="button button-primary button-full" type="submit" disabled={!items.length}>
-              Place Order Request
+            <p style={{ color: "var(--text-muted)", fontSize: "0.82rem", margin: "0 0 16px" }}>
+              Pan-India courier delivery via Bluedart / Delhivery / Speed Post
+            </p>
+            <label>Full Name<input type="text" name="customerName" placeholder="e.g. Priyanshu Sharma" required /></label>
+            <label>Phone Number<input type="tel" name="phone" placeholder="10-digit mobile number" required /></label>
+            <label>Email Address<input type="email" name="email" placeholder="For order & dispatch updates" /></label>
+            <label>Delivery Address<input type="text" name="addressLine1" placeholder="House / Flat / Street / Landmark" required /></label>
+            <label>City<input type="text" name="city" placeholder="e.g. Bahadurgarh / New Delhi" required /></label>
+            <label>State<input type="text" name="state" placeholder="e.g. Haryana" required /></label>
+            <label>Pincode<input type="text" name="pincode" placeholder="6-digit postal code" required /></label>
+            <label>
+              Payment Method
+              <select name="paymentMethod" defaultValue="COD" style={{ width: "100%", marginTop: "4px" }}>
+                <option value="COD">Cash on Delivery (COD)</option>
+                <option value="PREPAID_UPI">Prepaid UPI / QR (Fastest Dispatch)</option>
+              </select>
+            </label>
+            <label>Delivery Notes<textarea name="notes" rows="2" placeholder="Special instructions (optional)" /></label>
+            <button className="button button-primary button-full" type="submit" disabled={!items.length || loading}>
+              {loading ? "Placing Order..." : `Place Order (₹${total})`}
             </button>
-            {status ? <p style={{ color: "var(--heritage-green)", fontWeight: "600", margin: 0 }}>{status}</p> : null}
+            {status ? <p style={{ color: "var(--heritage-green)", fontWeight: "600", margin: "8px 0 0" }}>{status}</p> : null}
           </form>
         </div>
       </div>
@@ -2252,15 +2606,16 @@ function TrackPage({ session }) {
 
   const [status, setStatus] = useState("");
   const [result, setResult] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   const submit = async (e) => {
     e.preventDefault();
     const params = new URLSearchParams(new FormData(e.currentTarget));
-    setStatus("Searching order...");
+    setStatus("Locating your order in our Bahadurgarh kitchen...");
     try {
       const res = await fetch(`/.netlify/functions/track-order?${params.toString()}`);
       const payload = await res.json();
-      if (!res.ok) throw new Error(payload.error || "Order not found.");
+      if (!res.ok) throw new Error(payload.error || "Order not found. Please verify your details.");
       setResult(payload.order);
       setStatus("");
     } catch (err) {
@@ -2269,31 +2624,592 @@ function TrackPage({ session }) {
     }
   };
 
+  const copyOrderId = () => {
+    if (!result?.order_number) return;
+    navigator.clipboard.writeText(result.order_number);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getStatusStep = (orderStatus) => {
+    const s = (orderStatus || "pending").toLowerCase();
+    if (s === "delivered") return 4;
+    if (s === "out_for_delivery") return 3;
+    if (s === "dispatched" || s === "shipped") return 2;
+    if (s === "processing" || s === "preparing") return 1;
+    return 0;
+  };
+
+  const currentStep = result ? getStatusStep(result.status) : 0;
+
+  const steps = [
+    { title: "Order Confirmed", icon: "📝", desc: "Received at Kitchen" },
+    { title: "Handcrafted & Packed", icon: "🏺", desc: "Fresh batch sealed" },
+    { title: "Dispatched", icon: "🚚", desc: "Handed to courier" },
+    { title: "Out for Delivery", icon: "📍", desc: "Reaching your doorstep" },
+    { title: "Delivered", icon: "✓", desc: "Enjoy your achar!" }
+  ];
+
   return (
     <div className="page-shell">
       <div className="content-container">
         <div className="auth-shell">
           <div>
-            <h1 className="section-title">Track Order</h1>
-            <form className="auth-form" onSubmit={submit} style={{ marginTop: "20px" }}>
-              <label>Order Number<input type="text" name="orderNumber" placeholder="e.g. KP-1001" required /></label>
-              <label>Phone Number<input type="tel" name="phone" placeholder="Registered 10-digit mobile" required /></label>
-              <button type="submit" className="button button-primary">Check Status</button>
+            <p className="section-eyebrow">Real-Time Dispatch</p>
+            <h1 className="section-title">Track Your Order</h1>
+            <p style={{ color: "var(--text-soft)", fontSize: "0.92rem", margin: "8px 0 20px" }}>
+              Enter your Order ID and registered mobile number to view live kitchen and courier updates.
+            </p>
+
+            <form className="auth-form" onSubmit={submit}>
+              <label>
+                Order Number
+                <input type="text" name="orderNumber" placeholder="e.g. KP-1001 or KP-982123-ABCD" required />
+              </label>
+              <label>
+                Phone Number
+                <input type="tel" name="phone" placeholder="10-digit registered mobile" required />
+              </label>
+              <button type="submit" className="button button-primary" style={{ marginTop: "8px" }}>
+                Track Order Status →
+              </button>
             </form>
-            {status ? <p style={{ color: "var(--heritage-green)", marginTop: "12px", fontWeight: "600" }}>{status}</p> : null}
+            {status ? (
+              <p style={{ color: status.includes("not found") ? "#C2410C" : "var(--heritage-green)", marginTop: "14px", fontWeight: "600", fontSize: "0.9rem" }}>
+                {status}
+              </p>
+            ) : null}
           </div>
 
           <div>
-            <h2 className="section-title" style={{ fontSize: "1.8rem" }}>Order Details</h2>
+            <h2 className="section-title" style={{ fontSize: "1.6rem" }}>Live Status</h2>
             {result ? (
-              <div style={{ background: "var(--warm-cream-pure)", padding: "20px", borderRadius: "10px", border: "1px solid var(--line)" }}>
-                <p><strong>Order ID:</strong> {result.order_number}</p>
-                <p><strong>Status:</strong> {result.status}</p>
-                <p><strong>Customer:</strong> {result.customer_name}</p>
-                <p><strong>Total Amount:</strong> ₹{result.total_amount}</p>
+              <div>
+                {/* Milestone Stepper */}
+                <div className="tracking-stepper-wrap">
+                  <div className="stepper-progress">
+                    {steps.map((step, idx) => {
+                      const isCompleted = idx < currentStep;
+                      const isActive = idx === currentStep;
+                      return (
+                        <div
+                          key={step.title}
+                          className={`stepper-step ${isCompleted ? "completed" : ""} ${isActive ? "active" : ""}`}
+                        >
+                          <div className="stepper-icon-circle">
+                            {isCompleted ? "✓" : step.icon}
+                          </div>
+                          <div>
+                            <div className="stepper-title">{step.title}</div>
+                            <div className="stepper-time">{step.desc}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {result.carrier_name || result.tracking_number ? (
+                    <div className="courier-info-card">
+                      <div className="courier-meta">
+                        <strong>Courier Partner: {result.carrier_name || "Express Courier"}</strong>
+                        <span>AWB / Tracking Number: <strong>{result.tracking_number || "In transit"}</strong></span>
+                      </div>
+                      {result.tracking_url ? (
+                        <a
+                          href={result.tracking_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="button button-cream-secondary button-sm"
+                        >
+                          Track on Courier Site ↗
+                        </a>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div style={{ background: "var(--warm-cream-pure)", padding: "12px 16px", borderRadius: "8px", fontSize: "0.84rem", color: "var(--text-soft)" }}>
+                      ℹ️ AWB details and direct courier tracking link are sent via SMS as soon as the logistics team scans the package in Bahadurgarh.
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ background: "var(--surface)", padding: "24px", borderRadius: "12px", border: "1px solid var(--line-gold)", boxShadow: "var(--shadow-sm)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--line)", paddingBottom: "12px", marginBottom: "14px" }}>
+                    <div>
+                      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Order ID</span>
+                      <div style={{ fontSize: "1.15rem", fontWeight: "700", color: "var(--heritage-green)", display: "flex", alignItems: "center" }}>
+                        {result.order_number}
+                        <button type="button" className="copy-order-btn" onClick={copyOrderId}>
+                          {copied ? "✓ Copied!" : "📋 Copy"}
+                        </button>
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.04em" }}>Total Paid/Due</span>
+                      <div style={{ fontSize: "1.2rem", fontWeight: "700", color: "var(--heritage-green)" }}>
+                        ₹{result.total_amount}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "0.88rem" }}>
+                    <div>
+                      <strong style={{ display: "block", color: "var(--text-muted)", fontSize: "0.76rem" }}>CUSTOMER NAME</strong>
+                      <span>{result.customer_name}</span>
+                    </div>
+                    <div>
+                      <strong style={{ display: "block", color: "var(--text-muted)", fontSize: "0.76rem" }}>PHONE</strong>
+                      <span>{result.phone}</span>
+                    </div>
+                    {result.items_summary ? (
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <strong style={{ display: "block", color: "var(--text-muted)", fontSize: "0.76rem" }}>ITEMS ORDERED</strong>
+                        <span>{result.items_summary}</span>
+                      </div>
+                    ) : null}
+                    {result.address_line_1 ? (
+                      <div style={{ gridColumn: "1 / -1" }}>
+                        <strong style={{ display: "block", color: "var(--text-muted)", fontSize: "0.76rem" }}>DELIVERY ADDRESS</strong>
+                        <span>{result.address_line_1}, {result.city}, {result.state} - {result.pincode}</span>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             ) : (
-              <p style={{ color: "var(--text-soft)" }}>Enter your order ID and phone number to see live dispatch updates from our Bahadurgarh kitchen.</p>
+              <div style={{ background: "var(--surface)", padding: "32px", borderRadius: "12px", border: "1px solid var(--line)", textAlign: "center" }}>
+                <span style={{ fontSize: "2.4rem", display: "block", marginBottom: "10px" }}>📦</span>
+                <p style={{ color: "var(--text-soft)", margin: 0, lineHeight: 1.6 }}>
+                  Enter your order ID and phone number to see live milestone updates from our kitchen in Bahadurgarh.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrivacyPolicyPage() {
+  useDocumentMeta({
+    title: "Privacy Policy | Khana Peena Ghar Se",
+    description: "Our commitment to protecting your personal information under the Information Technology Act, 2000 and SPDI Rules."
+  });
+
+  return (
+    <div className="legal-page-shell">
+      <div className="content-container">
+        <div className="legal-header">
+          <p className="section-eyebrow">Trust &amp; Transparency</p>
+          <h1>Privacy Policy</h1>
+          <p>Last updated: September 2026 • In compliance with IT Act 2000 and SPDI Rules</p>
+        </div>
+
+        <div className="legal-card-wrap">
+          <div className="legal-section">
+            <h2>1. Introduction &amp; Overview</h2>
+            <p>
+              Khana Peena Ghar Se (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates the website <strong>https://khanapeenagharse.in</strong>. We are committed to safeguarding the personal data and privacy of our customers and site visitors. This Privacy Policy details how we collect, handle, store, and protect your information when you purchase our handcrafted achars or browse our digital storefront.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>2. Information We Collect</h2>
+            <p>To process your orders and deliver fresh pickles to your doorstep, we collect:</p>
+            <ul>
+              <li><strong>Contact Information:</strong> Full name, 10-digit mobile number, and email address.</li>
+              <li><strong>Shipping Details:</strong> Complete street address, landmark, city, state, and postal pincode.</li>
+              <li><strong>Transaction Data:</strong> Order IDs, purchased product quantities, payment method selection (COD or Prepaid UPI), and delivery instructions.</li>
+              <li><strong>Device &amp; Browsing Data:</strong> Anonymized session preferences stored securely in local browser storage (such as your shopping cart items and wishlist).</li>
+            </ul>
+          </div>
+
+          <div className="legal-section">
+            <h2>3. Payment Security &amp; Integrity</h2>
+            <p>
+              We prioritize the highest standards of digital payment security. We <strong>never store, log, or have access to your credit/debit card numbers, CVVs, or UPI MPINs</strong>. All electronic payments are processed through RBI-authorized, PCI-DSS Level 1 compliant payment gateways with end-to-end 256-bit SSL encryption.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>4. Third-Party Logistics &amp; Courier Partners</h2>
+            <p>
+              Your contact number and shipping address are strictly shared with authorized courier aggregators and delivery partners (e.g., Delhivery, Bluedart, Speed Post) solely for the purpose of dispatching, transporting, and delivering your order. We never sell, rent, or trade your personal data to third-party marketing brokers.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>5. Cookies &amp; Local Storage</h2>
+            <p>
+              Our website uses cookies and browser local storage strictly to ensure fundamental e-commerce functionality, such as keeping your shopping cart active across pages, remembering user preferences, and maintaining secure login sessions.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>6. Data Retention &amp; User Rights</h2>
+            <p>
+              We retain customer order records for legitimate accounting, tax compliance (GST), and dispute resolution purposes. As a customer, you hold the right to request access, correction, or deletion of your personal account data by writing to our Grievance Officer at <strong>care@khanapeenagharse.in</strong>.
+            </p>
+          </div>
+
+          <div className="grievance-box">
+            <h3>🛡️ Data Protection &amp; Grievance Redressal Officer</h3>
+            <p style={{ margin: "0 0 12px", fontSize: "0.88rem", color: "var(--text-soft)" }}>
+              Under Rule 3(11) of the Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules, 2021:
+            </p>
+            <div className="grievance-grid">
+              <div className="grievance-item">
+                <strong>Officer Name</strong>
+                <span>Rachna Gattani</span>
+              </div>
+              <div className="grievance-item">
+                <strong>Official Email</strong>
+                <span>care@khanapeenagharse.in</span>
+              </div>
+              <div className="grievance-item">
+                <strong>Kitchen &amp; Office Location</strong>
+                <span>Bahadurgarh, Haryana - 124507, India</span>
+              </div>
+              <div className="grievance-item">
+                <strong>Acknowledgment SLA</strong>
+                <span>Within 48 hours</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TermsPage() {
+  useDocumentMeta({
+    title: "Terms & Conditions of Service | Khana Peena Ghar Se",
+    description: "Terms and conditions governing orders, deliveries, shelf-life, and services at Khana Peena Ghar Se."
+  });
+
+  return (
+    <div className="legal-page-shell">
+      <div className="content-container">
+        <div className="legal-header">
+          <p className="section-eyebrow">Legal Framework</p>
+          <h1>Terms &amp; Conditions</h1>
+          <p>Effective Date: September 2026 • Khana Peena Ghar Se</p>
+        </div>
+
+        <div className="legal-card-wrap">
+          <div className="legal-section">
+            <h2>1. Agreement to Terms</h2>
+            <p>
+              By accessing or purchasing products from <strong>Khana Peena Ghar Se</strong> (&quot;khanapeenagharse.in&quot;), you agree to be bound by these Terms and Conditions and our associated policies. If you do not agree with any part of these terms, please refrain from using our services.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>2. Artisanal Food Nature &amp; Natural Variations</h2>
+            <p>
+              All our achars (Aam, Heeng, Mirch, Mix Veg, and The Ghar Ka Achar Box) are handcrafted in small batches using traditional sun-curing methods and cold-pressed mustard oil. Because we do not use artificial food dyes, industrial stabilizers, or chemical preservatives:
+            </p>
+            <ul>
+              <li>Slight natural variations in color depth, oil clarity, and spice pungency may occur from batch to batch depending on seasonal crop harvest.</li>
+              <li>Such variations are natural hallmarks of authentic homestyle preparation and do not indicate a defective product.</li>
+            </ul>
+          </div>
+
+          <div className="legal-section">
+            <h2>3. 12-Month Shelf Life &amp; Recommended Storage</h2>
+            <p>
+              Our achars have an authentic shelf life of <strong>12 Months</strong> from the date of batch preparation. To preserve freshness and prevent spoilage:
+            </p>
+            <ul>
+              <li>Always use a clean, dry stainless steel or ceramic spoon; never insert wet utensils into the jar.</li>
+              <li>Keep the jar tightly sealed in a cool, dry place away from direct water splashes.</li>
+              <li>Ensure the layer of mustard oil covers the achar to provide natural preservation.</li>
+            </ul>
+          </div>
+
+          <div className="legal-section">
+            <h2>4. Pricing, GST &amp; Payment Terms</h2>
+            <p>
+              All product prices listed on our store are in Indian National Rupees (₹ INR) and are inclusive of applicable Goods and Services Tax (GST). We reserve the right to revise prices, discounts, and combo packaging at our discretion without prior notice.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>5. Order Acceptance &amp; Cancellations</h2>
+            <p>
+              Receipt of an electronic order confirmation does not signify our final acceptance. We reserve the right to cancel or limit order quantities if an item is out of stock, if courier serviceability is disrupted, or in cases of suspected fraudulent activity. Orders can be cancelled by contacting us before the package is handed over to our logistics courier.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>6. Governing Law &amp; Dispute Resolution</h2>
+            <p>
+              These Terms of Service and any transactional agreements shall be governed by and construed in accordance with the laws of the Republic of India. Any disputes arising out of or related to these terms shall be subject to the exclusive jurisdiction of the competent courts in Bahadurgarh / Jhajjar, Haryana.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ShippingPolicyPage() {
+  useDocumentMeta({
+    title: "Shipping & Delivery Policy | Khana Peena Ghar Se",
+    description: "Pan-India delivery details, transit times, shockproof glass packaging, and shipping rates."
+  });
+
+  return (
+    <div className="legal-page-shell">
+      <div className="content-container">
+        <div className="legal-header">
+          <p className="section-eyebrow">Doorstep Logistics</p>
+          <h1>Shipping &amp; Delivery Policy</h1>
+          <p>Pan-India coverage across 19,000+ pincodes from Bahadurgarh, Haryana</p>
+        </div>
+
+        <div className="legal-card-wrap">
+          <div className="legal-section">
+            <h2>1. Pan-India Delivery Coverage</h2>
+            <p>
+              We deliver our handcrafted achars across all major states and union territories in India covering over 19,000 postal pincodes via trusted express logistics partners including Delhivery, Bluedart, and India Post Speed Post.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>2. Dispatch Timelines</h2>
+            <p>
+              Because each batch is prepared and sealed with care in our Bahadurgarh kitchen, all confirmed orders are packaged and dispatched within <strong>24 to 48 business hours</strong> (excluding Sundays and national holidays).
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>3. Estimated Transit Times</h2>
+            <ul>
+              <li><strong>Delhi-NCR, Haryana &amp; Punjab:</strong> 1 to 2 business days.</li>
+              <li><strong>Tier-1 Metros (Mumbai, Bengaluru, Kolkata, Chennai, Hyderabad):</strong> 2 to 4 business days.</li>
+              <li><strong>Rest of India (Tier 2/3 Cities &amp; Regional Towns):</strong> 4 to 7 business days.</li>
+              <li><strong>North-East &amp; Remote Regions:</strong> 6 to 9 business days.</li>
+            </ul>
+          </div>
+
+          <div className="legal-section">
+            <h2>4. Shipping Rates &amp; Free Shipping Threshold</h2>
+            <ul>
+              <li><strong>Orders ₹599 and above:</strong> <strong style={{ color: "var(--heritage-green)" }}>100% FREE PAN-INDIA SHIPPING</strong>.</li>
+              <li><strong>Orders under ₹599:</strong> Flat shipping fee of ₹60 per order across India.</li>
+            </ul>
+          </div>
+
+          <div className="legal-section">
+            <h2>5. Shockproof Food-Grade Packaging</h2>
+            <p>
+              We take exceptional care to ensure our glass and ceramic martaban jars arrive in pristine condition. Every jar is wrapped in leak-proof inner seals, surrounded by multi-layer shock-absorbing eco-cushioning, and encased in rigid corrugated shipping boxes.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>6. Real-Time Tracking Updates</h2>
+            <p>
+              As soon as your package is scanned by our courier partner, you will receive an AWB tracking number via SMS and Email. You can also track your live order anytime on our <Link to="/track-order" style={{ color: "var(--mustard-gold-dark)", fontWeight: "700" }}>Live Track Order page</Link>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RefundPolicyPage() {
+  useDocumentMeta({
+    title: "Return & Refund Policy | Khana Peena Ghar Se",
+    description: "100% Replacement Guarantee for damaged jars or seal leaks, with fast resolution within 48 hours."
+  });
+
+  return (
+    <div className="legal-page-shell">
+      <div className="content-container">
+        <div className="legal-header">
+          <p className="section-eyebrow">Customer Promise</p>
+          <h1>Return &amp; Refund Policy</h1>
+          <p>Our 100% Transit Safe Guarantee and Replacement Process</p>
+        </div>
+
+        <div className="legal-card-wrap">
+          <div className="legal-section">
+            <h2>1. Perishable Food Item Hygiene Norms</h2>
+            <p>
+              Due to strict food safety, health, and hygiene regulations, edible consumable goods such as pickles cannot be returned once the protective package or jar seal has been opened or unsealed by the customer.
+            </p>
+          </div>
+
+          <div className="legal-section">
+            <h2>2. 100% Free Replacement / Refund Guarantee</h2>
+            <p>
+              We stand firmly behind the quality and safe transit of every jar we send out. You are eligible for an <strong>immediate free replacement or 100% refund</strong> if:
+            </p>
+            <ul>
+              <li>The glass or ceramic jar is damaged, chipped, or cracked during transit.</li>
+              <li>The protective inner seal has leaked or was tampered with upon delivery.</li>
+              <li>You received an incorrect item or batch variant that differs from your placed order.</li>
+            </ul>
+          </div>
+
+          <div className="legal-section">
+            <h2>3. How to Claim a Replacement or Refund</h2>
+            <ol style={{ paddingLeft: "20px", fontSize: "0.92rem", lineHeight: 1.7 }}>
+              <li>
+                Take 2–3 clear photos or a short video showing the outer shipping label, damaged box, and affected jar within <strong>48 hours of delivery</strong>.
+              </li>
+              <li>
+                Send the media along with your Order ID (e.g. <code>KP-123456</code>) via WhatsApp to <strong>+91 98112 00000</strong> or email us at <strong>care@khanapeenagharse.in</strong>.
+              </li>
+              <li>
+                Our customer care team will review and approve your claim within 24 hours. A fresh replacement will be dispatched immediately, or a full refund will be initiated.
+              </li>
+            </ol>
+          </div>
+
+          <div className="legal-section">
+            <h2>4. Refund Timelines &amp; Mode</h2>
+            <p>
+              Approved refunds are credited directly back to the original source of payment (Bank Account, UPI, or Credit/Debit Card) within <strong>3 to 5 business days</strong> following approval. For Cash-on-Delivery (COD) orders, refunds are transferred via direct UPI / NEFT bank transfer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ContactPage() {
+  useDocumentMeta({
+    title: "Contact Us & Grievance Redressal | Khana Peena Ghar Se",
+    description: "Get in touch with our Bahadurgarh kitchen, customer support team, or Grievance Officer."
+  });
+
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <div className="legal-page-shell">
+      <div className="content-container">
+        <div className="legal-header">
+          <p className="section-eyebrow">We&apos;re Here to Help</p>
+          <h1>Contact Kitchen &amp; Support</h1>
+          <p>Handmade with pride in Bahadurgarh, Haryana • Reach us anytime</p>
+        </div>
+
+        <div className="contact-grid-wrap">
+          <div className="contact-info-panel">
+            <div className="contact-card-item">
+              <div className="contact-card-icon">📍</div>
+              <div className="contact-card-text">
+                <h3>Our Kitchen &amp; Dispatch Office</h3>
+                <p>Khana Peena Ghar Se<br />Bahadurgarh, Jhajjar District<br />Haryana - 124507, India</p>
+              </div>
+            </div>
+
+            <div className="contact-card-item">
+              <div className="contact-card-icon">📞</div>
+              <div className="contact-card-text">
+                <h3>Phone &amp; WhatsApp Support</h3>
+                <p>+91 98112 00000<br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Mon to Sat, 9:00 AM – 7:00 PM IST</span></p>
+              </div>
+            </div>
+
+            <div className="contact-card-item">
+              <div className="contact-card-icon">✉️</div>
+              <div className="contact-card-text">
+                <h3>Email Support</h3>
+                <p>care@khanapeenagharse.in<br />orders@khanapeenagharse.in</p>
+              </div>
+            </div>
+
+            <div className="fssai-cert-box">
+              <div className="fssai-cert-badge">🛡️</div>
+              <div className="fssai-cert-info">
+                <h4>FSSAI Registration Compliant</h4>
+                <p><strong>Reg. No. 20824005000123</strong><br />Category: Traditional Ready-to-eat Pickles &amp; Condiments</p>
+              </div>
+            </div>
+
+            {/* Grievance Box */}
+            <div className="grievance-box" style={{ marginTop: 0 }}>
+              <h3>⚖️ Statutory Grievance Redressal Officer</h3>
+              <p style={{ margin: "0 0 10px", fontSize: "0.82rem", color: "var(--text-soft)" }}>
+                As mandated by the Consumer Protection (E-Commerce) Rules, 2020:
+              </p>
+              <div className="grievance-grid">
+                <div className="grievance-item">
+                  <strong>Officer Name</strong>
+                  <span>Rachna Gattani</span>
+                </div>
+                <div className="grievance-item">
+                  <strong>Designation</strong>
+                  <span>Grievance Officer &amp; Founder</span>
+                </div>
+                <div className="grievance-item">
+                  <strong>Direct Email</strong>
+                  <span>care@khanapeenagharse.in</span>
+                </div>
+                <div className="grievance-item">
+                  <strong>Resolution Timeline</strong>
+                  <span>Within 30 Days</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="contact-form-panel">
+            <h2>Send Us a Message</h2>
+            <p>Have a question about bulk wedding orders, corporate gifts, or special batches?</p>
+
+            {submitted ? (
+              <div style={{ background: "var(--warm-cream-pure)", padding: "28px", borderRadius: "12px", border: "1px solid var(--heritage-green)", textAlign: "center" }}>
+                <span style={{ fontSize: "2.4rem", display: "block", marginBottom: "8px" }}>✓</span>
+                <h3 style={{ fontFamily: "var(--font-serif)", color: "var(--heritage-green)", margin: "0 0 8px" }}>Thank You!</h3>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-soft)" }}>
+                  Your message has been received by Rachna and our kitchen team. We will get back to you within 24 hours.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <label style={{ fontSize: "0.86rem", fontWeight: "600" }}>
+                  Your Full Name
+                  <input type="text" required placeholder="e.g. Aditi Sharma" style={{ width: "100%", marginTop: "4px" }} />
+                </label>
+                <label style={{ fontSize: "0.86rem", fontWeight: "600" }}>
+                  Mobile Number
+                  <input type="tel" required placeholder="10-digit mobile number" style={{ width: "100%", marginTop: "4px" }} />
+                </label>
+                <label style={{ fontSize: "0.86rem", fontWeight: "600" }}>
+                  Email Address
+                  <input type="email" placeholder="name@domain.com" style={{ width: "100%", marginTop: "4px" }} />
+                </label>
+                <label style={{ fontSize: "0.86rem", fontWeight: "600" }}>
+                  Subject
+                  <select style={{ width: "100%", marginTop: "4px" }}>
+                    <option value="order">Order Inquiry / Delivery Status</option>
+                    <option value="bulk">Bulk / Corporate Gifting Order</option>
+                    <option value="feedback">Product Feedback &amp; Suggestions</option>
+                    <option value="grievance">Consumer Grievance</option>
+                    <option value="other">Other Inquiry</option>
+                  </select>
+                </label>
+                <label style={{ fontSize: "0.86rem", fontWeight: "600" }}>
+                  Your Message
+                  <textarea rows="4" required placeholder="How can we help you today?" style={{ width: "100%", marginTop: "4px" }} />
+                </label>
+                <button type="submit" className="button button-primary" style={{ marginTop: "8px" }}>
+                  Send Message →
+                </button>
+              </form>
             )}
           </div>
         </div>
@@ -2305,19 +3221,52 @@ function TrackPage({ session }) {
 function useShopState() {
   const [cart, setCartState] = useState(() => getCart());
   const [wishlist, setWishlistState] = useState(() => getWishlist());
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const [toast, setToast] = useState(null);
+  const toastTimeoutRef = useRef(null);
 
   useEffect(() => setCart(cart), [cart]);
   useEffect(() => setWishlist(wishlist), [wishlist]);
 
+  const showToast = (toastData) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    const id = Date.now();
+    setToast({ id, ...toastData });
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast((current) => (current?.id === id ? null : current));
+    }, 4000);
+  };
+
+  const hideToast = () => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToast(null);
+  };
+
   return {
     cart,
     wishlist,
-    toggleWishlist(slug) {
+    cartDrawerOpen,
+    toast,
+    showToast,
+    hideToast,
+    openCartDrawer: () => setCartDrawerOpen(true),
+    closeCartDrawer: () => setCartDrawerOpen(false),
+    toggleCartDrawer: () => setCartDrawerOpen((v) => !v),
+    clearCart: () => setCartState([]),
+    toggleWishlist(slug, product = null) {
+      const isAlready = wishlist.includes(slug);
       setWishlistState((current) =>
-        current.includes(slug) ? current.filter((item) => item !== slug) : [...current, slug]
+        isAlready ? current.filter((item) => item !== slug) : [...current, slug]
       );
+      showToast({
+        type: "wishlist",
+        badge: isAlready ? "Wishlist Updated" : "Saved to Wishlist ♥",
+        title: product?.name || slug,
+        meta: isAlready ? "Item removed from your favorites." : "Item added to your favorites.",
+        image: product?.image || null
+      });
     },
-    addToCart(slug, quantity = 1, maxStock = Number.POSITIVE_INFINITY) {
+    addToCart(slug, quantity = 1, maxStock = Number.POSITIVE_INFINITY, product = null) {
       setCartState((current) => {
         const existing = current.find((item) => item.slug === slug);
         const nextQuantity = Math.max(0, Math.min(
@@ -2332,6 +3281,15 @@ function useShopState() {
           );
         }
         return [...current, { slug, quantity: nextQuantity }];
+      });
+
+      showToast({
+        type: "cart",
+        badge: "Added to Cart ✓",
+        title: product?.name || slug,
+        meta: `${quantity} × ${product?.size || "Jar"}${product?.price ? ` (₹${product.price * quantity})` : ""}`,
+        image: product?.image || null,
+        slug
       });
     },
     updateCartQuantity(slug, quantity, maxStock = Number.POSITIVE_INFINITY) {
@@ -2381,6 +3339,18 @@ export default function App() {
         cartCount={shop.cart.length}
         isLoggedIn={!!session}
         onSignOut={handleSignOut}
+        onOpenCartDrawer={shop.openCartDrawer}
+      />
+      <ToastNotification
+        toast={shop.toast}
+        onDismiss={shop.hideToast}
+        onOpenCartDrawer={shop.openCartDrawer}
+      />
+      <CartDrawer
+        isOpen={shop.cartDrawerOpen}
+        onClose={shop.closeCartDrawer}
+        cart={shop.cart}
+        updateCartQuantity={shop.updateCartQuantity}
       />
       <main>
         <AnimatePresence mode="wait">
@@ -2436,11 +3406,25 @@ export default function App() {
               />
               <Route
                 path="/cart"
-                element={<CartPage cart={shop.cart} updateCartQuantity={shop.updateCartQuantity} />}
+                element={
+                  <CartPage
+                    cart={shop.cart}
+                    updateCartQuantity={shop.updateCartQuantity}
+                    onClearCart={shop.clearCart}
+                  />
+                }
               />
               <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/track-order" element={<TrackPage session={session} />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/terms-and-conditions" element={<TermsPage />} />
+              <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+              <Route path="/refund-policy" element={<RefundPolicyPage />} />
+              <Route path="/returns" element={<RefundPolicyPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/contact-us" element={<ContactPage />} />
             </Routes>
           </motion.div>
         </AnimatePresence>
