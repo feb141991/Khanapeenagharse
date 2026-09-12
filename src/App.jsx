@@ -9,6 +9,7 @@ const ZOMATO_URL =
   "https://www.zomato.com/bahadurgarh/khana-peena-ghar-se-bahadurgarh-locality/order";
 const HOME_HERO_IMAGE = "/images/brand/home-hero.jpg";
 const ABOUT_OWNER_IMAGE = "/images/brand/about-owner.jpg";
+const LIFESTYLE_IMAGE = "/images/brand/lifestyle-dining.jpg";
 
 function mergeProductsWithMedia(items) {
   return items.map((product) => {
@@ -463,7 +464,7 @@ function LifestyleBanner() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <img
-              src={HOME_HERO_IMAGE}
+              src={LIFESTYLE_IMAGE}
               alt="Authentic Indian meal spread with handcrafted achar"
               onError={(e) => {
                 e.currentTarget.src = "/images/logo.png";
