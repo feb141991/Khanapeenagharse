@@ -1,0 +1,22 @@
+{
+  "short_name": "KhanaPeena",
+  "name": "Khana Peena Ghar Se",
+  "icons": [
+    {
+      "src": "/images/favicon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/logo.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#1c1917",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/"
+}

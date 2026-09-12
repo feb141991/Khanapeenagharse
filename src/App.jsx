@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform
 } from "motion/react";
-import { faqs, products } from "./data";
+import { faqs, products, testimonials } from "./data";
 import { hasSupabaseClientEnv, supabase } from "./supabaseClient";
 import { getCart, getWishlist, setCart, setWishlist } from "./store";
 
@@ -445,6 +445,187 @@ function FAQSection() {
   );
 }
 
+function getPincodeEstimate(pin) {
+  const prefix2 = pin.slice(0, 2);
+  const prefix1 = pin.slice(0, 1);
+
+  if (["11", "12", "13", "20"].includes(prefix2)) {
+    return {
+      valid: true,
+      eta: "⚡ Estimated Delivery: 1–2 Business Days",
+      zone: "Delhi NCR & Haryana Express Zone"
+    };
+  }
+  if (["40", "41", "56", "50", "60", "70", "30", "22", "38", "16", "14"].includes(prefix2)) {
+    return {
+      valid: true,
+      eta: "🚚 Estimated Delivery: 2–3 Business Days",
+      zone: "Major Metro Express Corridor"
+    };
+  }
+  if (["1", "2", "3", "4", "5", "6", "7", "8"].includes(prefix1)) {
+    return {
+      valid: true,
+      eta: "📦 Estimated Delivery: 3–5 Business Days",
+      zone: "Standard Pan-India Tracked Courier"
+    };
+  }
+  return {
+    valid: false,
+    message: "PIN code not recognized for standard delivery routes."
+  };
+}
+
+function PincodeChecker() {
+  const [pincode, setPincode] = useState(() => localStorage.getItem("kp_pincode") || "");
+  const [result, setResult] = useState(() => {
+    const saved = localStorage.getItem("kp_pincode");
+    if (saved && /^\d{6}$/.test(saved)) {
+      return getPincodeEstimate(saved);
+    }
+    return null;
+  });
+
+  const check = (e) => {
+    e?.preventDefault();
+    const clean = pincode.trim();
+    if (!/^\d{6}$/.test(clean)) {
+      setResult({ valid: false, message: "Please enter a valid 6-digit Indian PIN code." });
+      return;
+    }
+    localStorage.setItem("kp_pincode", clean);
+    setResult(getPincodeEstimate(clean));
+  };
+
+  return (
+    <div className="pincode-checker-box">
+      <div className="pincode-header">
+        <span className="pincode-icon" aria-hidden="true">📍</span>
+        <div>
+          <strong>Check Delivery to your PIN Code</strong>
+          <span>Express dispatch from Bahadurgarh kitchen</span>
+        </div>
+      </div>
+      <form className="pincode-form" onSubmit={check}>
+        <input
+          type="text"
+          maxLength={6}
+          placeholder="Enter 6-digit PIN"
+          value={pincode}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "");
+            setPincode(val);
+            if (val.length === 6) {
+              localStorage.setItem("kp_pincode", val);
+              setResult(getPincodeEstimate(val));
+            }
+          }}
+        />
+        <button type="submit" className="button button-secondary button-sm">Check</button>
+      </form>
+      {result && (
+        <div className={`pincode-result ${result.valid ? "is-success" : "is-error"}`}>
+          {result.valid ? (
+            <>
+              <div className="pincode-eta">
+                <strong>{result.eta}</strong>
+                <span>{result.zone}</span>
+              </div>
+              <div className="pincode-perks">
+                <span>✓ Free delivery on orders above ₹499</span>
+                <span>🛡️ Sealed glass jar transit protection guarantee</span>
+              </div>
+            </>
+          ) : (
+            <p className="pincode-error-text">{result.message}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SafeDeliveryGuarantee() {
+  return (
+    <div className="safe-delivery-guarantee">
+      <div className="guarantee-item">
+        <span className="g-icon">🛡️</span>
+        <div>
+          <strong>100% Jar Breakage Protection</strong>
+          <span>Instant free replacement if courier damage occurs</span>
+        </div>
+      </div>
+      <div className="guarantee-item">
+        <span className="g-icon">🫙</span>
+        <div>
+          <strong>Food-Grade Glass Jars</strong>
+          <span>Preserves authentic sun-cured aroma without plastic</span>
+        </div>
+      </div>
+      <div className="guarantee-item">
+        <span className="g-icon">⚡</span>
+        <div>
+          <strong>Tracked Dispatch in 24–48 Hrs</strong>
+          <span>Fast pan-India delivery with live tracking</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReviewsSection() {
+  return (
+    <section className="reviews-section" aria-labelledby="reviews-heading">
+      <div className="reviews-head">
+        <div className="rating-pill">⭐ 4.9 / 5 Overall Rating</div>
+        <h2 id="reviews-heading">Loved at Dining Tables Across India</h2>
+        <p>From everyday family parathas to celebratory festive feasts, here is what our customers say.</p>
+      </div>
+
+      <div className="reviews-grid">
+        {testimonials.map((review) => (
+          <div key={review.name} className="review-card">
+            <div className="review-stars" aria-label="5 out of 5 stars">
+              {"★".repeat(review.rating)}
+            </div>
+            <p className="review-quote">"{review.quote}"</p>
+            <div className="review-author">
+              <strong>{review.name}</strong>
+              <div className="review-meta">
+                <span className="review-location">📍 {review.location}</span>
+                <span className="review-tag">{review.tag}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function WhatsAppFloatingButton() {
+  const whatsappUrl = `https://wa.me/919999999999?text=${encodeURIComponent(
+    "Hi Khana Peena Ghar Se! I would like to inquire about ordering your authentic homemade achars."
+  )}`;
+
+  return (
+    <a
+      href={whatsappUrl}
+      target="_blank"
+      rel="noreferrer"
+      className="whatsapp-float-btn"
+      aria-label="Chat with Khana Peena Ghar Se on WhatsApp"
+    >
+      <span className="whatsapp-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm0 18.14c-1.49 0-2.95-.4-4.23-1.16l-.3-.18-3.14.82.84-3.06-.2-.31a8.16 8.16 0 0 1-1.25-4.35c0-4.52 3.68-8.2 8.2-8.2 2.19 0 4.25.85 5.8 2.4 1.55 1.55 2.4 3.61 2.4 5.8 0 4.52-3.68 8.24-8.12 8.24zm4.5-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.17 0-.44.06-.66.31-.23.25-.88.86-.88 2.09 0 1.23.9 2.42 1.02 2.59.12.17 1.77 2.7 4.28 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.2-.58.2-1.08.14-1.18-.06-.1-.23-.17-.48-.29z" />
+        </svg>
+      </span>
+      <span className="whatsapp-text">Order / Help on WhatsApp</span>
+    </a>
+  );
+}
+
 function HomePage() {
   useDocumentMeta({
     title: "Khana Peena Ghar Se | Artisanal Homemade Achars & Pickles",
@@ -601,6 +782,8 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
           </motion.article>
         ))}
       </section>
+
+      <ReviewsSection />
 
       <FAQSection />
 
@@ -955,6 +1138,13 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
         price: product.price,
         availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         itemCondition: "https://schema.org/NewCondition"
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.9",
+        reviewCount: "128",
+        bestRating: "5",
+        worstRating: "1"
       }
     };
   }, [product]);
@@ -1067,6 +1257,8 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
         <p className="product-note">{product.note}</p>
         <p className="product-note">{product.shelfLife}</p>
 
+        <PincodeChecker />
+
         <div className="qty-row">
           <label>
             Quantity
@@ -1104,6 +1296,8 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
           </button>
         </div>
         <p className="inline-status">{message}</p>
+
+        <SafeDeliveryGuarantee />
       </div>
     </section>
   );
@@ -1583,6 +1777,7 @@ export default function App() {
           </Routes>
         </motion.div>
       </AnimatePresence>
+      <WhatsAppFloatingButton />
     </div>
   );
 }

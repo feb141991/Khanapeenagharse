@@ -1443,4 +1443,293 @@ textarea {
   border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
+/* --- Pincode Delivery Estimator --- */
+.pincode-checker-box {
+  margin: 16px 0;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  display: grid;
+  gap: 12px;
+}
+
+.pincode-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pincode-icon {
+  font-size: 1.25rem;
+}
+
+.pincode-header strong {
+  display: block;
+  font-size: 0.96rem;
+  color: var(--text-dark, #1e293b);
+}
+
+.pincode-header span {
+  font-size: 0.82rem;
+  color: var(--text-soft, #64748b);
+}
+
+.pincode-form {
+  display: flex;
+  gap: 8px;
+}
+
+.pincode-form input {
+  flex: 1;
+  min-height: 42px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line, #cbd5e1);
+  background: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.pincode-form .button-sm {
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 0.88rem;
+  border-radius: 10px;
+}
+
+.pincode-result {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+}
+
+.pincode-result.is-success {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #065f46;
+}
+
+.pincode-result.is-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #991b1b;
+}
+
+.pincode-eta strong {
+  display: block;
+  font-size: 0.94rem;
+  color: #047857;
+  margin-bottom: 2px;
+}
+
+.pincode-eta span {
+  font-size: 0.82rem;
+  color: #065f46;
+  opacity: 0.9;
+}
+
+.pincode-perks {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(16, 185, 129, 0.2);
+  display: grid;
+  gap: 4px;
+  font-size: 0.82rem;
+}
+
+/* --- Safe Delivery Guarantees --- */
+.safe-delivery-guarantee {
+  margin: 16px 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  display: grid;
+  gap: 12px;
+}
+
+.guarantee-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.g-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.guarantee-item strong {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--text-dark, #1e293b);
+}
+
+.guarantee-item span {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-soft, #64748b);
+  line-height: 1.4;
+}
+
+/* --- Floating WhatsApp Button --- */
+.whatsapp-float-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #25d366;
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.92rem;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+
+.whatsapp-float-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(37, 211, 102, 0.45);
+  color: #ffffff;
+}
+
+.whatsapp-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Customer Reviews Section --- */
+.reviews-section {
+  margin: 36px 0 24px;
+  padding: 36px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-md);
+}
+
+.reviews-head {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 32px;
+  display: grid;
+  gap: 8px;
+}
+
+.rating-pill {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 6px 14px;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.reviews-head h2 {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-dark, #1c1917);
+  letter-spacing: -0.02em;
+}
+
+.reviews-head p {
+  color: var(--text-soft, #57534e);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.review-card {
+  padding: 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.review-stars {
+  color: #f59e0b;
+  font-size: 1.15rem;
+  letter-spacing: 2px;
+}
+
+.review-quote {
+  color: var(--text-dark, #334155);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  font-style: italic;
+  margin: 0;
+}
+
+.review-author strong {
+  display: block;
+  font-size: 0.96rem;
+  color: var(--text-dark, #0f172a);
+}
+
+.review-meta {
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.review-location {
+  color: var(--text-soft, #64748b);
+  font-weight: 500;
+}
+
+.review-tag {
+  padding: 2px 8px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.74rem;
+}
+
+@media (max-width: 640px) {
+  .whatsapp-float-btn .whatsapp-text {
+    display: none;
+  }
+  .whatsapp-float-btn {
+    padding: 14px;
+    border-radius: 50%;
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+
 

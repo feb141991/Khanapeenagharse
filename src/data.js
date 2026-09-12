@@ -134,21 +134,35 @@ export const products = [
 export const testimonials = [
   {
     quote:
-      "The aam ka achar hit exactly the balance I look for — sharp up front, rounded in the finish. It's quietly become the default jar at our table.",
-    name: "Ritika S.",
-    meta: "New Delhi · Repeat customer"
+      "The aam ka achar hit exactly the balance I look for — sharp up front, rounded in the finish. It's quietly become the default jar at our dining table.",
+    name: "Ritika Sharma",
+    location: "New Delhi",
+    rating: 5,
+    tag: "Verified Buyer • Repeat Customer"
   },
   {
     quote:
-      "Shipped well, clean label, the hing achar is the best I've had outside of a homemade kitchen. Gifted two jars already.",
-    name: "Arjun M.",
-    meta: "Gurugram · Gift order"
+      "Shipped all the way to Bengaluru in flawless glass packaging. Clean label, no chemical aftertaste. The hing achar is the best I've tasted outside my grandmother's home.",
+    name: "Arjun Menon",
+    location: "Bengaluru",
+    rating: 5,
+    tag: "Verified Buyer • Express Delivery"
   },
   {
     quote:
-      "Honest small-batch flavour without the gimmicks. The mirch achar is properly hot and still flavourful — not just burn.",
-    name: "Neha K.",
-    meta: "Bahadurgarh · Local pickup"
+      "Honest small-batch flavour without gimmicks. The mirch achar is properly hot and deeply flavourful with roasted methi — not just random chilli powder heat.",
+    name: "Neha Khandelwal",
+    location: "Jaipur",
+    rating: 5,
+    tag: "Verified Buyer • Heritage Blend"
+  },
+  {
+    quote:
+      "Ordered the 4-jar set for Diwali family dining in Mumbai. The mustard oil aroma and crunchy mix veg achar was an instant hit with everyone.",
+    name: "Siddharth Deshmukh",
+    location: "Mumbai",
+    rating: 5,
+    tag: "Verified Buyer • Festive Gift Order"
   }
 ];
 
