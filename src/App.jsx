@@ -450,85 +450,66 @@ function Header({ cartCount, isLoggedIn, onSignOut, onOpenCartDrawer }) {
   ];
 
   return (
-    <header className="app-header">
-      <Link className="brand" to="/" aria-label="Khana Peena Ghar Se home">
-        <img src="/images/logo.png" alt="Khana Peena Ghar Se logo" />
-        <span className="brand-copy">
-          <strong>KHANA PEENA GHAR SE</strong>
-          <span>THE PICKLE CHAPTER</span>
-        </span>
-      </Link>
+    <div className="notch-header-wrapper">
+      <header className="notch-navbar">
+        <Link className="brand" to="/" aria-label="Khana Peena Ghar Se home">
+          <img src="/images/logo.png" alt="Khana Peena Ghar Se logo" />
+          <span className="brand-copy">
+            <strong>KHANA PEENA GHAR SE</strong>
+            <span>THE PICKLE CHAPTER</span>
+          </span>
+        </Link>
 
-      <button
-        type="button"
-        className={`menu-toggle ${menuOpen ? "active" : ""}`}
-        aria-expanded={menuOpen}
-        aria-label="Toggle navigation menu"
-        onClick={() => setMenuOpen((val) => !val)}
-      >
-        <span />
-        <span />
-        <span />
-      </button>
+        <button
+          type="button"
+          className={`menu-toggle ${menuOpen ? "active" : ""}`}
+          aria-expanded={menuOpen}
+          aria-label="Toggle navigation menu"
+          onClick={() => setMenuOpen((val) => !val)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
 
-      <nav className={`app-nav ${menuOpen ? "open" : ""}`} aria-label="Main Navigation">
-        <div className="nav-links">
-          {navItems.map((item) => {
-            const active = location.pathname === item.to;
-            return (
-              <Link key={item.to} to={item.to} className={`nav-pill ${active ? "active" : ""}`}>
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
+        <nav className={`app-nav ${menuOpen ? "open" : ""}`} aria-label="Main Navigation">
+          <div className="nav-links">
+            {navItems.map((item) => {
+              const active = location.pathname === item.to;
+              return (
+                <Link key={item.to} to={item.to} className={`nav-pill ${active ? "active" : ""}`}>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
 
-        <div className="nav-actions">
-          <button
-            type="button"
-            className="nav-cart-btn"
-            onClick={onOpenCartDrawer}
-            aria-label="Open Cart Drawer"
-            style={{
-              background: "var(--surface)",
-              border: "1px solid var(--line-gold)",
-              borderRadius: "999px",
-              padding: "7px 14px",
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "7px",
-              fontSize: "0.85rem",
-              fontWeight: "600",
-              color: "var(--heritage-green)",
-              transition: "all 0.2s"
-            }}
-          >
-            <span>🛍️ Cart</span>
-            {cartCount > 0 ? (
-              <span style={{
-                background: "var(--mustard-gold)",
-                color: "#FFF",
-                borderRadius: "10px",
-                padding: "2px 7px",
-                fontSize: "0.74rem",
-                fontWeight: "700"
-              }}>
-                {cartCount}
-              </span>
-            ) : null}
-          </button>
-          <Link to="/achar" className="nav-cta-btn">
-            Shop Achar
-          </Link>
-          {isLoggedIn ? (
-            <button className="nav-admin" type="button" onClick={onSignOut}>
-              Sign Out
+          <div className="nav-actions">
+            <button
+              type="button"
+              className="nav-cart-btn"
+              onClick={onOpenCartDrawer}
+              aria-label="Open Cart Drawer"
+            >
+              <span>🛍️ Cart</span>
+              {cartCount > 0 ? (
+                <span className="nav-cart-badge">
+                  {cartCount}
+                </span>
+              ) : null}
             </button>
-          ) : null}
-        </div>
-      </nav>
-    </header>
+            <Link to="/achar" className="nav-cta-btn">
+              Shop Achar
+            </Link>
+            {isLoggedIn ? (
+              <button className="nav-admin" type="button" onClick={onSignOut}>
+                Sign Out
+              </button>
+            ) : null}
+          </div>
+        </nav>
+      </header>
+    </div>
   );
 }
 
@@ -595,100 +576,354 @@ function TrustStrip() {
   );
 }
 
-function HeroSection() {
+const HERO_SLIDES = [
+  {
+    id: "slide-jars",
+    eyebrow: "Artisanal Indian Pickles",
+    headline: "Recipes passed down.\nPickles made today.",
+    subhead: "Taste the achar. Remember the home.",
+    body: "Traditional homemade pickles prepared in small batches from our family kitchen in Bahadurgarh. Same recipes. Pure cold-pressed mustard oil. Real ingredients. A taste of home, always.",
+    image: "/images/brand/home-hero.jpg",
+    alt: "Authentic Sun-Cured Pickles in traditional glass and ceramic jars",
+    badgeTop: { icon: "🌿", title: "100% Kacchi Ghani", sub: "Cold-Pressed Mustard Oil" },
+    badgeBottom: { icon: "🏺", title: "Sun-Cured In Barnis", sub: "12-Month Natural Life" },
+    tabTitle: "Sun-Cured Jars",
+    ctaPrimary: { label: "Shop Achar →", to: "/achar" },
+    ctaSecondary: { label: "Our Story", to: "/about" }
+  },
+  {
+    id: "slide-kitchen",
+    eyebrow: "Handcrafted in Bahadurgarh",
+    headline: "Small batches crafted\nby Rachna at home.",
+    subhead: "Authentic mother's touch, zero chemical preservatives.",
+    body: "Every jar is seasoned with whole spices roasted by hand, naturally fermented in ceramic barnis under the Haryana sun, and sealed with pure love.",
+    image: "/images/brand/about-owner.jpg",
+    alt: "Rachna preparing traditional homemade pickles in her Bahadurgarh kitchen",
+    badgeTop: { icon: "👵", title: "Mother's Recipe", sub: "Family Kitchen Handcrafted" },
+    badgeBottom: { icon: "☀️", title: "Slow Fermented", sub: "Sun-Warmed on Terrace" },
+    tabTitle: "Kitchen Story",
+    ctaPrimary: { label: "Meet Rachna →", to: "/about" },
+    ctaSecondary: { label: "How It's Made", to: "/how-its-made" }
+  },
+  {
+    id: "slide-dining",
+    eyebrow: "The Soul of Indian Dining",
+    headline: "Transforms every meal\ninto comforting nostalgia.",
+    subhead: "Crisp parathas, comforting khichdi, or festive thalis.",
+    body: "No Indian plate is truly complete without the punch of authentic ghar ka achar. From zesty spicy green chillies to tangy hing mango, taste perfection in every spoonful.",
+    image: "/images/brand/lifestyle-dining.jpg",
+    alt: "Traditional Indian dining thali accompanied by homemade achars",
+    badgeTop: { icon: "🍛", title: "Comfort Dining", sub: "Parathas & Thalis" },
+    badgeBottom: { icon: "🪔", title: "Pure Nostalgia", sub: "Timeless Indian Taste" },
+    tabTitle: "Dining Rituals",
+    ctaPrimary: { label: "Explore Flavours →", to: "/achar" },
+    ctaSecondary: { label: "Why Glass Jars?", to: "/how-its-made" }
+  },
+  {
+    id: "slide-combo",
+    eyebrow: "Signature Family Assortment",
+    headline: "The Complete Box:\nAll 4 Signature Achars.",
+    subhead: "Aam, Hing, Mirch & Mix Veg together in one giftable set.",
+    body: "Can't choose a single favourite? Experience the complete heirloom chapter with our signature combo box, lovingly packed for safe doorstep transit across India.",
+    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+    alt: "The Complete Ghar Ka Achar 4-in-1 combo box",
+    badgeTop: { icon: "🎁", title: "All 4 Heirlooms", sub: "Aam, Hing, Mirch & Mix" },
+    badgeBottom: { icon: "🚚", title: "Pan-India Shipping", sub: "Safe Glass Jar Transit" },
+    tabTitle: "Combo Box",
+    ctaPrimary: { label: "Shop Combo Box →", to: "/achar/ghar-ka-achar-box" },
+    ctaSecondary: { label: "All Achars", to: "/achar" }
+  }
+];
+
+function HeroCarousel() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const SLIDE_DURATION = 5500;
+  const INTERVAL_STEP = 50;
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          setCurrentSlide((curr) => (curr + 1) % HERO_SLIDES.length);
+          return 0;
+        }
+        return prev + (INTERVAL_STEP / SLIDE_DURATION) * 100;
+      });
+    }, INTERVAL_STEP);
+
+    return () => clearInterval(interval);
+  }, [isPaused, currentSlide]);
+
+  const goToSlide = (idx) => {
+    setCurrentSlide(idx);
+    setProgress(0);
+  };
+
+  const nextSlide = () => {
+    goToSlide((currentSlide + 1) % HERO_SLIDES.length);
+  };
+
+  const prevSlide = () => {
+    goToSlide((currentSlide - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  };
+
+  const slide = HERO_SLIDES[currentSlide];
+
   return (
-    <section className="heritage-hero">
-      <div className="content-container">
+    <section
+      className="transparent-luxury-hero"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="content-container hero-carousel-wrap">
         <div className="hero-grid">
-          <motion.div
-            className="hero-copy-wrap"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className="hero-eyebrow">Artisanal Indian Pickles</span>
-            <h1 className="hero-headline">
-              Recipes passed down.<br />Pickles made today.
-            </h1>
-            <p className="hero-subhead">
-              Taste the achar. Remember the home.
-            </p>
-            <p className="hero-body">
-              Traditional homemade pickles prepared in small batches from our family kitchen in Bahadurgarh. Same recipes. Pure cold-pressed mustard oil. Real ingredients. A taste of home, always.
-            </p>
-            <div className="hero-buttons">
-              <Link to="/achar" className="button button-primary">
-                Shop Achar →
-              </Link>
-              <Link to="/about" className="button button-secondary">
-                Our Story
-              </Link>
-            </div>
+          {/* Hero Left Column: Copy & Actions */}
+          <div className="hero-copy-wrap">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={slide.id + "-copy"}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: "grid", gap: "12px" }}
+              >
+                <div className="hero-eyebrow-pill">
+                  <span>✦</span> {slide.eyebrow}
+                </div>
+
+                <h1 className="hero-headline">
+                  {slide.headline.split("\n").map((line, i) => (
+                    <React.Fragment key={i}>
+                      {i === 0 ? line : <span className="highlight-gold">{line}</span>}
+                      {i < slide.headline.split("\n").length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
+                </h1>
+
+                <p className="hero-subhead">{slide.subhead}</p>
+
+                <p className="hero-body">{slide.body}</p>
+
+                <div className="hero-buttons">
+                  <Link to={slide.ctaPrimary.to} className="button button-primary">
+                    {slide.ctaPrimary.label}
+                  </Link>
+                  <Link to={slide.ctaSecondary.to} className="button button-secondary">
+                    {slide.ctaSecondary.label}
+                  </Link>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
             <div className="hero-local-pill">
               <span>📍 In Bahadurgarh today?</span>
               <a href={ZOMATO_URL} target="_blank" rel="noreferrer">
                 Order local delivery on Zomato ↗
               </a>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="hero-media-wrap"
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          >
+          {/* Hero Right Column: Interactive Image Carousel Card */}
+          <div className="hero-media-wrap">
             <div className="hero-image-stage">
-              <motion.div
-                className="hero-image-card"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              <button
+                type="button"
+                className="hero-carousel-nav-btn prev"
+                onClick={prevSlide}
+                aria-label="Previous slide"
               >
-                <img
-                  src={HOME_HERO_IMAGE}
-                  alt="Traditional homemade Indian achar jars on dining table"
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/logo.png";
-                  }}
-                />
-              </motion.div>
+                ‹
+              </button>
 
-              {/* Floating Ingredient & Heritage Badges with Kinetic Motion */}
-              <motion.div
-                className="hero-floating-badge badge-top-right"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: [0, -6, 0], x: [0, 4, 0] }}
-                transition={{
-                  opacity: { duration: 0.5, delay: 0.3 },
-                  y: { repeat: Infinity, duration: 4.8, ease: "easeInOut" },
-                  x: { repeat: Infinity, duration: 4.8, ease: "easeInOut" }
-                }}
-              >
-                <span className="floating-badge-icon" aria-hidden="true">🌿</span>
-                <div className="floating-badge-text">
-                  <strong>100% Kacchi Ghani</strong>
-                  <small>Cold-Pressed Mustard Oil</small>
-                </div>
-              </motion.div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide.id + "-media"}
+                  className="hero-carousel-card"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <img
+                    src={slide.image}
+                    alt={slide.alt}
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/brand/home-hero.jpg";
+                    }}
+                  />
+                </motion.div>
+              </AnimatePresence>
 
-              <motion.div
-                className="hero-floating-badge badge-bottom-left"
-                initial={{ opacity: 0, y: -15 }}
-                animate={{ opacity: 1, y: [0, 6, 0], x: [0, -4, 0] }}
-                transition={{
-                  opacity: { duration: 0.5, delay: 0.45 },
-                  y: { repeat: Infinity, duration: 5.4, ease: "easeInOut", delay: 0.4 },
-                  x: { repeat: Infinity, duration: 5.4, ease: "easeInOut", delay: 0.4 }
-                }}
+              <button
+                type="button"
+                className="hero-carousel-nav-btn next"
+                onClick={nextSlide}
+                aria-label="Next slide"
               >
-                <span className="floating-badge-icon" aria-hidden="true">🏺</span>
-                <div className="floating-badge-text">
-                  <strong>Sun-Cured In Barnis</strong>
-                  <small>12-Month Natural Life</small>
-                </div>
-              </motion.div>
+                ›
+              </button>
+
+              {/* Floating Kinetic Badges */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide.id + "-badgeTop"}
+                  className="hero-floating-badge badge-top-right"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <span className="floating-badge-icon" aria-hidden="true">
+                    {slide.badgeTop.icon}
+                  </span>
+                  <div className="floating-badge-text">
+                    <strong>{slide.badgeTop.title}</strong>
+                    <small>{slide.badgeTop.sub}</small>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide.id + "-badgeBottom"}
+                  className="hero-floating-badge badge-bottom-left"
+                  initial={{ opacity: 0, y: -12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                >
+                  <span className="floating-badge-icon" aria-hidden="true">
+                    {slide.badgeBottom.icon}
+                  </span>
+                  <div className="floating-badge-text">
+                    <strong>{slide.badgeBottom.title}</strong>
+                    <small>{slide.badgeBottom.sub}</small>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
-          </motion.div>
+          </div>
+        </div>
+
+        {/* Carousel Tabs with Live Progress Bar */}
+        <div className="hero-carousel-tabs" role="tablist" aria-label="Hero carousel navigation">
+          {HERO_SLIDES.map((s, idx) => {
+            const isActive = idx === currentSlide;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={`hero-tab-btn ${isActive ? "active" : ""}`}
+                onClick={() => goToSlide(idx)}
+              >
+                <span className="hero-tab-num">0{idx + 1} / Story</span>
+                <span className="hero-tab-title">{s.tabTitle}</span>
+                {isActive && (
+                  <div className="hero-tab-progress-bar">
+                    <div
+                      className="hero-tab-progress-fill"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const KITCHEN_MOMENTS = [
+  {
+    image: "/images/brand/about-owner.jpg",
+    tag: "Kitchen Master",
+    title: "Handcrafted in Bahadurgarh",
+    subtitle: "Rachna carefully measuring whole roasted masalas"
+  },
+  {
+    image: "/images/brand/lifestyle-1.jpg",
+    tag: "Balcony Sun-Curing",
+    title: "Ceramic Barnis in the Sun",
+    subtitle: "Natural warmth develops rich heirloom tang"
+  },
+  {
+    image: "/images/brand/lifestyle-2.jpg",
+    tag: "Morning Parathas",
+    title: "Hot Parathas & Mirch Achar",
+    subtitle: "The quintessence of hearty Indian mornings"
+  },
+  {
+    image: "/images/brand/lifestyle-3.jpg",
+    tag: "Pure Ingredients",
+    title: "Cold-Pressed Mustard Oil",
+    subtitle: "Golden Kacchi Ghani acting as natural preservative"
+  },
+  {
+    image: "/images/brand/lifestyle-dining.jpg",
+    tag: "Family Table",
+    title: "Grand Dining Spread",
+    subtitle: "Bringing families together around home cooked food"
+  },
+  {
+    image: "/images/brand/lifestyle-4.jpg",
+    tag: "Heirloom Recipe",
+    title: "Oil-Free Hing Mango",
+    subtitle: "Traditional digestive spice blend"
+  }
+];
+
+function KitchenMomentsSection() {
+  return (
+    <section className="kitchen-moments-section">
+      <div className="content-container">
+        <div className="moments-header-wrap">
+          <div>
+            <p className="section-eyebrow" style={{ color: "var(--mustard-gold-dark)" }}>
+              Visual Kitchen Stories
+            </p>
+            <h2>Ghar Ka Nazara & Kitchen Moments</h2>
+          </div>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", maxWidth: "420px", margin: 0 }}>
+            Take a peek into our Bahadurgarh family kitchen, sunny balconies lined with ceramic barnis, and everyday dining memories.
+          </p>
+        </div>
+
+        <div className="moments-carousel-track">
+          {KITCHEN_MOMENTS.map((moment, idx) => (
+            <motion.div
+              key={idx}
+              className="moment-card"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.08 }}
+            >
+              <img
+                src={moment.image}
+                alt={moment.title}
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/brand/home-hero.jpg";
+                }}
+              />
+              <div className="moment-card-overlay">
+                <span className="moment-tag">{moment.tag}</span>
+                <strong style={{ fontSize: "0.95rem", lineHeight: 1.25 }}>{moment.title}</strong>
+                <p style={{ fontSize: "0.78rem", color: "rgba(247, 241, 231, 0.85)", margin: "4px 0 0", lineHeight: 1.3 }}>
+                  {moment.subtitle}
+                </p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -1389,7 +1624,7 @@ function HomePage({ wishlist, toggleWishlist, addToCart }) {
 
   return (
     <div>
-      <HeroSection />
+      <HeroCarousel />
       <TrustStrip />
       <SignatureProductsSection
         catalog={catalog}
@@ -1397,6 +1632,7 @@ function HomePage({ wishlist, toggleWishlist, addToCart }) {
         toggleWishlist={toggleWishlist}
         addToCart={addToCart}
       />
+      <KitchenMomentsSection />
       <StorySpotlightSection />
       <LifestyleBanner />
       <ReviewsSection />
