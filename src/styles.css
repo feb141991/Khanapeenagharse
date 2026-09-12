@@ -6815,3 +6815,67 @@ textarea {
   }
 }
 
+/* ==========================================================================
+   Floating Luxury WhatsApp Concierge Widget
+   ========================================================================== */
+.floating-whatsapp-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 998;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px 10px 14px;
+  background: #25D366;
+  color: #FFFFFF;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35), 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.floating-whatsapp-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(37, 211, 102, 0.5), 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: #FFFFFF;
+}
+
+.floating-whatsapp-btn .wa-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.floating-whatsapp-btn .wa-pulse-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: var(--mustard-gold);
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  animation: wa-pulse-ring 2s infinite;
+}
+
+@keyframes wa-pulse-ring {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 155, 60, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(200, 155, 60, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(200, 155, 60, 0); }
+}
+
+@media (max-width: 768px) {
+  .floating-whatsapp-btn {
+    bottom: 18px;
+    right: 18px;
+    padding: 10px 14px;
+  }
+  .floating-whatsapp-btn .wa-text {
+    display: none;
+  }
+}
+
+

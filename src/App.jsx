@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Link, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { faqs, products, testimonials } from "./data";
 import { hasSupabaseClientEnv, supabase } from "./supabaseClient";
@@ -19,6 +19,28 @@ import {
 
 const ZOMATO_URL =
   "https://www.zomato.com/bahadurgarh/khana-peena-ghar-se-bahadurgarh-locality/order";
+const WHATSAPP_PHONE = "919811200000";
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent("Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.")}`;
+
+export function getWhatsAppOrderUrl(items = [], subtotal = 0, customerInfo = null) {
+  const itemList = items
+    .map((item) => `• ${item.quantity} × ${item.product?.name || item.name} (₹${(item.product?.price || item.unitPrice || 0) * item.quantity})`)
+    .join("\n");
+
+  let text = `Namaste Khana Peena Ghar Se! I would like to place an order from your website:\n\n${itemList}\n\n*Subtotal:* ₹${subtotal}\n*Shipping:* ${subtotal >= 599 ? "FREE Pan-India Delivery" : "₹60"}\n*Total:* ₹${subtotal >= 599 ? subtotal : subtotal + 60}`;
+
+  if (customerInfo && customerInfo.pincode) {
+    text += `\n\n*Delivery Pincode:* ${customerInfo.pincode}`;
+    if (customerInfo.city || customerInfo.state) {
+      text += ` (${[customerInfo.city, customerInfo.state].filter(Boolean).join(", ")})`;
+    }
+  }
+
+  text += `\n\nPlease confirm availability and payment details. Thank you!`;
+
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+}
+
 const HOME_HERO_IMAGE = "/images/brand/home-hero.jpg";
 const ABOUT_OWNER_IMAGE = "/images/brand/about-owner.jpg";
 const LIFESTYLE_IMAGE = "/images/brand/lifestyle-dining.jpg";
@@ -4056,6 +4078,16 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
             <button className="button button-primary button-full" type="submit" disabled={!items.length || loading}>
               {loading ? "Placing Order..." : `Place Order (₹${total})`}
             </button>
+            <a
+              href={getWhatsAppOrderUrl(items, subtotal, { pincode: checkoutPincode, city: checkoutCity, state: checkoutState })}
+              target="_blank"
+              rel="noreferrer"
+              className="button button-cream-secondary button-full"
+              style={{ marginTop: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+              onClick={() => trackEvent("order_via_whatsapp_click", { subtotal, items_count: items.length })}
+            >
+              <span>💬</span> Order via WhatsApp Instant Chat
+            </a>
             {status ? <p style={{ color: "var(--heritage-green)", fontWeight: "600", margin: "8px 0 0" }}>{status}</p> : null}
           </form>
         </div>
@@ -5340,6 +5372,93 @@ function useShopState() {
   };
 }
 
+function WhatsAppRedirectPage() {
+  const [searchParams] = useSearchParams();
+  const productCatalog = useCatalogProducts();
+
+  useDocumentMeta({
+    title: "Connecting to WhatsApp | Khana Peena Ghar Se",
+    description: "Connect directly with Rachna's kitchen in Bahadurgarh on WhatsApp."
+  });
+
+  useEffect(() => {
+    const productSlug = searchParams.get("product") || searchParams.get("item");
+    const orderId = searchParams.get("order");
+    const isBulk = searchParams.get("bulk");
+    const isCombo = searchParams.get("combo");
+    const customMsg = searchParams.get("msg") || searchParams.get("text");
+    const ref = searchParams.get("ref") || "direct_route";
+
+    let message = "Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.";
+
+    if (customMsg) {
+      message = customMsg;
+    } else if (orderId) {
+      message = `Namaste Khana Peena Ghar Se! I would like to check the status of my Order #${orderId}.`;
+    } else if (productSlug) {
+      const p = productCatalog.find((i) => i.slug === productSlug);
+      const name = p ? p.name : productSlug;
+      message = `Namaste Khana Peena Ghar Se! I would like to order ${name} (₹${p?.price || 299}). Please share details.`;
+    } else if (isCombo) {
+      message = "Namaste Khana Peena Ghar Se! I want to order The Ghar Ka Achar 4-in-1 Signature Combo Box (₹999).";
+    } else if (isBulk) {
+      message = "Namaste Khana Peena Ghar Se! I am interested in bulk orders / festive gifting hampers for homemade achars.";
+    }
+
+    trackEvent("whatsapp_redirect", {
+      ref,
+      product: productSlug || "",
+      order_id: orderId || ""
+    });
+
+    const targetUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+    
+    const timer = setTimeout(() => {
+      window.location.replace(targetUrl);
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [searchParams, productCatalog]);
+
+  return (
+    <div className="page-shell" style={{ minHeight: "65vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ textAlign: "center", padding: "40px 20px", maxWidth: "480px" }}>
+        <div style={{ fontSize: "3.2rem", marginBottom: "16px" }}>💬</div>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "1.9rem", color: "var(--heritage-green)", margin: "0 0 10px" }}>
+          Connecting to WhatsApp...
+        </h1>
+        <p style={{ color: "var(--text-soft)", fontSize: "0.95rem", lineHeight: 1.5, margin: "0 0 24px" }}>
+          Opening direct WhatsApp chat with Rachna's kitchen in Bahadurgarh.
+        </p>
+        <a
+          href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent("Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar.")}`}
+          className="button button-primary"
+          style={{ background: "#25D366", borderColor: "#25D366", color: "#FFF" }}
+        >
+          Open WhatsApp Now ↗
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function FloatingWhatsAppButton() {
+  return (
+    <a
+      href="/whatsapp?ref=floating_widget"
+      className="floating-whatsapp-btn"
+      aria-label="Chat with Khana Peena Ghar Se on WhatsApp"
+      target="_blank"
+      rel="noreferrer"
+      onClick={() => trackEvent("floating_whatsapp_click")}
+    >
+      <span className="wa-icon" aria-hidden="true">💬</span>
+      <span className="wa-text">WhatsApp Us</span>
+      <span className="wa-pulse-badge" />
+    </a>
+  );
+}
+
 function NotFoundPage() {
   useDocumentMeta({
     title: "Page Not Found | Khana Peena Ghar Se",
@@ -5502,6 +5621,8 @@ export default function App() {
                   />
                 }
               />
+              <Route path="/whatsapp" element={<WhatsAppRedirectPage />} />
+              <Route path="/wa" element={<WhatsAppRedirectPage />} />
               <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/track-order" element={<TrackPage session={session} />} />
@@ -5518,6 +5639,7 @@ export default function App() {
           </motion.div>
         </AnimatePresence>
       </main>
+      <FloatingWhatsAppButton />
       <Footer />
     </div>
   );
