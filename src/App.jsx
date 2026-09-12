@@ -361,74 +361,299 @@ function CartDrawer({ isOpen, onClose, cart, updateCartQuantity }) {
 }
 
 function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay = 0 }) {
+  const navigate = useNavigate();
   const [justAdded, setJustAdded] = useState(false);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [selectedImgIdx, setSelectedImgIdx] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [modalAdded, setModalAdded] = useState(false);
   const isWishlisted = wishlist.includes(product.slug);
 
-  const handleAdd = () => {
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : [product.image];
+
+  const handleAdd = (qty = 1) => {
     if (product.stock <= 0) return;
-    addToCart(product.slug, 1, product.stock, product);
+    addToCart(product.slug, qty, product.stock, product);
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
   };
 
+  const handleModalAdd = () => {
+    if (product.stock <= 0) return;
+    addToCart(product.slug, quantity, product.stock, product);
+    setModalAdded(true);
+    setTimeout(() => setModalAdded(false), 1800);
+  };
+
+  const openQuickView = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedImgIdx(0);
+    setQuantity(1);
+    setIsQuickViewOpen(true);
+  };
+
+  const closeQuickView = () => {
+    setIsQuickViewOpen(false);
+    setModalAdded(false);
+  };
+
+  const goToProductPage = () => {
+    setIsQuickViewOpen(false);
+    navigate(`/product/${product.slug}`);
+  };
+
   return (
-    <motion.article
-      className="product-card"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay }}
-    >
-      <div className="product-card-visual">
-        <span className="product-card-tag">{product.category}</span>
-        {product.stock > 0 && product.stock <= 8 ? (
-          <span className="scarcity-pill" style={{ position: "absolute", bottom: "8px", left: "8px", zIndex: 3 }}>
-            Only {product.stock} left!
-          </span>
-        ) : null}
-        <button
-          type="button"
-          className={`product-wishlist-btn ${isWishlisted ? "is-active" : ""}`}
-          aria-label={`Save ${product.name} to wishlist`}
-          onClick={() => toggleWishlist(product.slug, product)}
-        >
-          {isWishlisted ? "♥" : "♡"}
-        </button>
-        <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
-          <img
-            src={product.image}
-            alt={product.name}
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.src = "/images/logo.png";
-            }}
-          />
-        </Link>
-      </div>
+    <>
+      <motion.article
+        className="product-card"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay }}
+      >
+        <div className="product-card-visual">
+          <span className="product-card-tag">{product.category}</span>
+          {product.stock > 0 && product.stock <= 8 ? (
+            <span className="scarcity-pill" style={{ position: "absolute", bottom: "8px", left: "8px", zIndex: 3 }}>
+              Only {product.stock} left!
+            </span>
+          ) : null}
 
-      <div className="product-card-info">
-        <h3>{product.name}</h3>
-        <p className="product-card-tagline">{product.tagline}</p>
-        <div className="product-card-price-row">
-          <span className="product-card-price">₹{product.price}</span>
-          <span className="product-card-size">{product.size}</span>
+          <button
+            type="button"
+            className={`product-wishlist-btn ${isWishlisted ? "is-active" : ""}`}
+            aria-label={`Save ${product.name} to wishlist`}
+            onClick={() => toggleWishlist(product.slug, product)}
+          >
+            {isWishlisted ? "♥" : "♡"}
+          </button>
+
+          <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
+            <img
+              src={product.image}
+              alt={product.name}
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.src = "/images/logo.png";
+              }}
+            />
+          </Link>
+
+          {/* Sleek Translucent Quick View Hover Trigger */}
+          <button
+            type="button"
+            className="product-card-quickview-btn"
+            onClick={openQuickView}
+            aria-label={`Quick view ${product.name}`}
+          >
+            <span>🔍</span> Quick View
+          </button>
         </div>
-      </div>
 
-      <div className="product-card-actions">
-        <button
-          type="button"
-          className={`button button-primary button-sm ${justAdded ? "is-added button-pulse" : ""}`}
-          disabled={product.stock <= 0}
-          onClick={handleAdd}
-        >
-          {product.stock <= 0 ? "Out of Stock" : justAdded ? "✓ Added!" : "Add to Cart"}
-        </button>
-        <Link to={`/product/${product.slug}`} className="button button-cream-secondary button-sm">
-          View
-        </Link>
-      </div>
-    </motion.article>
+        <div className="product-card-info">
+          <h3>{product.name}</h3>
+          <p className="product-card-tagline">{product.tagline}</p>
+          <div className="product-card-price-row">
+            <span className="product-card-price">₹{product.price}</span>
+            <span className="product-card-size">{product.size}</span>
+          </div>
+        </div>
+
+        <div className="product-card-actions">
+          <button
+            type="button"
+            className={`button button-primary button-sm ${justAdded ? "is-added button-pulse" : ""}`}
+            disabled={product.stock <= 0}
+            onClick={() => handleAdd(1)}
+          >
+            {product.stock <= 0 ? "Out of Stock" : justAdded ? "✓ Added!" : "Add to Cart"}
+          </button>
+          <button
+            type="button"
+            className="button button-cream-secondary button-sm"
+            onClick={openQuickView}
+          >
+            Quick View
+          </button>
+        </div>
+      </motion.article>
+
+      {/* Translucent & Transparent Luxury Quick View Modal */}
+      <AnimatePresence>
+        {isQuickViewOpen && (
+          <motion.div
+            className="product-quickview-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeQuickView}
+          >
+            <motion.div
+              className="product-quickview-card"
+              initial={{ scale: 0.92, opacity: 0, y: 24 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 24 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="quickview-close-btn"
+                onClick={closeQuickView}
+                aria-label="Close Quick View"
+              >
+                ✕
+              </button>
+
+              {/* Left Column: Visual Showcase & Gallery */}
+              <div className="quickview-gallery-col">
+                <div className="quickview-main-image-wrap">
+                  <img
+                    src={images[selectedImgIdx] || product.image}
+                    alt={product.name}
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/logo.png";
+                    }}
+                  />
+                  <div className="quickview-image-badge">
+                    ✦ 100% Pure Mustard Oil • Zero Palm Oil
+                  </div>
+                </div>
+
+                {images.length > 1 && (
+                  <div className="quickview-thumbs-strip">
+                    {images.map((img, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className={`quickview-thumb-btn ${selectedImgIdx === i ? "is-active" : ""}`}
+                        onClick={() => setSelectedImgIdx(i)}
+                      >
+                        <img
+                          src={img}
+                          alt=""
+                          onError={(e) => {
+                            e.currentTarget.src = "/images/logo.png";
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Culinary Details & Instant Order Controls */}
+              <div className="quickview-info-col">
+                <div className="quickview-meta-pills">
+                  <span className="quickview-category-pill">{product.category}</span>
+                  {product.spice && (
+                    <span className="quickview-spice-pill">
+                      🌶️ {product.spice}
+                    </span>
+                  )}
+                  <span className="quickview-shelf-pill">⏳ 12-Month Life</span>
+                </div>
+
+                <h2 className="quickview-title">{product.name}</h2>
+                <p className="quickview-tagline">{product.tagline}</p>
+
+                <div className="quickview-price-box">
+                  <div className="quickview-price-wrap">
+                    <span className="quickview-price-main">₹{product.price}</span>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <>
+                        <span className="quickview-price-original">₹{product.originalPrice}</span>
+                        <span className="quickview-savings-badge">
+                          Save ₹{product.originalPrice - product.price}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <span className="quickview-size-badge">{product.size}</span>
+                </div>
+
+                <p className="quickview-description">
+                  {product.shortDescription || product.description}
+                </p>
+
+                {/* Dietary & Craft Badges */}
+                {product.dietaryBadges && product.dietaryBadges.length > 0 && (
+                  <div className="quickview-dietary-pills">
+                    {product.dietaryBadges.slice(0, 4).map((badge, i) => (
+                      <span key={i} className="quickview-dietary-pill">
+                        ✓ {badge}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Ingredients snippet */}
+                {product.ingredients && product.ingredients.length > 0 && (
+                  <div className="quickview-ingredients-row">
+                    <strong>Ingredients:</strong>{" "}
+                    <span>{product.ingredients.join(", ")}</span>
+                  </div>
+                )}
+
+                {/* Purchase & Action Controls */}
+                <div className="quickview-actions-wrap">
+                  <div className="quickview-qty-selector">
+                    <button
+                      type="button"
+                      className="quickview-qty-btn"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      disabled={quantity <= 1}
+                    >
+                      −
+                    </button>
+                    <span className="quickview-qty-val">{quantity}</span>
+                    <button
+                      type="button"
+                      className="quickview-qty-btn"
+                      onClick={() => setQuantity((q) => Math.min(product.stock || 20, q + 1))}
+                      disabled={quantity >= (product.stock || 20)}
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    className={`button button-mustard-primary quickview-add-btn ${modalAdded ? "is-added" : ""}`}
+                    disabled={product.stock <= 0}
+                    onClick={handleModalAdd}
+                  >
+                    {product.stock <= 0
+                      ? "Out of Stock"
+                      : modalAdded
+                      ? "✓ Added to Cart!"
+                      : `Add to Cart • ₹${product.price * quantity}`}
+                  </button>
+                </div>
+
+                <div className="quickview-footer-links">
+                  <button
+                    type="button"
+                    className="quickview-full-details-link"
+                    onClick={goToProductPage}
+                  >
+                    View Full Product Details &amp; Reviews →
+                  </button>
+
+                  <div className="quickview-trust-note">
+                    🔒 Handcrafted in Bahadurgarh • Free Safe Pan-India Delivery
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
