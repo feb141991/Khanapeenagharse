@@ -559,7 +559,9 @@ textarea {
   text-underline-offset: 3px;
 }
 
-/* Hero Carousel Stage & Cards */
+/* ==========================================================================
+   Seamless Integrated Hero Media Stage & Interactive Tabs
+   ========================================================================== */
 .hero-media-wrap {
   position: relative;
   display: flex;
@@ -568,9 +570,63 @@ textarea {
   justify-content: center;
 }
 
+/* Ambient Radiant Glow behind the photography stage */
+.hero-stage-aura {
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(circle at 65% 35%, rgba(200, 155, 60, 0.32), transparent 60%),
+    radial-gradient(circle at 25% 75%, rgba(31, 74, 58, 0.7), transparent 65%),
+    radial-gradient(circle at 50% 50%, rgba(200, 155, 60, 0.15), transparent 70%);
+  filter: blur(44px);
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  animation: heroAuraPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes heroAuraPulse {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.82;
+  }
+  100% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+/* Outer Layered Luxury Bezel Frame */
+.hero-stage-outer-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(200, 155, 60, 0.08) 45%, rgba(14, 39, 29, 0.45) 100%);
+  padding: 8px;
+  border-radius: 28px;
+  border: 1px solid rgba(200, 155, 60, 0.38);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.55),
+    0 0 50px rgba(200, 155, 60, 0.16),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.35s ease;
+}
+
+.hero-stage-outer-frame:hover {
+  border-color: rgba(200, 155, 60, 0.6);
+  box-shadow:
+    0 36px 85px rgba(0, 0, 0, 0.65),
+    0 0 65px rgba(200, 155, 60, 0.24),
+    inset 0 1px 1px rgba(255, 255, 255, 0.45);
+}
+
 .hero-image-stage {
   position: relative;
   width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -579,15 +635,12 @@ textarea {
 .hero-carousel-card {
   position: relative;
   z-index: 1;
-  border-radius: var(--radius-xl);
+  border-radius: 20px;
   overflow: hidden;
-  border: 1px solid rgba(200, 155, 60, 0.35);
-  background: rgba(14, 39, 29, 0.6);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), 0 0 40px rgba(200, 155, 60, 0.15);
-  aspect-ratio: 4 / 3;
+  background: #0E271D;
+  aspect-ratio: 4 / 3.1;
   display: flex;
   width: 100%;
-  backdrop-filter: blur(10px);
 }
 
 .hero-carousel-card img {
@@ -596,83 +649,205 @@ textarea {
   object-fit: cover;
   object-position: center;
   display: block;
-  transition: transform 0.6s var(--ease);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-carousel-card:hover img {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
+/* Soft Vignette Blending Layer */
+.hero-card-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 30%, transparent 45%, rgba(9, 29, 21, 0.35) 100%),
+    linear-gradient(180deg, rgba(9, 29, 21, 0.12) 0%, transparent 35%, rgba(9, 29, 21, 0.72) 75%, rgba(9, 29, 21, 0.96) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Integrated Top Badge */
+.hero-card-top-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  background: rgba(9, 29, 21, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(200, 155, 60, 0.45);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+}
+
+.hero-card-top-badge:hover {
+  background: rgba(9, 29, 21, 0.95);
+  border-color: var(--mustard-gold);
+  transform: translateY(-1px);
+}
+
+.hero-badge-icon {
+  font-size: 1.15rem;
+}
+
+.hero-badge-text strong {
+  display: block;
+  font-size: 0.76rem;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+.hero-badge-text small {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--mustard-gold-light);
+  font-weight: 500;
+}
+
+/* Integrated Bottom Editorial Glass Bar */
+.hero-card-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 24px 20px 18px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.hero-bottom-text {
+  flex: 1;
+}
+
+.hero-bottom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--mustard-gold-light);
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.hero-bottom-tag strong {
+  color: #FFFFFF;
+}
+
+.hero-bottom-title {
+  font-family: var(--font-serif);
+  font-size: 0.94rem;
+  color: rgba(247, 241, 231, 0.95);
+  margin: 0;
+  line-height: 1.35;
+  font-style: italic;
+}
+
+.hero-card-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, var(--mustard-gold), var(--mustard-gold-dark));
+  color: #FFFFFF;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(200, 155, 60, 0.4);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.hero-card-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200, 155, 60, 0.55);
+  color: #FFFFFF;
+}
+
+/* Sleek Nav Buttons */
 .hero-carousel-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(14, 39, 29, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(9, 29, 21, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(200, 155, 60, 0.4);
   color: var(--warm-cream);
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .hero-carousel-nav-btn:hover {
   background: var(--mustard-gold);
-  color: #FFFFFF;
+  color: #0E271D;
   border-color: var(--mustard-gold-light);
-  transform: translateY(-50%) scale(1.08);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(200, 155, 60, 0.5);
 }
 
 .hero-carousel-nav-btn.prev {
-  left: -14px;
+  left: 12px;
 }
 
 .hero-carousel-nav-btn.next {
-  right: -14px;
+  right: 12px;
 }
 
 /* Interactive Tabs & Progress Timer */
 .hero-carousel-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 24px;
+  gap: 12px;
+  margin-top: 28px;
   width: 100%;
 }
 
 .hero-tab-btn {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(200, 155, 60, 0.2);
-  border-radius: var(--radius);
-  padding: 10px 12px;
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
   text-align: left;
   cursor: pointer;
   transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
   color: rgba(247, 241, 231, 0.75);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .hero-tab-btn:hover {
   background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(200, 155, 60, 0.4);
+  border-color: rgba(200, 155, 60, 0.45);
   color: #FFFFFF;
 }
 
 .hero-tab-btn.active {
-  background: rgba(200, 155, 60, 0.15);
+  background: rgba(200, 155, 60, 0.16);
   border-color: var(--mustard-gold);
   color: #FFFFFF;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 }
 
 .hero-tab-num {
@@ -681,11 +856,11 @@ textarea {
   text-transform: uppercase;
   color: var(--mustard-gold-light);
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .hero-tab-title {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.25;
   display: block;
@@ -700,57 +875,13 @@ textarea {
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--line);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .hero-tab-progress-fill {
   height: 100%;
   background: linear-gradient(90deg, var(--mustard-gold), var(--mustard-gold-light));
   transition: width 0.1s linear;
-}
-
-/* Floating Badges */
-.hero-floating-badge {
-  position: absolute;
-  background: rgba(14, 39, 29, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(200, 155, 60, 0.45);
-  border-radius: 999px;
-  padding: 6px 14px 6px 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-  z-index: 5;
-  pointer-events: none;
-}
-
-.hero-floating-badge.badge-top-right {
-  top: -12px;
-  right: -12px;
-}
-
-.hero-floating-badge.badge-bottom-left {
-  bottom: -12px;
-  left: -12px;
-}
-
-.floating-badge-icon {
-  font-size: 1.15rem;
-}
-
-.floating-badge-text strong {
-  display: block;
-  font-size: 0.78rem;
-  color: #FFFFFF;
-  line-height: 1.2;
-}
-
-.floating-badge-text small {
-  display: block;
-  font-size: 0.68rem;
-  color: var(--mustard-gold-light);
 }
 
 /* ==========================================================================
