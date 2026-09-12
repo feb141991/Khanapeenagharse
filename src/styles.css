@@ -50,10 +50,13 @@ body,
 #root {
   min-height: 100%;
   margin: 0;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -2802,6 +2805,7 @@ textarea {
   border: 1px solid var(--line-strong);
   background: #FFFFFF;
   color: var(--text-dark);
+  font-size: 16px; /* Prevents auto-zoom on iOS */
 }
 
 textarea {
@@ -3014,5 +3018,109 @@ textarea {
 
   .hero-floating-badge {
     display: none;
+  }
+}
+
+/* --- Mobile Phones Specific (<480px) --- */
+@media (max-width: 480px) {
+  .content-container {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .heritage-hero {
+    padding: 24px 0 28px;
+  }
+
+  .hero-headline {
+    font-size: 1.65rem !important;
+    line-height: 1.15;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .hero-buttons .button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .hero-local-pill {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.72rem;
+  }
+
+  /* 2-Column Mobile E-Commerce Grid (Swiggy / Luxury Grocery Style) */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .product-card {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .product-card-tag {
+    font-size: 0.64rem;
+    padding: 2px 6px;
+    top: 6px;
+    left: 6px;
+  }
+
+  .product-wishlist-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    top: 6px;
+    right: 6px;
+  }
+
+  .product-card-info h3 {
+    font-size: 0.92rem;
+  }
+
+  .product-card-tagline {
+    display: none; /* Keep mobile card clean and compact */
+  }
+
+  .product-card-price {
+    font-size: 1rem;
+  }
+
+  .product-card-size {
+    font-size: 0.68rem;
+  }
+
+  .product-card-actions {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .product-card-actions .button-sm {
+    padding: 6px 8px;
+    font-size: 0.74rem;
+  }
+
+  .reviews-carousel-viewport {
+    margin: 0 -4px;
+  }
+
+  .review-card-carousel {
+    padding: 16px;
+  }
+
+  .patience-banner {
+    padding: 22px 16px;
+  }
+
+  .how-main-title {
+    font-size: 1.85rem !important;
   }
 }
