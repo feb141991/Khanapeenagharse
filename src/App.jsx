@@ -280,19 +280,56 @@ function HeroSection() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.div
-              className="hero-image-card"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-            >
-              <img
-                src={HOME_HERO_IMAGE}
-                alt="Traditional homemade Indian achar jars on dining table"
-                onError={(e) => {
-                  e.currentTarget.src = "/images/logo.png";
+            <div className="hero-image-stage">
+              <motion.div
+                className="hero-image-card"
+                animate={{ y: [0, -8, 0] }}
+                transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              >
+                <img
+                  src={HOME_HERO_IMAGE}
+                  alt="Traditional homemade Indian achar jars on dining table"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/logo.png";
+                  }}
+                />
+              </motion.div>
+
+              {/* Floating Ingredient & Heritage Badges with Kinetic Motion */}
+              <motion.div
+                className="hero-floating-badge badge-top-right"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: [0, -6, 0], x: [0, 4, 0] }}
+                transition={{
+                  opacity: { duration: 0.5, delay: 0.3 },
+                  y: { repeat: Infinity, duration: 4.8, ease: "easeInOut" },
+                  x: { repeat: Infinity, duration: 4.8, ease: "easeInOut" }
                 }}
-              />
-            </motion.div>
+              >
+                <span className="floating-badge-icon" aria-hidden="true">🌿</span>
+                <div className="floating-badge-text">
+                  <strong>100% Kacchi Ghani</strong>
+                  <small>Cold-Pressed Mustard Oil</small>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="hero-floating-badge badge-bottom-left"
+                initial={{ opacity: 0, y: -15 }}
+                animate={{ opacity: 1, y: [0, 6, 0], x: [0, -4, 0] }}
+                transition={{
+                  opacity: { duration: 0.5, delay: 0.45 },
+                  y: { repeat: Infinity, duration: 5.4, ease: "easeInOut", delay: 0.4 },
+                  x: { repeat: Infinity, duration: 5.4, ease: "easeInOut", delay: 0.4 }
+                }}
+              >
+                <span className="floating-badge-icon" aria-hidden="true">🏺</span>
+                <div className="floating-badge-text">
+                  <strong>Sun-Cured In Barnis</strong>
+                  <small>12-Month Natural Life</small>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -398,6 +435,9 @@ function StorySpotlightSection() {
                   e.currentTarget.src = HOME_HERO_IMAGE;
                 }}
               />
+              <div className="story-floating-badge">
+                <span>🏺</span> Family Kitchen, Bahadurgarh
+              </div>
             </div>
             <div className="story-badge-quote">
               “Same recipes. Same care. A taste of home.”
@@ -438,36 +478,105 @@ const LIFESTYLE_SLIDES = [
   {
     src: "/images/brand/lifestyle-1.jpg",
     title: "Everyday Comfort",
-    caption: "Crispy layered parathas & slow-cured mango achar"
+    caption: "Crispy layered parathas paired with slow-cured mango achar",
+    tag: "🥭 Aam Ka Achar",
+    badge: "Homestyle Breakfast"
+  },
+  {
+    src: "/images/brand/lifestyle-5.jpg",
+    title: "Sun-Cured In Barnis",
+    caption: "Authentic ceramic martabans maturing naturally under the golden sun",
+    tag: "🏺 Traditional Maturation",
+    badge: "100% Sun-Cured"
   },
   {
     src: "/images/brand/lifestyle-2.jpg",
-    title: "Handcrafted Tradition",
-    caption: "Pure kacchi ghani mustard oil & roasted whole masalas"
+    title: "Small-Batch Craft",
+    caption: "Pure kacchi ghani mustard oil blended with freshly roasted whole masalas",
+    tag: "🌿 Cold-Pressed Mustard Oil",
+    badge: "Zero Preservatives"
   },
   {
     src: "/images/brand/lifestyle-3.jpg",
-    title: "Family Feasts",
-    caption: "Sunday poori-aloo with homestyle pickle"
+    title: "Sunday Family Feasts",
+    caption: "Golden puffed pooris, savory aloo & a generous dollop of homestyle pickle",
+    tag: "✨ Family Gatherings",
+    badge: "Sunday Feasts"
   },
   {
     src: "/images/brand/lifestyle-4.jpg",
-    title: "Authentic Punch",
-    caption: "Spiced green chillies & roasted fenugreek masalas"
+    title: "Authentic Zing",
+    caption: "Crisp sun-ripened chillies stuffed with tangy mustard and fenugreek seeds",
+    tag: "🌶️ Bharwa Mirch",
+    badge: "Hand-Stuffed"
+  },
+  {
+    src: "/images/brand/lifestyle-6.jpg",
+    title: "Comfort in Simplicity",
+    caption: "Warm moong dal khichdi with pure desi ghee and spiced mix vegetable pickle",
+    tag: "🍲 Homestyle Comfort",
+    badge: "Soul Food"
   }
 ];
 
+const verticalSlideVariants = {
+  enter: (dir) => ({
+    y: dir > 0 ? "50%" : "-50%",
+    opacity: 0,
+    scale: 0.96
+  }),
+  center: {
+    zIndex: 1,
+    y: "0%",
+    opacity: 1,
+    scale: 1,
+    transition: {
+      y: { type: "spring", stiffness: 320, damping: 30 },
+      opacity: { duration: 0.35 },
+      scale: { duration: 0.35 }
+    }
+  },
+  exit: (dir) => ({
+    zIndex: 0,
+    y: dir > 0 ? "-50%" : "50%",
+    opacity: 0,
+    scale: 0.96,
+    transition: {
+      y: { type: "spring", stiffness: 320, damping: 30 },
+      opacity: { duration: 0.25 },
+      scale: { duration: 0.25 }
+    }
+  })
+};
+
 function LifestyleBanner() {
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [[activeIdx, direction], setSlideState] = useState([0, 0]);
   const [isPaused, setIsPaused] = useState(false);
+  const [timerKey, setTimerKey] = useState(0);
+
+  const paginate = (newDirection) => {
+    setSlideState(([prevIdx]) => {
+      let nextIdx = prevIdx + newDirection;
+      if (nextIdx < 0) nextIdx = LIFESTYLE_SLIDES.length - 1;
+      if (nextIdx >= LIFESTYLE_SLIDES.length) nextIdx = 0;
+      return [nextIdx, newDirection];
+    });
+    setTimerKey((k) => k + 1);
+  };
+
+  const jumpToSlide = (idx) => {
+    if (idx === activeIdx) return;
+    setSlideState(([prevIdx]) => [idx, idx > prevIdx ? 1 : -1]);
+    setTimerKey((k) => k + 1);
+  };
 
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % LIFESTYLE_SLIDES.length);
-    }, 4200);
+      paginate(1);
+    }, 4500);
     return () => clearInterval(timer);
-  }, [isPaused]);
+  }, [isPaused, activeIdx]);
 
   return (
     <section
@@ -484,50 +593,118 @@ function LifestyleBanner() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <p className="hero-eyebrow">A Taste of Tradition</p>
+            <div className="lifestyle-header-badge">
+              <span className="pulse-dot" />
+              <span>A Taste of Tradition</span>
+            </div>
             <h2>Not just a pickle.<br />A piece of home.</h2>
             <p>
-              Some meals need a little achar. Some memories do too. Handcrafted with patience, cold-pressed mustard oil, and authentic masalas.
+              Some meals need a little achar. Some memories do too. Handcrafted with patience, cold-pressed mustard oil, and authentic whole masalas in Bahadurgarh.
             </p>
-            <Link to="/achar" className="button button-primary">
-              Shop The Pickle Chapter →
-            </Link>
+            <div className="lifestyle-cta-row">
+              <Link to="/achar" className="button button-primary">
+                Shop The Pickle Chapter →
+              </Link>
+              <span className="lifestyle-pause-hint">
+                {isPaused ? "⏸ Paused on hover" : "▶ Auto-playing"}
+              </span>
+            </div>
           </motion.div>
 
           <div className="lifestyle-vertical-showcase">
+            {/* Vertical Controls & Counter */}
+            <div className="lifestyle-vertical-controls">
+              <button
+                type="button"
+                className="lifestyle-ctrl-btn"
+                onClick={() => paginate(-1)}
+                aria-label="Previous image"
+                title="Previous image"
+              >
+                ▲
+              </button>
+              <div className="lifestyle-counter">
+                <strong>0{activeIdx + 1}</strong>
+                <div className="counter-bar">
+                  <span
+                    key={timerKey}
+                    className={`counter-progress ${isPaused ? "is-paused" : ""}`}
+                  />
+                </div>
+                <span>0{LIFESTYLE_SLIDES.length}</span>
+              </div>
+              <button
+                type="button"
+                className="lifestyle-ctrl-btn"
+                onClick={() => paginate(1)}
+                aria-label="Next image"
+                title="Next image"
+              >
+                ▼
+              </button>
+            </div>
+
+            {/* Main Stage with Vertical Slide Motion */}
             <div className="lifestyle-carousel-stage">
-              <AnimatePresence mode="wait">
+              <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                   key={activeIdx}
+                  custom={direction}
+                  variants={verticalSlideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
                   className="lifestyle-slide-main"
-                  initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -24, scale: 0.98 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <img
                     src={LIFESTYLE_SLIDES[activeIdx].src}
                     alt={LIFESTYLE_SLIDES[activeIdx].title}
                   />
-                  <div className="lifestyle-slide-caption">
+
+                  {/* Top Floating Badge */}
+                  <motion.div
+                    className="lifestyle-slide-badge"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15, duration: 0.3 }}
+                  >
+                    {LIFESTYLE_SLIDES[activeIdx].badge}
+                  </motion.div>
+
+                  {/* Bottom Caption Box */}
+                  <motion.div
+                    className="lifestyle-slide-caption"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1, duration: 0.35 }}
+                  >
+                    <span className="lifestyle-tag-pill">{LIFESTYLE_SLIDES[activeIdx].tag}</span>
                     <strong>{LIFESTYLE_SLIDES[activeIdx].title}</strong>
                     <span>{LIFESTYLE_SLIDES[activeIdx].caption}</span>
-                  </div>
+                  </motion.div>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Vertical Thumbnail Indicator Rail */}
+            {/* Vertical Thumbnail Filmstrip Navigation */}
             <div className="lifestyle-vertical-nav" aria-label="Lifestyle slides navigation">
               {LIFESTYLE_SLIDES.map((slide, idx) => (
                 <button
                   key={slide.title}
                   type="button"
                   className={`lifestyle-thumb-btn ${activeIdx === idx ? "is-active" : ""}`}
-                  onClick={() => setActiveIdx(idx)}
-                  aria-label={`View ${slide.title}`}
+                  onClick={() => jumpToSlide(idx)}
+                  aria-label={`View ${slide.title} (0${idx + 1})`}
+                  title={slide.title}
                 >
                   <img src={slide.src} alt={slide.title} />
+                  {activeIdx === idx && (
+                    <motion.div
+                      layoutId="activeThumbOutline"
+                      className="active-thumb-glow"
+                      transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                    />
+                  )}
                 </button>
               ))}
             </div>

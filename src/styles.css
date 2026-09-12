@@ -496,6 +496,14 @@ textarea {
   z-index: 0;
 }
 
+.hero-image-stage {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .hero-image-card {
   position: relative;
   z-index: 1;
@@ -510,6 +518,7 @@ textarea {
   transition: transform 0.5s var(--ease), filter 0.5s var(--ease);
   aspect-ratio: 4 / 3;
   display: flex;
+  width: 100%;
 }
 
 .hero-image-card img {
@@ -524,6 +533,55 @@ textarea {
 .hero-image-card:hover {
   transform: translateY(-2px) scale(1.01);
   filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 40px rgba(200, 155, 60, 0.2));
+}
+
+.hero-floating-badge {
+  position: absolute;
+  background: rgba(15, 40, 30, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  border-radius: 999px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.badge-top-right {
+  top: -6px;
+  right: -6px;
+}
+
+.badge-bottom-left {
+  bottom: -6px;
+  left: -6px;
+}
+
+.floating-badge-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.floating-badge-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.floating-badge-text strong {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+
+.floating-badge-text small {
+  font-size: 0.64rem;
+  color: var(--mustard-gold-light);
+  line-height: 1.2;
 }
 
 /* --- Trust / Core Values Strip --- */
@@ -1168,6 +1226,7 @@ textarea {
 }
 
 .story-portrait-frame {
+  position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--line-gold);
@@ -1185,6 +1244,26 @@ textarea {
   display: block;
 }
 
+.story-floating-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(15, 40, 30, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--warm-cream);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+
 .story-badge-quote {
   position: absolute;
   bottom: -8px;
@@ -1198,6 +1277,7 @@ textarea {
   font-size: 0.74rem;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--mustard-gold);
+  z-index: 2;
 }
 
 .story-copy-panel {
@@ -1230,7 +1310,7 @@ textarea {
 
 /* --- Lifestyle / Food Moment Banner --- */
 .section-lifestyle {
-  padding: 30px 0;
+  padding: 34px 0;
   background: var(--heritage-green-dark);
   color: var(--warm-cream);
   position: relative;
@@ -1239,24 +1319,68 @@ textarea {
 
 .lifestyle-card {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1.05fr);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 1.28fr);
   gap: 28px;
   align-items: center;
 }
 
+.lifestyle-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(200, 155, 60, 0.15);
+  border: 1px solid rgba(200, 155, 60, 0.35);
+  border-radius: 999px;
+  padding: 3px 10px;
+  color: var(--mustard-gold-light);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  width: fit-content;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mustard-gold);
+  box-shadow: 0 0 8px var(--mustard-gold);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+
 .lifestyle-copy h2 {
   font-family: var(--font-serif);
-  font-size: clamp(1.4rem, 2vw, 1.75rem);
+  font-size: clamp(1.45rem, 2.2vw, 1.85rem);
   line-height: 1.15;
   color: #FFFFFF;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .lifestyle-copy p {
   color: rgba(247, 241, 231, 0.88);
   font-size: 0.86rem;
   line-height: 1.5;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
+}
+
+.lifestyle-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.lifestyle-pause-hint {
+  font-size: 0.72rem;
+  color: rgba(247, 241, 231, 0.55);
+  letter-spacing: 0.04em;
 }
 
 .lifestyle-vertical-showcase {
@@ -1266,22 +1390,109 @@ textarea {
   position: relative;
 }
 
+/* Vertical Up/Down Controls & Slide Counter */
+.lifestyle-vertical-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.lifestyle-ctrl-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(200, 155, 60, 0.3);
+  color: var(--mustard-gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.65rem;
+  transition: all 200ms ease;
+}
+
+.lifestyle-ctrl-btn:hover {
+  background: var(--mustard-gold);
+  color: var(--heritage-green-dark);
+  border-color: var(--mustard-gold);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(200, 155, 60, 0.4);
+}
+
+.lifestyle-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+}
+
+.lifestyle-counter strong {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  color: var(--mustard-gold-light);
+  line-height: 1;
+}
+
+.lifestyle-counter span {
+  font-size: 0.68rem;
+  color: rgba(247, 241, 231, 0.5);
+  line-height: 1;
+}
+
+.counter-bar {
+  width: 2px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  margin: 2px 0;
+}
+
+.counter-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--mustard-gold);
+  transform-origin: top;
+  animation: slideProgressBar 4.5s linear forwards;
+}
+
+.counter-progress.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes slideProgressBar {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+/* Carousel Main Stage */
 .lifestyle-carousel-stage {
   flex: 1;
   position: relative;
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid rgba(200, 155, 60, 0.35);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
   background: var(--heritage-green-dark);
   aspect-ratio: 16 / 11;
-  max-height: 250px;
+  max-height: 260px;
+  min-height: 210px;
 }
 
 .lifestyle-slide-main {
   width: 100%;
   height: 100%;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
 }
 
@@ -1293,47 +1504,78 @@ textarea {
   display: block;
 }
 
+.lifestyle-slide-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(15, 40, 30, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(200, 155, 60, 0.4);
+  color: var(--mustard-gold-light);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
 .lifestyle-slide-caption {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(0deg, rgba(15, 40, 30, 0.95) 0%, rgba(15, 40, 30, 0.6) 60%, transparent 100%);
+  background: linear-gradient(0deg, rgba(15, 40, 30, 0.96) 0%, rgba(15, 40, 30, 0.7) 65%, transparent 100%);
   padding: 18px 14px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  z-index: 2;
+}
+
+.lifestyle-tag-pill {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--mustard-gold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .lifestyle-slide-caption strong {
   font-family: var(--font-serif);
-  font-size: 0.94rem;
+  font-size: 0.96rem;
   color: #FFFFFF;
+  line-height: 1.2;
 }
 
 .lifestyle-slide-caption span {
-  font-size: 0.76rem;
-  color: var(--mustard-gold-light);
+  font-size: 0.74rem;
+  color: rgba(247, 241, 231, 0.88);
+  line-height: 1.3;
 }
 
+/* Vertical Thumbnail Filmstrip */
 .lifestyle-vertical-nav {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .lifestyle-thumb-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
   overflow: hidden;
   border: 2px solid transparent;
   padding: 0;
   background: transparent;
   cursor: pointer;
   position: relative;
-  opacity: 0.55;
+  opacity: 0.5;
   transition: all 200ms ease;
 }
 
@@ -1346,14 +1588,22 @@ textarea {
 
 .lifestyle-thumb-btn:hover {
   opacity: 0.85;
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .lifestyle-thumb-btn.is-active {
   opacity: 1;
   border-color: var(--mustard-gold);
-  box-shadow: 0 0 0 2px rgba(200, 155, 60, 0.4);
-  transform: scale(1.08);
+  box-shadow: 0 0 10px rgba(200, 155, 60, 0.45);
+  transform: scale(1.06);
+}
+
+.active-thumb-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 2px var(--mustard-gold);
+  pointer-events: none;
 }
 
 /* --- Customer Reviews Single-Line Carousel Section --- */
@@ -1940,10 +2190,57 @@ textarea {
 
   .lifestyle-vertical-showcase {
     flex-direction: column;
+    gap: 12px;
+  }
+
+  .lifestyle-vertical-controls {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    order: 2;
+  }
+
+  .lifestyle-counter {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .counter-bar {
+    width: 36px;
+    height: 2px;
+  }
+
+  .counter-progress {
+    transform-origin: left;
+    animation-name: slideProgressBarHorizontal;
+  }
+
+  @keyframes slideProgressBarHorizontal {
+    0% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+  }
+
+  .lifestyle-carousel-stage {
+    width: 100%;
+    max-height: 220px;
+    order: 1;
   }
 
   .lifestyle-vertical-nav {
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    order: 3;
+  }
+
+  .lifestyle-thumb-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .hero-floating-badge {
+    display: none;
   }
 }
