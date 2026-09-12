@@ -904,6 +904,30 @@ function HeroCarousel() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
+      {/* Full-Bleed Atmospheric Scene Canvas on the Right */}
+      <div className="hero-atmospheric-scene" aria-hidden="true">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={slide.id + "-ambient-scene"}
+            className="hero-scene-image-wrap"
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <img
+              src={slide.image}
+              alt=""
+              onError={(e) => {
+                e.currentTarget.src = "/images/brand/home-hero.jpg";
+              }}
+            />
+            {/* Atmospheric Lighting Gradient & Radial Vignette */}
+            <div className="hero-scene-lighting-mesh" />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
       <div className="content-container hero-carousel-wrap">
         <div className="hero-grid">
           {/* Hero Left Column: Copy & Actions */}
@@ -953,81 +977,66 @@ function HeroCarousel() {
             </div>
           </div>
 
-          {/* Hero Right Column: Integrated Luxury Culinary Stage */}
+          {/* Hero Right Column: Floating Interactive Scene Spotlights */}
           <div className="hero-media-wrap">
-            {/* Atmospheric Ambient Radiant Aura */}
-            <div className="hero-stage-aura" aria-hidden="true" />
-
-            {/* Layered Luxury Bezel Frame */}
-            <div className="hero-stage-outer-frame">
-              <div className="hero-image-stage">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={slide.id + "-media"}
-                    className="hero-carousel-card"
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <img
-                      src={slide.image}
-                      alt={slide.alt}
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/brand/home-hero.jpg";
-                      }}
-                    />
-
-                    {/* Integrated Vignette Blending Layer */}
-                    <div className="hero-card-vignette" />
-
-                    {/* Integrated Top-Right Frosted Badge */}
-                    <div className="hero-card-top-badge">
-                      <span className="hero-badge-icon" aria-hidden="true">
-                        {slide.badgeTop.icon}
-                      </span>
-                      <div className="hero-badge-text">
-                        <strong>{slide.badgeTop.title}</strong>
-                        <small>{slide.badgeTop.sub}</small>
-                      </div>
-                    </div>
-
-                    {/* Integrated Bottom Editorial Glass Bar */}
-                    <div className="hero-card-bottom-bar">
-                      <div className="hero-bottom-text">
-                        <div className="hero-bottom-tag">
-                          <span>{slide.badgeBottom.icon}</span>
-                          <strong>{slide.badgeBottom.title}</strong>
-                          <span>• {slide.badgeBottom.sub}</span>
-                        </div>
-                        <p className="hero-bottom-title">{slide.subhead}</p>
-                      </div>
-                      <Link to={slide.ctaPrimary.to} className="hero-card-action-btn">
-                        Explore →
-                      </Link>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Sleek Glass Nav Controls */}
-                <button
-                  type="button"
-                  className="hero-carousel-nav-btn prev"
-                  onClick={prevSlide}
-                  aria-label="Previous slide"
+            <div className="hero-scene-interactive-stage">
+              {/* Top Floating Badge */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide.id + "-badgeTop"}
+                  className="hero-scene-top-pill"
+                  initial={{ opacity: 0, y: -12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  ‹
-                </button>
+                  <span className="hero-badge-icon" aria-hidden="true">{slide.badgeTop.icon}</span>
+                  <div className="hero-badge-text">
+                    <strong>{slide.badgeTop.title}</strong>
+                    <small>{slide.badgeTop.sub}</small>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
 
-                <button
-                  type="button"
-                  className="hero-carousel-nav-btn next"
-                  onClick={nextSlide}
-                  aria-label="Next slide"
+              {/* Bottom Floating Story Glass Card */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={slide.id + "-bottomCard"}
+                  className="hero-scene-bottom-card"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.45, delay: 0.1 }}
                 >
-                  ›
-                </button>
-              </div>
+                  <div className="hero-scene-bottom-tag">
+                    <span>{slide.badgeBottom.icon}</span>
+                    <strong>{slide.badgeBottom.title}</strong>
+                    <span>• {slide.badgeBottom.sub}</span>
+                  </div>
+                  <p className="hero-scene-bottom-quote">“{slide.subhead}”</p>
+                  <Link to={slide.ctaPrimary.to} className="hero-scene-explore-btn">
+                    {slide.ctaPrimary.label}
+                  </Link>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Carousel Next/Prev Nav Buttons */}
+              <button
+                type="button"
+                className="hero-scene-nav-btn prev"
+                onClick={prevSlide}
+                aria-label="Previous slide"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="hero-scene-nav-btn next"
+                onClick={nextSlide}
+                aria-label="Next slide"
+              >
+                ›
+              </button>
             </div>
           </div>
         </div>

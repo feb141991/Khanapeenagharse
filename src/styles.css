@@ -560,258 +560,299 @@ textarea {
 }
 
 /* ==========================================================================
-   Seamless Integrated Hero Media Stage & Interactive Tabs
+   Organic Atmospheric Hero Scene & Cinematic Blend
    ========================================================================== */
-.hero-media-wrap {
+.transparent-luxury-hero {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Ambient Radiant Glow behind the photography stage */
-.hero-stage-aura {
-  position: absolute;
-  inset: -12%;
   background:
-    radial-gradient(circle at 65% 35%, rgba(200, 155, 60, 0.32), transparent 60%),
-    radial-gradient(circle at 25% 75%, rgba(31, 74, 58, 0.7), transparent 65%),
-    radial-gradient(circle at 50% 50%, rgba(200, 155, 60, 0.15), transparent 70%);
-  filter: blur(44px);
-  z-index: 0;
-  pointer-events: none;
-  border-radius: 50%;
-  animation: heroAuraPulse 8s ease-in-out infinite alternate;
-}
-
-@keyframes heroAuraPulse {
-  0% {
-    transform: scale(0.96);
-    opacity: 0.82;
-  }
-  100% {
-    transform: scale(1.04);
-    opacity: 1;
-  }
-}
-
-/* Outer Layered Luxury Bezel Frame */
-.hero-stage-outer-frame {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(200, 155, 60, 0.08) 45%, rgba(14, 39, 29, 0.45) 100%);
-  padding: 8px;
-  border-radius: 28px;
-  border: 1px solid rgba(200, 155, 60, 0.38);
-  box-shadow:
-    0 30px 70px rgba(0, 0, 0, 0.55),
-    0 0 50px rgba(200, 155, 60, 0.16),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition: all 0.35s ease;
-}
-
-.hero-stage-outer-frame:hover {
-  border-color: rgba(200, 155, 60, 0.6);
-  box-shadow:
-    0 36px 85px rgba(0, 0, 0, 0.65),
-    0 0 65px rgba(200, 155, 60, 0.24),
-    inset 0 1px 1px rgba(255, 255, 255, 0.45);
-}
-
-.hero-image-stage {
-  position: relative;
-  width: 100%;
-  border-radius: 20px;
+    radial-gradient(circle at 10% 20%, rgba(200, 155, 60, 0.16), transparent 50%),
+    radial-gradient(circle at 45% 85%, rgba(200, 155, 60, 0.12), transparent 45%),
+    linear-gradient(165deg, #071710 0%, #0B2218 35%, #102F22 70%, #153D2D 100%);
+  color: var(--warm-cream);
+  padding: 110px 0 48px;
   overflow: hidden;
+  border-bottom: 1px solid rgba(200, 155, 60, 0.25);
+  min-height: 680px;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.hero-carousel-card {
-  position: relative;
+/* Full-Bleed Atmospheric Scene on the Right (No card box, no borders) */
+.hero-atmospheric-scene {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 62%;
+  height: 100%;
+  pointer-events: none;
   z-index: 1;
-  border-radius: 20px;
   overflow: hidden;
-  background: #0E271D;
-  aspect-ratio: 4 / 3.1;
-  display: flex;
-  width: 100%;
 }
 
-.hero-carousel-card img {
+.hero-scene-image-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-scene-image-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center 40%;
   display: block;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Organic Multi-Stop Mask: Dissolves seamlessly into the green hero on the left and bottom */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.8) 45%, #000 70%, #000 100%),
+    linear-gradient(to bottom, #000 82%, transparent 100%),
+    radial-gradient(circle at 80% 50%, #000 50%, rgba(0, 0, 0, 0.5) 80%, transparent 100%);
+  mask-image:
+    linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.15) 15%, rgba(0, 0, 0, 0.8) 45%, #000 70%, #000 100%),
+    linear-gradient(to bottom, #000 82%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  filter: saturate(1.08) contrast(1.04);
 }
 
-.hero-carousel-card:hover img {
-  transform: scale(1.04);
-}
-
-/* Soft Vignette Blending Layer */
-.hero-card-vignette {
+/* Volumetric Lighting & Radial Warmth Over the Scene */
+.hero-scene-lighting-mesh {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 30%, transparent 45%, rgba(9, 29, 21, 0.35) 100%),
-    linear-gradient(180deg, rgba(9, 29, 21, 0.12) 0%, transparent 35%, rgba(9, 29, 21, 0.72) 75%, rgba(9, 29, 21, 0.96) 100%);
+    radial-gradient(circle at 75% 30%, rgba(200, 155, 60, 0.28), transparent 55%),
+    radial-gradient(circle at 30% 60%, rgba(11, 34, 24, 0.85), transparent 60%),
+    linear-gradient(180deg, rgba(7, 23, 16, 0.4) 0%, transparent 30%, rgba(7, 23, 16, 0.6) 80%, rgba(7, 23, 16, 0.95) 100%),
+    linear-gradient(90deg, #071710 0%, rgba(7, 23, 16, 0.75) 20%, transparent 55%);
   pointer-events: none;
-  z-index: 2;
 }
 
-/* Integrated Top Badge */
-.hero-card-top-badge {
-  position: absolute;
-  top: 14px;
-  right: 14px;
+.hero-carousel-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 36px;
+  align-items: center;
+  position: relative;
+  min-height: 480px;
+}
+
+.hero-copy-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 580px;
   z-index: 3;
-  background: rgba(9, 29, 21, 0.82);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Right Media / Interactive Stage */
+.hero-media-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 440px;
+  z-index: 3;
+}
+
+.hero-scene-interactive-stage {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* Floating Top Pill */
+.hero-scene-top-pill {
+  background: rgba(7, 23, 16, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(200, 155, 60, 0.45);
   border-radius: 999px;
-  padding: 6px 14px 6px 10px;
+  padding: 8px 18px 8px 12px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  align-self: flex-end;
+  margin-top: 10px;
   transition: all 0.25s ease;
 }
 
-.hero-card-top-badge:hover {
-  background: rgba(9, 29, 21, 0.95);
+.hero-scene-top-pill:hover {
+  background: rgba(7, 23, 16, 0.92);
   border-color: var(--mustard-gold);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
 }
 
 .hero-badge-icon {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
 }
 
 .hero-badge-text strong {
   display: block;
-  font-size: 0.76rem;
+  font-size: 0.82rem;
   color: #FFFFFF;
   line-height: 1.2;
 }
 
 .hero-badge-text small {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--mustard-gold-light);
   font-weight: 500;
 }
 
-/* Integrated Bottom Editorial Glass Bar */
-.hero-card-bottom-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  padding: 24px 20px 18px;
+/* Floating Bottom Story Card */
+.hero-scene-bottom-card {
+  background: rgba(7, 23, 16, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(200, 155, 60, 0.45);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  max-width: 380px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(200, 155, 60, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  align-self: flex-end;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 14px;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.3s ease;
 }
 
-.hero-bottom-text {
-  flex: 1;
+.hero-scene-bottom-card:hover {
+  background: rgba(7, 23, 16, 0.94);
+  border-color: var(--mustard-gold);
+  transform: translateY(-3px);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(200, 155, 60, 0.2);
 }
 
-.hero-bottom-tag {
+.hero-scene-bottom-tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--mustard-gold-light);
-  margin-bottom: 3px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.hero-bottom-tag strong {
+.hero-scene-bottom-tag strong {
   color: #FFFFFF;
 }
 
-.hero-bottom-title {
+.hero-scene-bottom-quote {
   font-family: var(--font-serif);
-  font-size: 0.94rem;
-  color: rgba(247, 241, 231, 0.95);
-  margin: 0;
-  line-height: 1.35;
   font-style: italic;
+  font-size: 1rem;
+  color: rgba(247, 241, 231, 0.95);
+  line-height: 1.4;
+  margin: 0;
 }
 
-.hero-card-action-btn {
+.hero-scene-explore-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: linear-gradient(135deg, var(--mustard-gold), var(--mustard-gold-dark));
   color: #FFFFFF;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: 999px;
   text-decoration: none;
+  width: fit-content;
   box-shadow: 0 4px 14px rgba(200, 155, 60, 0.4);
   transition: all 0.2s ease;
-  flex-shrink: 0;
+  margin-top: 4px;
 }
 
-.hero-card-action-btn:hover {
-  transform: translateY(-2px);
+.hero-scene-explore-btn:hover {
+  transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(200, 155, 60, 0.55);
   color: #FFFFFF;
 }
 
-/* Sleek Nav Buttons */
-.hero-carousel-nav-btn {
+/* Nav Buttons positioned softly on the right edge */
+.hero-scene-nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: rgba(9, 29, 21, 0.75);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(7, 23, 16, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(200, 155, 60, 0.4);
   color: var(--warm-cream);
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-.hero-carousel-nav-btn:hover {
+.hero-scene-nav-btn:hover {
   background: var(--mustard-gold);
-  color: #0E271D;
+  color: #071710;
   border-color: var(--mustard-gold-light);
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 20px rgba(200, 155, 60, 0.5);
+  box-shadow: 0 8px 24px rgba(200, 155, 60, 0.5);
 }
 
-.hero-carousel-nav-btn.prev {
-  left: 12px;
+.hero-scene-nav-btn.prev {
+  left: 0;
 }
 
-.hero-carousel-nav-btn.next {
-  right: 12px;
+.hero-scene-nav-btn.next {
+  right: 0;
+}
+
+@media (max-width: 980px) {
+  .hero-atmospheric-scene {
+    width: 100%;
+    opacity: 0.35;
+  }
+  .hero-scene-image-wrap img {
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .hero-media-wrap {
+    min-height: auto;
+  }
+  .hero-scene-interactive-stage {
+    height: auto;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .hero-scene-bottom-card {
+    max-width: 100%;
+    align-self: stretch;
+  }
 }
 
 /* Interactive Tabs & Progress Timer */
