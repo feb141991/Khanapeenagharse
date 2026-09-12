@@ -200,6 +200,22 @@ export const testimonials = [
     location: "Mumbai",
     rating: 5,
     tag: "Verified Buyer • Festive Gift Order"
+  },
+  {
+    quote:
+      "The mirch achar and hing achar arrived in pristine condition in Chennai. Authenticity and warmth you can taste in the very first bite with hot curd rice.",
+    name: "Meenakshi Sundaram",
+    location: "Chennai",
+    rating: 5,
+    tag: "Verified Buyer • South India Transit"
+  },
+  {
+    quote:
+      "Zero artificial vinegar smell. Pure kacchi ghani mustard oil pungency just like my nani used to make in Haryana. Truly ghar jaisa achar.",
+    name: "Dr. Rajesh Gupta",
+    location: "Gurugram",
+    rating: 5,
+    tag: "Verified Buyer • Pure Mustard Oil"
   }
 ];
 

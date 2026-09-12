@@ -477,26 +477,83 @@ function LifestyleBanner() {
 }
 
 function ReviewsSection() {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setCanScrollLeft(scrollLeft > 10);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, []);
+
+  const handleScroll = (direction) => {
+    if (!scrollRef.current) return;
+    const scrollAmount = 330;
+    scrollRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth"
+    });
+  };
+
   return (
     <section className="section-reviews">
       <div className="content-container">
-        <div className="section-head-center">
-          <p className="section-eyebrow">Customer Love</p>
-          <h2 className="section-title">Loved at Family Tables Across India</h2>
-          <p className="section-subtitle">Verified reviews from homes enjoying our small-batch achars.</p>
+        <div className="reviews-header-flex">
+          <div className="reviews-head-copy">
+            <p className="section-eyebrow">Customer Love</p>
+            <h2 className="section-title">Loved at Family Tables Across India</h2>
+            <p className="section-subtitle">Verified reviews from homes enjoying our handcrafted small-batch achars.</p>
+          </div>
+          <div className="reviews-nav-controls">
+            <button
+              type="button"
+              className="review-carousel-btn"
+              onClick={() => handleScroll("left")}
+              disabled={!canScrollLeft}
+              aria-label="Previous review"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="review-carousel-btn"
+              onClick={() => handleScroll("right")}
+              disabled={!canScrollRight}
+              aria-label="Next review"
+            >
+              →
+            </button>
+          </div>
         </div>
 
-        <div className="reviews-grid">
+        <div className="reviews-carousel-track" ref={scrollRef}>
           {testimonials.map((rev, idx) => (
             <motion.div
               key={rev.name}
-              className="review-card"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              className="review-card review-card-carousel"
+              initial={{ opacity: 0, scale: 0.97 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.08 }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
             >
-              <div className="review-stars">{"★".repeat(rev.rating)}</div>
+              <div className="review-top-row">
+                <div className="review-stars">{"★".repeat(rev.rating)}</div>
+                <span className="review-verified-badge">✓ Verified Order</span>
+              </div>
               <p className="review-quote">"{rev.quote}"</p>
               <div className="review-author">
                 <strong>{rev.name}</strong>
