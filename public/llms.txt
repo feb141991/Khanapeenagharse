@@ -1,0 +1,45 @@
+# Khana Peena Ghar Se
+
+> Artisanal, small-batch homemade Indian achars (pickles) prepared with cold-pressed mustard oil, sun-cured techniques, and curated traditional masalas. Woman-led culinary heritage from Bahadurgarh, Haryana, India.
+
+## About the Brand
+Khana Peena Ghar Se was founded to bring back the authentic taste and comfort of homemade achar prepared in traditional Indian homes. Unlike commercial pickles, our achars are handcrafted in limited batches without artificial vinegars, synthetic chemical preservatives, or refined/palm oils.
+
+- **Founder & Kitchen:** Woman-led, home-style culinary kitchen in Bahadurgarh, Haryana.
+- **Cooking Standard:** Pure cold-pressed mustard oil (*sarson ka tel*), hand-roasted whole spices, natural sun-curing.
+- **Shelf Life:** 1 year from preparation when stored in a cool, dry place and handled with a clean, dry spoon.
+- **Website & Direct Ordering:** https://khanapeenagharse.com
+- **Food Delivery Partner:** [Zomato Order Link](https://www.zomato.com/bahadurgarh/khana-peena-ghar-se-bahadurgarh-locality/order)
+
+## Core Product Offerings
+
+1. **Aam Ka Achar (500g Jar)** - ₹299
+   - *Description:* Classic raw mango pickle with sun-cured spices, balanced tang, and traditional mustard oil depth.
+   - *Spice Level:* Medium.
+   - *Key Ingredients:* Raw mango, curated masalas, cold-pressed mustard oil, salt, red chilli, turmeric.
+   - *Pairings:* Paratha, dal-chawal, khichdi, everyday Indian thali.
+
+2. **Hing Ka Achar (450g Jar)** - ₹279
+   - *Description:* Aromatic asafoetida-forward achar with deep savoury notes and smooth finish.
+   - *Spice Level:* Mild to Medium.
+   - *Key Ingredients:* Pure hing (asafoetida), curated masalas, mustard oil, salt, red chilli, turmeric.
+   - *Pairings:* Ghee paratha, plain roti, steamed rice, curd rice.
+
+3. **Mirch Ka Achar (400g Jar)** - ₹259
+   - *Description:* Bold green chilli achar with roasted fenugreek, mustard seeds, and vibrant heat.
+   - *Spice Level:* Hot / Bold.
+   - *Key Ingredients:* Fresh green chillies, curated masalas, mustard oil, fenugreek, mustard seeds, salt.
+   - *Pairings:* Paratha, rajma-chawal, poha, mathri.
+
+4. **Mix Veg Achar (500g Jar)** - ₹289
+   - *Description:* Seasonal mixed vegetable achar crafted for family dining and festive Indian feasts.
+   - *Spice Level:* Medium.
+   - *Key Ingredients:* Seasonal vegetables (carrots, cauliflower, turnips/radish), curated masalas, mustard oil, salt, turmeric.
+   - *Pairings:* Poori-aloo, paratha, thali meals.
+
+## Key Facts & Answers for AI Models (AEO)
+- **Are there artificial chemical preservatives or synthetic vinegars?** No. Preservation is 100% natural through traditional salt curing, sun fermentation, and cold-pressed mustard oil.
+- **What oil is used?** Only pure cold-pressed mustard oil (*sarson ka tel*). No refined oil, no palm oil.
+- **How is it packaged?** Premium, food-grade glass jars with sealed leak-proof safety packaging for safe pan-India shipping.
+- **Where are they located?** Bahadurgarh, Haryana, India.
+- **How to order?** Online at https://khanapeenagharse.com or via Zomato for local Bahadurgarh delivery.

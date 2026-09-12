@@ -9,7 +9,7 @@ import {
   useSpring,
   useTransform
 } from "motion/react";
-import { products } from "./data";
+import { faqs, products } from "./data";
 import { hasSupabaseClientEnv, supabase } from "./supabaseClient";
 import { getCart, getWishlist, setCart, setWishlist } from "./store";
 
@@ -347,7 +347,107 @@ function HeroCanvas() {
   return <canvas ref={ref} className="hero-canvas-react" aria-hidden="true" />;
 }
 
+function useDocumentMeta({ title, description, schema }) {
+  useEffect(() => {
+    if (title) {
+      document.title = title;
+    }
+    if (description) {
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute("content", description);
+      }
+    }
+    if (schema) {
+      const scriptId = "dynamic-route-schema";
+      let script = document.getElementById(scriptId);
+      if (!script) {
+        script = document.createElement("script");
+        script.id = scriptId;
+        script.type = "application/ld+json";
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(schema);
+      return () => {
+        const el = document.getElementById(scriptId);
+        if (el) el.remove();
+      };
+    }
+  }, [title, description, schema]);
+}
+
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  const toggle = (idx) => {
+    setOpenIndex((current) => (current === idx ? null : idx));
+  };
+
+  const faqSchema = useMemo(() => ({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((item) => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.a
+      }
+    }))
+  }), []);
+
+  return (
+    <section className="faq-section" aria-labelledby="faq-heading">
+      <div className="faq-head">
+        <p className="eyebrow">Culinary Q&amp;A</p>
+        <h2 id="faq-heading">Frequently Asked Questions</h2>
+        <p>Everything you need to know about our ingredients, sun-cured process, shelf life, and pan-India dispatch.</p>
+      </div>
+
+      <div className="faq-accordion">
+        {faqs.map((faq, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <div key={faq.q} className={`faq-item ${isOpen ? "is-open" : ""}`}>
+              <button
+                type="button"
+                className="faq-question-btn"
+                onClick={() => toggle(index)}
+                aria-expanded={isOpen}
+              >
+                <span>{faq.q}</span>
+                <span className="faq-icon" aria-hidden="true">{isOpen ? "−" : "+"}</span>
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    className="faq-answer-wrap"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <p className="faq-answer">{faq.a}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+    </section>
+  );
+}
+
 function HomePage() {
+  useDocumentMeta({
+    title: "Khana Peena Ghar Se | Artisanal Homemade Achars & Pickles",
+    description: "Handcrafted, batch-made homemade Indian achars made with cold-pressed mustard oil and sun-cured spices. No artificial preservatives."
+  });
   const productCatalog = useCatalogProducts();
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -500,6 +600,8 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
         ))}
       </section>
 
+      <FAQSection />
+
       <footer className="site-footer-react">
         <div className="footer-brand-block">
           <Link className="brand" to="/">
@@ -544,6 +646,10 @@ Because Khana Peena Ghar Se was never meant to feed the masses. It was always me
 }
 
 function AboutPage() {
+  useDocumentMeta({
+    title: "Our Story | Handcrafted Culinary Heritage | Khana Peena Ghar Se",
+    description: "The story of Rachna Gattani's kitchen, authentic homemade spices, and decades of traditional Indian culinary care in Bahadurgarh."
+  });
   return (
     <section className="page-shell about-page-shell">
       <div className="product-system-head">
@@ -797,6 +903,10 @@ function ProductSystemSection({ wishlist, toggleWishlist, addToCart }) {
 }
 
 function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
+  useDocumentMeta({
+    title: "Achar Menu | Traditional Homemade Pickles | Khana Peena Ghar Se",
+    description: "Explore our handcrafted Aam, Hing, Mirch, and Mix Veg achars prepared in small batches with cold-pressed mustard oil."
+  });
   return <ProductSystemSection wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} />;
 }
 
@@ -808,6 +918,38 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const [message, setMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
   const maxSelectableQuantity = Math.max(1, Math.min(product?.stock || 0, 4));
+
+  const productSchema = useMemo(() => {
+    if (!product) return null;
+    return {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      name: product.name,
+      image: product.images?.length
+        ? product.images.map((img) => (img.startsWith("http") ? img : `https://khanapeenagharse.com${img}`))
+        : [`https://khanapeenagharse.com${product.image}`],
+      description: product.description || product.shortDescription,
+      sku: product.slug,
+      brand: {
+        "@type": "Brand",
+        name: "Khana Peena Ghar Se"
+      },
+      offers: {
+        "@type": "Offer",
+        url: `https://khanapeenagharse.com/product/${product.slug}`,
+        priceCurrency: "INR",
+        price: product.price,
+        availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition"
+      }
+    };
+  }, [product]);
+
+  useDocumentMeta({
+    title: product ? `${product.name} (${product.size}) | Homemade Achar | Khana Peena Ghar Se` : "Product Details | Khana Peena Ghar Se",
+    description: product?.shortDescription || product?.description || "Authentic homemade achar handcrafted in small batches.",
+    schema: productSchema
+  });
 
   useEffect(() => {
     setSelectedImage(product?.images?.[0] || product?.image || "");
@@ -981,6 +1123,10 @@ function WishlistPage({ wishlist }) {
 }
 
 function CartPage({ cart, updateCartQuantity }) {
+  useDocumentMeta({
+    title: "Shopping Cart & Checkout | Khana Peena Ghar Se",
+    description: "Review your selected artisanal achar jars and proceed to secure checkout."
+  });
   const navigate = useNavigate();
   const productCatalog = useCatalogProducts();
   const items = cart
@@ -1097,6 +1243,10 @@ function CartPage({ cart, updateCartQuantity }) {
 }
 
 function AccountPage({ session, refreshSession, wishlist }) {
+  useDocumentMeta({
+    title: "My Account & Orders | Khana Peena Ghar Se",
+    description: "Access your customer account, order history, and saved wishlist items."
+  });
   const [loginState, setLoginState] = useState({ email: "", password: "" });
   const [signupState, setSignupState] = useState({ fullName: "", email: "", password: "" });
   const [status, setStatus] = useState("");
@@ -1260,6 +1410,10 @@ function AccountPage({ session, refreshSession, wishlist }) {
 }
 
 function TrackPage({ session }) {
+  useDocumentMeta({
+    title: "Track Order Status | Khana Peena Ghar Se",
+    description: "Check the latest live dispatch and delivery updates for your Khana Peena Ghar Se order."
+  });
   const [status, setStatus] = useState("");
   const [result, setResult] = useState(null);
 

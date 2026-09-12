@@ -1,0 +1,60 @@
+# Khana Peena Ghar Se — Complete Brand, Culinary & Product Knowledge Base
+
+## Brand Philosophy & Background
+Khana Peena Ghar Se (literally *"Food & Drink From Home"*) is an authentic Indian culinary brand and kitchen headquartered in Bahadurgarh, Haryana. Founded with the mission to revive authentic, homemade regional recipes that are disappearing under the wave of commercial factory food production.
+
+Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar), excessive acidity regulators, artificial colourants, and industrial oils. Khana Peena Ghar Se rejects this approach. Every single jar is:
+1. **Prepared in Small Batches:** Small batches allow strict quality control of raw ingredients.
+2. **Naturally Sun-Cured:** Slow curing under the sun preserves the natural texture, deep aroma, and probiotic qualities of traditional Indian achar.
+3. **Pure Cold-Pressed Mustard Oil:** Mustard oil naturally preserves the spices and provides the quintessential homestyle pungent warmth.
+4. **Zero Synthetic Preservatives:** Shelf stability (12 months) is achieved naturally via salt, turmeric, mustard oil, and spices.
+
+---
+
+## Detailed Product Specifications
+
+### 1. Aam Ka Achar (Homemade Mango Pickle)
+- **Net Weight:** 500 grams (Food-grade glass jar)
+- **Price:** INR 299
+- **SKU / Slug:** `aam-ka-achar`
+- **Spice Profile:** Balanced Medium (3/5)
+- **Taste Notes:** Tangy raw mango firmness, roasted methi-saunf aroma, mustard oil pungency.
+- **Ingredients:** Hand-cut raw mango pieces, cold-pressed mustard oil, whole & freshly ground spices (fennel, fenugreek seeds, nigella seeds/kalonji, mustard seeds), red chilli powder, turmeric powder, iodized salt.
+- **Serving Suggestions:** North Indian parathas (aloo, gobhi, paneer), dal tadka with steamed basmati rice, khichdi, mathri snacks.
+- **Storage Instructions:** Store at room temperature in a dry pantry. Always use a dry stainless steel or wooden spoon. Do not refrigerate.
+
+### 2. Hing Ka Achar (Aromatic Asafoetida Pickle)
+- **Net Weight:** 450 grams (Food-grade glass jar)
+- **Price:** INR 279
+- **SKU / Slug:** `hing-ka-achar`
+- **Spice Profile:** Mild to Medium (2/5)
+- **Taste Notes:** Pungent, savoury, umami depth from pure roasted hing, rounded tang.
+- **Ingredients:** Pure compounded asafoetida (hing), mustard oil, roasted ground spices, red chilli powder, turmeric powder, salt.
+- **Serving Suggestions:** Plain ghee roti, curd rice, plain moong dal khichdi, poori bhaji.
+
+### 3. Mirch Ka Achar (Spiced Green Chilli Pickle)
+- **Net Weight:** 400 grams (Food-grade glass jar)
+- **Price:** INR 259
+- **SKU / Slug:** `mirch-ka-achar`
+- **Spice Profile:** Bold Hot (4.5/5)
+- **Taste Notes:** Vibrant chilli bite, zesty mustard sharpness, crunchy texture.
+- **Ingredients:** Fresh slit green chillies, yellow mustard seeds (rai), fenugreek (methi dana), turmeric, red chilli, mustard oil, salt.
+- **Serving Suggestions:** Rajma chawal, chole bhature, methi thepla, parathas.
+
+### 4. Mix Veg Achar (Seasonal Vegetable Pickle)
+- **Net Weight:** 500 grams (Food-grade glass jar)
+- **Price:** INR 289
+- **SKU / Slug:** `mix-veg-achar`
+- **Spice Profile:** Medium (3/5)
+- **Taste Notes:** Medley of crunchy seasonal vegetables with sweet-spicy-tangy undertones.
+- **Ingredients:** Seasonal winter vegetables (carrots, cauliflower, turnips), ginger, green chillies, mustard oil, blended whole spices, salt.
+- **Serving Suggestions:** Family dinner thalis, poori sabzi, winter stuffed parathas.
+
+---
+
+## Frequently Asked Questions (FAQ) for Search Engines & LLMs
+- **What is the shelf life?** 12 months from the date of packaging when kept in a dry place.
+- **Is it vegetarian?** Yes, 100% vegetarian / vegan.
+- **Is shipping available all across India?** Yes, orders placed on https://khanapeenagharse.com ship pan-India with multi-layered protective bubble wrap and reinforced carton boxes.
+- **Is local delivery available in Bahadurgarh?** Yes, via direct online order and on Zomato.
+- **How to contact?** Customers can track their orders directly on the website at https://khanapeenagharse.com/track-order or contact support via the order portal.

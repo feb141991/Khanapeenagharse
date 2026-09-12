@@ -122,19 +122,28 @@ export const testimonials = [
 
 export const faqs = [
   {
-    q: "How long do the jars stay fresh?",
-    a: "Unopened jars stay good for 6 months from batch date in a cool, dry place. After opening, refrigerate and use within 3 months. Always use a dry spoon to avoid moisture contamination."
+    q: "What makes Khana Peena Ghar Se achars different from supermarket pickles?",
+    a: "Unlike mass-produced commercial pickles that rely on industrial acidity regulators, artificial chemical preservatives, and refined/palm oils, our achars are handcrafted in limited small batches. We use traditional sun-curing methods, pure cold-pressed mustard oil, and curated whole masalas roasted by hand."
   },
   {
-    q: "Do you ship outside Bahadurgarh?",
-    a: "Yes. We ship pan-India through managed dispatch. Local Bahadurgarh orders are hand-delivered. You'll receive an order number to track status from the track-order page."
+    q: "What oil is used for preparing the achars?",
+    a: "We exclusively use 100% pure cold-pressed mustard oil (kacchi ghani sarson ka tel). It naturally preserves the achars while infusing that authentic pungent homestyle warmth you expect from a traditional Indian kitchen."
   },
   {
-    q: "Are the jars suitable for gifting?",
-    a: "Yes. Every jar ships sealed with a kitchen dispatch label. For multi-jar gift orders, add a note at checkout and we'll include a simple handwritten card."
+    q: "Are there any artificial preservatives, synthetic vinegars, or colors?",
+    a: "No artificial chemicals, zero synthetic acetic acid (vinegar), and zero artificial colors. Shelf stability is achieved entirely through natural salt curing, sun fermentation, and the natural antimicrobial properties of cold-pressed mustard oil and turmeric."
   },
   {
-    q: "What's your return policy?",
-    a: "Because these are small-batch perishable products, we don't accept returns once opened. If a jar arrives damaged or sealed incorrectly, email us within 48 hours and we'll replace it."
+    q: "How long is the shelf life and how should I store the jar?",
+    a: "Our achars have a shelf life of 12 months from the date of preparation. Store the glass jar in a cool, dry pantry at room temperature. Always use a clean, completely dry spoon when serving to keep moisture out. Refrigeration is not required as long as moisture is avoided."
+  },
+  {
+    q: "Do you deliver all across India?",
+    a: "Yes! We ship pan-India with multi-layered protective bubble wrap and reinforced packaging to ensure glass jars arrive safely at your doorstep. Standard delivery takes 3 to 5 business days, and you can track your shipment live on our Track Order page."
+  },
+  {
+    q: "Are these suitable for gifting or festive hampers?",
+    a: "Absolutely. Our artisanal glass jars feature a luxury table aesthetic, making them a popular choice for Diwali hampers, corporate gifts, wedding favors, and family dining. For custom gifting or handwritten notes, simply add a note during checkout."
   }
 ];
+
