@@ -673,13 +673,12 @@ function Header({ cartCount, isLoggedIn, onSignOut, onOpenCartDrawer }) {
     { to: "/achar", label: "Shop" },
     { to: "/about", label: "Our Story" },
     { to: "/how-its-made", label: "How It's Made" },
-    { to: "/contact", label: "Contact & Kitchen" },
-    { to: "/account", label: isLoggedIn ? "My Account" : "Login" }
+    { to: "/contact", label: "Contact & Kitchen" }
   ];
 
   return (
-    <div className="notch-header-wrapper">
-      <header className="notch-navbar">
+    <header className="site-header">
+      <div className="content-container header-inner">
         <Link className="brand" to="/" aria-label="Khana Peena Ghar Se home">
           <img src="/images/logo.png" alt="Khana Peena Ghar Se logo" />
           <span className="brand-copy">
@@ -688,56 +687,65 @@ function Header({ cartCount, isLoggedIn, onSignOut, onOpenCartDrawer }) {
           </span>
         </Link>
 
-        <button
-          type="button"
-          className={`menu-toggle ${menuOpen ? "active" : ""}`}
-          aria-expanded={menuOpen}
-          aria-label="Toggle navigation menu"
-          onClick={() => setMenuOpen((val) => !val)}
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-
-        <nav className={`app-nav ${menuOpen ? "open" : ""}`} aria-label="Main Navigation">
+        <nav className={`main-nav ${menuOpen ? "open" : ""}`} aria-label="Main Navigation">
           <div className="nav-links">
             {navItems.map((item) => {
               const active = location.pathname === item.to;
               return (
-                <Link key={item.to} to={item.to} className={`nav-pill ${active ? "active" : ""}`}>
+                <Link key={item.to} to={item.to} className={`nav-link ${active ? "active" : ""}`}>
                   {item.label}
                 </Link>
               );
             })}
           </div>
-
-          <div className="nav-actions">
-            <button
-              type="button"
-              className="nav-cart-btn"
-              onClick={onOpenCartDrawer}
-              aria-label="Open Cart Drawer"
-            >
-              <span>🛍️ Cart</span>
-              {cartCount > 0 ? (
-                <span className="nav-cart-badge">
-                  {cartCount}
-                </span>
-              ) : null}
-            </button>
-            <Link to="/achar" className="nav-cta-btn">
-              Shop Achar
-            </Link>
-            {isLoggedIn ? (
-              <button className="nav-admin" type="button" onClick={onSignOut}>
-                Sign Out
-              </button>
-            ) : null}
-          </div>
         </nav>
-      </header>
-    </div>
+
+        <div className="header-actions">
+          <Link
+            to="/account"
+            className={`header-account-btn ${location.pathname === "/account" ? "active" : ""}`}
+            aria-label="Account / Login"
+          >
+            <span>👤</span>
+            <span>{isLoggedIn ? "Account" : "Login"}</span>
+          </Link>
+
+          <button
+            type="button"
+            className="header-cart-btn"
+            onClick={onOpenCartDrawer}
+            aria-label="Open Cart Drawer"
+          >
+            <span>🛍️ Cart</span>
+            {cartCount > 0 ? (
+              <span className="nav-cart-badge">{cartCount}</span>
+            ) : null}
+          </button>
+
+          <Link to="/achar" className="button button-primary button-sm header-cta-btn">
+            Shop Achar
+          </Link>
+
+          {isLoggedIn ? (
+            <button className="nav-admin" type="button" onClick={onSignOut}>
+              Sign Out
+            </button>
+          ) : null}
+
+          <button
+            type="button"
+            className={`menu-toggle ${menuOpen ? "active" : ""}`}
+            aria-expanded={menuOpen}
+            aria-label="Toggle navigation menu"
+            onClick={() => setMenuOpen((val) => !val)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
+      </div>
+    </header>
   );
 }
 
@@ -5163,7 +5171,6 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <TopAnnouncement />
       <Header
         cartCount={shop.cart.length}
         isLoggedIn={!!session}
