@@ -3059,74 +3059,561 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
 
 function AccountPage({ session, refreshSession }) {
   useDocumentMeta({
-    title: "My Account | Khana Peena Ghar Se",
-    description: "Manage your account and view order history."
+    title: "Member Portal & Account | Khana Peena Ghar Se",
+    description: "Sign in to track orders, manage deliveries, view batch receipts, and access member perks at Khana Peena Ghar Se."
   });
 
-  const [loginState, setLoginState] = useState({ email: "", password: "" });
-  const [signupState, setSignupState] = useState({ fullName: "", email: "", password: "" });
-  const [status, setStatus] = useState("");
+  const [activeTab, setActiveTab] = useState("signin"); // "signin" | "signup" | "forgot"
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState({ type: "", message: "" });
+
+  const [loginState, setLoginState] = useState({ email: "", password: "", remember: true });
+  const [signupState, setSignupState] = useState({ fullName: "", email: "", phone: "", password: "", agreeTerms: true });
+  const [forgotEmail, setForgotEmail] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!hasSupabaseClientEnv || !supabase) return setStatus("Supabase configuration missing.");
-    setStatus("Signing in...");
+    setStatus({ type: "", message: "" });
+    if (!hasSupabaseClientEnv || !supabase) {
+      setStatus({
+        type: "info",
+        message: "Demo Mode Active: Supabase environment credentials are not configured in local environment. Sign in would connect live to Supabase Auth."
+      });
+      return;
+    }
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: loginState.email,
       password: loginState.password
     });
-    if (error) return setStatus(error.message);
+    setLoading(false);
+    if (error) {
+      return setStatus({ type: "error", message: error.message });
+    }
     await refreshSession();
-    setStatus("Signed in successfully.");
+    setStatus({ type: "success", message: "Welcome back! Signed in successfully." });
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    if (!hasSupabaseClientEnv || !supabase) return setStatus("Supabase configuration missing.");
-    setStatus("Creating account...");
+    setStatus({ type: "", message: "" });
+    if (!hasSupabaseClientEnv || !supabase) {
+      setStatus({
+        type: "info",
+        message: "Demo Mode Active: Supabase environment credentials are not configured in local environment. Account registration would save to Supabase Auth."
+      });
+      return;
+    }
+    setLoading(true);
     const { error } = await supabase.auth.signUp({
       email: signupState.email,
       password: signupState.password,
-      options: { data: { full_name: signupState.fullName } }
+      options: {
+        data: {
+          full_name: signupState.fullName,
+          phone: signupState.phone
+        }
+      }
     });
-    if (error) return setStatus(error.message);
+    setLoading(false);
+    if (error) {
+      return setStatus({ type: "error", message: error.message });
+    }
     await refreshSession();
-    setStatus("Account created.");
+    setStatus({ type: "success", message: "Account created successfully! Check your email for confirmation." });
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setStatus({ type: "", message: "" });
+    if (!hasSupabaseClientEnv || !supabase) {
+      setStatus({
+        type: "info",
+        message: "Password reset link requested. In live mode, a secure recovery email is sent via Supabase."
+      });
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/account`
+    });
+    setLoading(false);
+    if (error) {
+      return setStatus({ type: "error", message: error.message });
+    }
+    setStatus({ type: "success", message: "Password reset instructions have been sent to your email." });
+  };
+
+  const handleSignOut = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    await refreshSession();
+    setStatus({ type: "info", message: "You have been safely signed out." });
   };
 
   return (
     <div className="page-shell">
-      <div className="content-container">
-        <div className="auth-shell">
-          <div>
-            <h1 className="section-title">{session ? "Your Account" : "Sign In"}</h1>
-            {session ? (
-              <div>
-                <p>Signed in as: <strong>{session.user.email}</strong></p>
-                <Link to="/track-order" className="button button-primary">Track Orders</Link>
-              </div>
-            ) : (
-              <form className="auth-form" onSubmit={handleLogin} style={{ marginTop: "20px" }}>
-                <label>Email<input type="email" value={loginState.email} onChange={(e) => setLoginState((c) => ({ ...c, email: e.target.value }))} required /></label>
-                <label>Password<input type="password" value={loginState.password} onChange={(e) => setLoginState((c) => ({ ...c, password: e.target.value }))} required /></label>
-                <button type="submit" className="button button-primary">Sign In</button>
-              </form>
-            )}
-          </div>
-
-          {!session ? (
-            <div>
-              <h2 className="section-title" style={{ fontSize: "1.8rem" }}>Create Account</h2>
-              <form className="auth-form" onSubmit={handleSignup} style={{ marginTop: "20px" }}>
-                <label>Full Name<input type="text" value={signupState.fullName} onChange={(e) => setSignupState((c) => ({ ...c, fullName: e.target.value }))} required /></label>
-                <label>Email<input type="email" value={signupState.email} onChange={(e) => setSignupState((c) => ({ ...c, email: e.target.value }))} required /></label>
-                <label>Password<input type="password" value={signupState.password} onChange={(e) => setSignupState((c) => ({ ...c, password: e.target.value }))} required /></label>
-                <button type="submit" className="button button-cream-secondary">Register</button>
-              </form>
+      {/* Luxury Ambient Hero Header */}
+      <section className="shop-hero-header">
+        <div className="content-container">
+          <div className="shop-hero-content">
+            <div className="shop-hero-pill">
+              <span>✦</span> Member Portal &amp; Kitchen Circle
             </div>
-          ) : null}
+            <h1 className="shop-hero-title">
+              {session ? "Welcome Back to Your Pantry" : "Welcome to Khana Peena Ghar Se"}
+            </h1>
+            <p className="shop-hero-desc">
+              {session
+                ? "Manage your delivery addresses, track live courier dispatches from Bahadurgarh, and access private batch releases."
+                : "Sign in to track orders, manage deliveries, view culinary receipts, and access early batch releases."}
+            </p>
+          </div>
         </div>
-        {status ? <p style={{ textAlign: "center", color: "var(--heritage-green)", fontWeight: "600", marginTop: "16px" }}>{status}</p> : null}
+      </section>
+
+      <div className="content-container" style={{ padding: "50px 24px 80px" }}>
+        {session ? (
+          /* ==========================================================================
+             Logged-In Member Dashboard View
+             ========================================================================== */
+          <div className="auth-member-dashboard">
+            <div className="member-welcome-card">
+              <div className="member-avatar-badge">
+                <span>{(session.user.user_metadata?.full_name || session.user.email || "G").charAt(0).toUpperCase()}</span>
+              </div>
+              <div className="member-info-col">
+                <div className="member-pill-badge">✦ Ghar Se Connoisseur</div>
+                <h2 className="member-welcome-name">
+                  {session.user.user_metadata?.full_name || session.user.email.split("@")[0]}
+                </h2>
+                <p className="member-email-text">{session.user.email}</p>
+              </div>
+              <button type="button" className="button button-outline-dark member-signout-btn" onClick={handleSignOut}>
+                Sign Out
+              </button>
+            </div>
+
+            <div className="member-dashboard-grid">
+              <div className="member-dash-card">
+                <div className="dash-card-icon">🚚</div>
+                <h3>Track Dispatches</h3>
+                <p>Check live transit status for packages on their way from our Bahadurgarh kitchen.</p>
+                <Link to="/track-order" className="dash-card-link">
+                  Track Live Order →
+                </Link>
+              </div>
+
+              <div className="member-dash-card">
+                <div className="dash-card-icon">🏺</div>
+                <h3>Pantry Catalog</h3>
+                <p>Reorder your household favorites or discover fresh 21-day sun-cured seasonal batches.</p>
+                <Link to="/achar" className="dash-card-link">
+                  Browse Achars →
+                </Link>
+              </div>
+
+              <div className="member-dash-card">
+                <div className="dash-card-icon">💬</div>
+                <h3>Kitchen Concierge</h3>
+                <p>Have an allergy question or need custom wedding/festival hampers? Speak with us directly.</p>
+                <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" className="dash-card-link">
+                  Chat on WhatsApp ↗
+                </a>
+              </div>
+            </div>
+
+            <div className="member-details-card">
+              <h3 style={{ fontFamily: "var(--font-serif)", fontSize: "1.3rem", color: "var(--heritage-green-dark)", margin: "0 0 16px" }}>
+                Account &amp; Security Overview
+              </h3>
+              <div className="member-details-row">
+                <span>Registered Email:</span>
+                <strong>{session.user.email}</strong>
+              </div>
+              <div className="member-details-row">
+                <span>Authentication Provider:</span>
+                <strong>Supabase Secure Auth (256-bit Encrypted)</strong>
+              </div>
+              <div className="member-details-row">
+                <span>Kitchen Location:</span>
+                <strong>Bahadurgarh, Haryana, India</strong>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ==========================================================================
+             Public Auth Split Layout (Perks Sidebar + Interactive Auth Form)
+             ========================================================================== */
+          <div className="auth-split-layout">
+            {/* Left Column: Brand Heritage & Member Privileges */}
+            <div className="auth-perks-sidebar">
+              <div className="auth-sidebar-brand">
+                <img src="/images/logo.png" alt="Khana Peena Ghar Se Logo" className="auth-sidebar-logo" />
+                <div>
+                  <strong style={{ display: "block", color: "var(--warm-cream)", fontSize: "1rem", letterSpacing: "0.04em" }}>
+                    KHANA PEENA GHAR SE
+                  </strong>
+                  <span style={{ fontSize: "0.75rem", color: "var(--mustard-gold-light)", letterSpacing: "0.08em" }}>
+                    THE PICKLE CHAPTER
+                  </span>
+                </div>
+              </div>
+
+              <h2 className="auth-perks-title">
+                The Heritage<br />Member Circle
+              </h2>
+              <p className="auth-perks-desc">
+                Experience the authentic taste of heirloom North Indian pickles with personalized pantry privileges.
+              </p>
+
+              <div className="auth-perks-list">
+                <div className="auth-perk-item">
+                  <div className="auth-perk-icon">📦</div>
+                  <div>
+                    <strong>Live Dispatch Tracking</strong>
+                    <p>Real-time courier updates straight from our Bahadurgarh packing station.</p>
+                  </div>
+                </div>
+
+                <div className="auth-perk-item">
+                  <div className="auth-perk-icon">🏺</div>
+                  <div>
+                    <strong>Early Batch Releases</strong>
+                    <p>Priority access when fresh seasonal Aam, Mirch, and Hing batches finish sun-curing.</p>
+                  </div>
+                </div>
+
+                <div className="auth-perk-item">
+                  <div className="auth-perk-icon">⚡</div>
+                  <div>
+                    <strong>1-Click Easy Reorders</strong>
+                    <p>Effortlessly restock your dining table without repeatedly entering addresses.</p>
+                  </div>
+                </div>
+
+                <div className="auth-perk-item">
+                  <div className="auth-perk-icon">🎁</div>
+                  <div>
+                    <strong>Festive Gifting Privileges</strong>
+                    <p>Special member pricing and customized gift boxes for Diwali, weddings, and celebrations.</p>
+                  </div>
+                </div>
+              </div>
+
+              <blockquote className="auth-perks-quote">
+                “Every single jar is sun-cured with patience in our ceramic barnis with 100% pure cold-pressed mustard oil. Welcome to our family table.”
+                <span style={{ display: "block", marginTop: "6px", fontStyle: "normal", fontWeight: "700", color: "var(--mustard-gold-light)", fontSize: "0.82rem" }}>
+                  — Rachna Gattani, Founder
+                </span>
+              </blockquote>
+
+              <div className="auth-trust-pills">
+                <span>🔒 256-Bit Secure</span>
+                <span>🌿 100% Vegetarian</span>
+                <span>📦 Safe Glass Transit</span>
+              </div>
+            </div>
+
+            {/* Right Column: Luxury Interactive Auth Card */}
+            <div className="auth-form-card">
+              {/* Tab Switcher */}
+              <div className="auth-tabs-row">
+                <button
+                  type="button"
+                  className={`auth-tab-btn ${activeTab === "signin" ? "is-active" : ""}`}
+                  onClick={() => {
+                    setActiveTab("signin");
+                    setStatus({ type: "", message: "" });
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  className={`auth-tab-btn ${activeTab === "signup" ? "is-active" : ""}`}
+                  onClick={() => {
+                    setActiveTab("signup");
+                    setStatus({ type: "", message: "" });
+                  }}
+                >
+                  Create Account
+                </button>
+              </div>
+
+              {/* Status Alert Banner */}
+              {status.message && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`auth-status-alert ${status.type}`}
+                >
+                  <span>{status.type === "success" ? "✓" : status.type === "error" ? "⚠️" : "ℹ️"}</span>
+                  <p>{status.message}</p>
+                </motion.div>
+              )}
+
+              {/* SIGN IN FORM */}
+              {activeTab === "signin" && (
+                <form className="auth-styled-form" onSubmit={handleLogin}>
+                  <div className="auth-form-header">
+                    <h2 className="auth-form-title">Sign In to Your Account</h2>
+                    <p className="auth-form-subtitle">Enter your registered email and password to continue.</p>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="login-email">
+                      <span>Email Address</span>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">✉️</span>
+                        <input
+                          id="login-email"
+                          type="email"
+                          placeholder="name@example.com"
+                          value={loginState.email}
+                          onChange={(e) => setLoginState((c) => ({ ...c, email: e.target.value }))}
+                          required
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="login-password">
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span>Password</span>
+                        <button
+                          type="button"
+                          className="auth-link-btn"
+                          onClick={() => {
+                            setActiveTab("forgot");
+                            setStatus({ type: "", message: "" });
+                          }}
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">🔒</span>
+                        <input
+                          id="login-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          value={loginState.password}
+                          onChange={(e) => setLoginState((c) => ({ ...c, password: e.target.value }))}
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="auth-eye-btn"
+                          onClick={() => setShowPassword((v) => !v)}
+                          aria-label="Toggle password visibility"
+                        >
+                          {showPassword ? "🙈" : "👁️"}
+                        </button>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="auth-options-row">
+                    <label className="auth-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={loginState.remember}
+                        onChange={(e) => setLoginState((c) => ({ ...c, remember: e.target.checked }))}
+                      />
+                      <span>Keep me signed in</span>
+                    </label>
+                  </div>
+
+                  <button type="submit" className="button button-mustard-primary auth-submit-btn" disabled={loading}>
+                    {loading ? "Signing in..." : "Sign In to Account →"}
+                  </button>
+
+                  <div className="auth-card-footer">
+                    <span>Don't have an account yet?</span>
+                    <button
+                      type="button"
+                      className="auth-inline-link"
+                      onClick={() => {
+                        setActiveTab("signup");
+                        setStatus({ type: "", message: "" });
+                      }}
+                    >
+                      Join Member Circle →
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* CREATE ACCOUNT FORM */}
+              {activeTab === "signup" && (
+                <form className="auth-styled-form" onSubmit={handleSignup}>
+                  <div className="auth-form-header">
+                    <h2 className="auth-form-title">Create Member Account</h2>
+                    <p className="auth-form-subtitle">Join the Ghar Se circle for early batch drops &amp; live courier updates.</p>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="signup-name">
+                      <span>Full Name</span>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">👤</span>
+                        <input
+                          id="signup-name"
+                          type="text"
+                          placeholder="e.g. Ritika Sharma"
+                          value={signupState.fullName}
+                          onChange={(e) => setSignupState((c) => ({ ...c, fullName: e.target.value }))}
+                          required
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="signup-email">
+                      <span>Email Address</span>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">✉️</span>
+                        <input
+                          id="signup-email"
+                          type="email"
+                          placeholder="name@example.com"
+                          value={signupState.email}
+                          onChange={(e) => setSignupState((c) => ({ ...c, email: e.target.value }))}
+                          required
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="signup-phone">
+                      <span>Mobile Number (Optional)</span>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">📱</span>
+                        <input
+                          id="signup-phone"
+                          type="tel"
+                          placeholder="+91 98765 43210 (For WhatsApp alerts)"
+                          value={signupState.phone}
+                          onChange={(e) => setSignupState((c) => ({ ...c, phone: e.target.value }))}
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="signup-password">
+                      <span>Create Password</span>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">🔒</span>
+                        <input
+                          id="signup-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="At least 6 characters"
+                          value={signupState.password}
+                          onChange={(e) => setSignupState((c) => ({ ...c, password: e.target.value }))}
+                          required
+                          minLength={6}
+                        />
+                        <button
+                          type="button"
+                          className="auth-eye-btn"
+                          onClick={() => setShowPassword((v) => !v)}
+                          aria-label="Toggle password visibility"
+                        >
+                          {showPassword ? "🙈" : "👁️"}
+                        </button>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="auth-options-row">
+                    <label className="auth-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={signupState.agreeTerms}
+                        onChange={(e) => setSignupState((c) => ({ ...c, agreeTerms: e.target.checked }))}
+                        required
+                      />
+                      <span>I agree to the <Link to="/terms" style={{ color: "var(--heritage-green)", textDecoration: "underline" }}>Terms</Link> &amp; <Link to="/privacy-policy" style={{ color: "var(--heritage-green)", textDecoration: "underline" }}>Privacy Policy</Link></span>
+                    </label>
+                  </div>
+
+                  <button type="submit" className="button button-mustard-primary auth-submit-btn" disabled={loading}>
+                    {loading ? "Creating Account..." : "Create Member Account →"}
+                  </button>
+
+                  <div className="auth-card-footer">
+                    <span>Already a member?</span>
+                    <button
+                      type="button"
+                      className="auth-inline-link"
+                      onClick={() => {
+                        setActiveTab("signin");
+                        setStatus({ type: "", message: "" });
+                      }}
+                    >
+                      Sign in here →
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* FORGOT PASSWORD FORM */}
+              {activeTab === "forgot" && (
+                <form className="auth-styled-form" onSubmit={handleForgotPassword}>
+                  <div className="auth-form-header">
+                    <h2 className="auth-form-title">Reset Your Password</h2>
+                    <p className="auth-form-subtitle">Enter your registered email address and we'll send you recovery instructions.</p>
+                  </div>
+
+                  <div className="auth-input-group">
+                    <label htmlFor="forgot-email">
+                      <span>Registered Email Address</span>
+                      <div className="auth-input-wrapper">
+                        <span className="auth-field-icon">✉️</span>
+                        <input
+                          id="forgot-email"
+                          type="email"
+                          placeholder="name@example.com"
+                          value={forgotEmail}
+                          onChange={(e) => setForgotEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                    </label>
+                  </div>
+
+                  <button type="submit" className="button button-mustard-primary auth-submit-btn" disabled={loading}>
+                    {loading ? "Sending..." : "Send Reset Instructions →"}
+                  </button>
+
+                  <div className="auth-card-footer">
+                    <button
+                      type="button"
+                      className="auth-inline-link"
+                      onClick={() => {
+                        setActiveTab("signin");
+                        setStatus({ type: "", message: "" });
+                      }}
+                    >
+                      ← Back to Sign In
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="auth-security-guarantee">
+                <span>🔒</span> 256-bit SSL encrypted • Zero spam guarantee • FSSAI compliant kitchen
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
