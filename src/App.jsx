@@ -1789,6 +1789,7 @@ function LifestyleBanner() {
 function ReviewsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     function updateVisible() {
@@ -1814,15 +1815,39 @@ function ReviewsSection() {
     }
   }, [maxIndex, currentIndex]);
 
-  const prev = () => setCurrentIndex((cur) => Math.max(0, cur - 1));
-  const next = () => setCurrentIndex((cur) => Math.min(maxIndex, cur + 1));
+  const prev = () => setCurrentIndex((cur) => (cur <= 0 ? maxIndex : cur - 1));
+  const next = () => setCurrentIndex((cur) => (cur >= maxIndex ? 0 : cur + 1));
+
+  // Auto-running carousel effect
+  useEffect(() => {
+    if (isPaused || maxIndex <= 0) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((cur) => (cur >= maxIndex ? 0 : cur + 1));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isPaused, maxIndex]);
 
   return (
-    <section className="section-reviews">
+    <section
+      className="section-reviews"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+    >
       <div className="content-container">
         <div className="reviews-header-flex">
           <div className="reviews-head-copy">
-            <p className="section-eyebrow">Customer Love</p>
+            <div className="reviews-eyebrow-row">
+              <p className="section-eyebrow">Customer Love</p>
+              <div
+                className="reviews-live-pill"
+                title={isPaused ? "Paused on hover" : "Auto-running customer reviews"}
+              >
+                <span className={`reviews-pulse-indicator ${isPaused ? "is-paused" : ""}`} />
+                <span>{isPaused ? "Paused" : "Auto-playing"}</span>
+              </div>
+            </div>
             <h2 className="section-title">Loved at Family Tables Across India</h2>
             <p className="section-subtitle">Verified reviews from homes enjoying our handcrafted small-batch achars.</p>
           </div>
@@ -1831,17 +1856,26 @@ function ReviewsSection() {
               type="button"
               className="review-carousel-btn"
               onClick={prev}
-              disabled={currentIndex === 0}
               aria-label="Previous review"
+              title="Previous review"
             >
               ←
             </button>
             <button
               type="button"
+              className={`review-carousel-btn review-play-toggle ${isPaused ? "is-paused" : ""}`}
+              onClick={() => setIsPaused((p) => !p)}
+              aria-label={isPaused ? "Resume auto-play" : "Pause auto-play"}
+              title={isPaused ? "Resume auto-play" : "Pause auto-play"}
+            >
+              {isPaused ? "▶" : "⏸"}
+            </button>
+            <button
+              type="button"
               className="review-carousel-btn"
               onClick={next}
-              disabled={currentIndex >= maxIndex}
               aria-label="Next review"
+              title="Next review"
             >
               →
             </button>
