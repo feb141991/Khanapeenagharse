@@ -463,7 +463,7 @@ textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 36%;
+  object-position: center 22%;
   display: block;
   /* Multi-stop mask: smooth organic transition into background without clipping */
   -webkit-mask-image:

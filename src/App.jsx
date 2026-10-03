@@ -857,6 +857,7 @@ const HERO_SLIDES = [
     body: "Traditional homemade pickles prepared in small batches from our family kitchen in Bahadurgarh. Same recipes. Pure cold-pressed mustard oil. Real ingredients. A taste of home, always.",
     image: "/images/brand/home-hero.jpg",
     alt: "Authentic Sun-Cured Pickles in traditional glass and ceramic jars",
+    objectPosition: "center 24%",
     badgeTop: { icon: "🌿", title: "100% Kacchi Ghani", sub: "Cold-Pressed Mustard Oil" },
     badgeBottom: { icon: "🏺", title: "Sun-Cured In Barnis", sub: "12-Month Natural Life" },
     tabTitle: "Sun-Cured Jars",
@@ -871,6 +872,7 @@ const HERO_SLIDES = [
     body: "Every jar is seasoned with whole spices roasted by hand, naturally fermented in ceramic barnis under the Haryana sun, and sealed with pure love.",
     image: "/images/brand/about-owner.jpg",
     alt: "Rachna preparing traditional homemade pickles in her Bahadurgarh kitchen",
+    objectPosition: "center 22%",
     badgeTop: { icon: "👵", title: "Mother's Recipe", sub: "Family Kitchen Handcrafted" },
     badgeBottom: { icon: "☀️", title: "Slow Fermented", sub: "Sun-Warmed on Terrace" },
     tabTitle: "Kitchen Story",
@@ -885,6 +887,7 @@ const HERO_SLIDES = [
     body: "No Indian plate is truly complete without the punch of authentic ghar ka achar. From zesty spicy green chillies to tangy hing mango, taste perfection in every spoonful.",
     image: "/images/brand/lifestyle-dining.jpg",
     alt: "Traditional Indian dining thali accompanied by homemade achars",
+    objectPosition: "center 25%",
     badgeTop: { icon: "🍛", title: "Comfort Dining", sub: "Parathas & Thalis" },
     badgeBottom: { icon: "🪔", title: "Pure Nostalgia", sub: "Timeless Indian Taste" },
     tabTitle: "Dining Rituals",
@@ -899,6 +902,7 @@ const HERO_SLIDES = [
     body: "Can't choose a single favourite? Experience the complete heirloom chapter with our signature combo box, lovingly packed for safe doorstep transit across India.",
     image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
     alt: "The Complete Ghar Ka Achar 4-in-1 combo box",
+    objectPosition: "center 25%",
     badgeTop: { icon: "🎁", title: "All 4 Heirlooms", sub: "Aam, Hing, Mirch & Mix" },
     badgeBottom: { icon: "🚚", title: "Pan-India Shipping", sub: "Safe Glass Jar Transit" },
     tabTitle: "Combo Box",
@@ -964,7 +968,8 @@ function HeroCarousel() {
           >
             <img
               src={slide.image}
-              alt=""
+              alt={slide.alt || ""}
+              style={{ objectPosition: slide.objectPosition || "center 22%" }}
               onError={(e) => {
                 e.currentTarget.src = "/images/brand/home-hero.jpg";
               }}
