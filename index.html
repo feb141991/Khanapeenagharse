@@ -49,7 +49,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- Schema.org JSON-LD: FoodEstablishment & Brand Organization -->
+    <!-- Schema.org JSON-LD: FoodEstablishment, Brand Organization & FAQPage (AEO/GEO) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -61,13 +61,21 @@
           "url": "https://khanapeenagharse.in",
           "logo": "https://khanapeenagharse.in/images/logo.png",
           "image": "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+          "email": "khanapeena.ghar@gmail.com",
           "description": "Artisanal, small-batch homemade Indian achars made with cold-pressed mustard oil and sun-cured spices.",
           "servesCuisine": "Indian",
           "priceRange": "₹₹",
+          "founder": {
+            "@type": "Person",
+            "name": "Rachna Gattani",
+            "jobTitle": "Co-founder & Head Chef",
+            "image": "https://khanapeenagharse.in/images/brand/about-owner.jpg"
+          },
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Bahadurgarh",
             "addressRegion": "Haryana",
+            "postalCode": "124507",
             "addressCountry": "IN"
           },
           "sameAs": [
@@ -82,6 +90,68 @@
           "publisher": {
             "@id": "https://khanapeenagharse.in/#organization"
           }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://khanapeenagharse.in/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What makes Khana Peena Ghar Se achars different from supermarket pickles?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Unlike mass-produced commercial pickles that rely on industrial acidity regulators, artificial chemical preservatives, and refined/palm oils, our achars are handcrafted in limited small batches. We use traditional sun-curing methods, pure cold-pressed mustard oil, and curated whole masalas roasted by hand in Rachna Gattani's family kitchen."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What oil is used for preparing the achars?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "We exclusively use 100% pure cold-pressed mustard oil (kacchi ghani sarson ka tel). It naturally preserves the achars while infusing that authentic pungent homestyle warmth you expect from a traditional Indian kitchen."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are there any artificial preservatives, synthetic vinegars, or colors?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No artificial chemicals, zero synthetic acetic acid (vinegar), and zero artificial colors. Shelf stability is achieved entirely through natural salt curing, sun fermentation, and the natural antimicrobial properties of cold-pressed mustard oil and turmeric."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How long is the shelf life and how should I store the jar?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our achars have a shelf life of 12 months (1 year) from the date of preparation. Store the glass jar in a cool, dry pantry at room temperature. Always use a clean, completely dry spoon when serving to keep moisture out. Refrigeration is not required as long as moisture is avoided."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do you deliver all across India?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! We ship pan-India with multi-layered protective bubble wrap and reinforced packaging to ensure glass jars arrive safely at your doorstep. Standard delivery takes 2 to 4 business days depending on your location, and you can track your shipment live on our Track Order page."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I place bulk orders for corporate gifting, Diwali hampers, or wedding favors?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! We provide custom-packaged glass jar gift sets (including 'The Ghar Ka Achar Box') with customized labels and handwritten greeting cards for weddings, Diwali gifts, and corporate events. Contact us through our order portal for custom gifting inquiries."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are these achars 100% vegetarian and vegan-friendly?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, all our achars are 100% vegetarian, plant-based, and vegan. We do not use any animal fats, dairy derivatives, or hidden chemical processing agents."
+              }
+            }
+          ]
         }
       ]
     }

@@ -1,20 +1,39 @@
 # Khana Peena Ghar Se — Complete Brand, Culinary & Product Knowledge Base
 
 ## Brand Philosophy & Background
-Khana Peena Ghar Se (literally *"Food & Drink From Home"*) is an authentic Indian culinary brand and kitchen headquartered in Bahadurgarh, Haryana. Founded with the mission to revive authentic, homemade regional recipes that are disappearing under the wave of commercial factory food production.
+Khana Peena Ghar Se (literally *"Food & Drink From Home"*) is an authentic Indian culinary brand and kitchen headquartered in Bahadurgarh, Haryana. Co-founded by Rachna Gattani with the mission to revive authentic, homemade regional recipes that are disappearing under the wave of commercial factory food production.
 
-Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar), excessive acidity regulators, artificial colourants, and industrial oils. Khana Peena Ghar Se rejects this approach. Every single jar is:
-1. **Prepared in Small Batches:** Small batches allow strict quality control of raw ingredients.
-2. **Naturally Sun-Cured:** Slow curing under the sun preserves the natural texture, deep aroma, and probiotic qualities of traditional Indian achar.
-3. **Pure Cold-Pressed Mustard Oil:** Mustard oil naturally preserves the spices and provides the quintessential homestyle pungent warmth.
-4. **Zero Synthetic Preservatives:** Shelf stability (12 months) is achieved naturally via salt, turmeric, mustard oil, and spices.
+Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar), excessive acidity regulators, artificial colourants, and industrial refined/palm oils. Khana Peena Ghar Se rejects this approach. Every single jar is:
+1. **Prepared in Small Batches:** Small batches allow strict quality control of raw ingredients and spices.
+2. **Naturally Sun-Cured:** Slow curing under the natural sun preserves the crisp texture, deep aroma, and authentic fermentation of traditional Indian achar.
+3. **Pure Cold-Pressed Mustard Oil:** 100% kacchi ghani mustard oil naturally preserves the spices and provides the quintessential homestyle pungent warmth. Zero palm oil, zero refined oil.
+4. **Zero Synthetic Preservatives:** Shelf stability (12 months) is achieved naturally via salt curing, turmeric, cold-pressed mustard oil, and hand-roasted spices.
+
+- **Co-founder & Head Chef:** Rachna Gattani
+- **Kitchen Headquarters:** Bahadurgarh, Haryana - 124507, India
+- **Official Contact Email:** khanapeena.ghar@gmail.com
+- **Website:** https://khanapeenagharse.in
+- **Delivery Radius:** Pan-India doorstep delivery with shock-proof glass packaging, plus local Bahadurgarh delivery via Zomato.
 
 ---
 
 ## Detailed Product Specifications
 
-### 1. Aam Ka Achar (Homemade Mango Pickle)
+### 1. The Ghar Ka Achar Box (4-Jar Gift Set)
+- **Net Weight:** 1,850 grams (4 full-sized glass jars)
+- **Price:** INR 999 (Special family price, Save ₹127, Original MRP ₹1,126)
+- **SKU / Slug:** `ghar-ka-achar-box`
+- **Contents:**
+  - Aam Ka Achar (500g) - Yellow Label
+  - Hing Ka Achar (450g) - Red Label
+  - Mirch Ka Achar (400g) - Green Label
+  - Mix Veg Achar (500g) - Red Label
+- **Packaging:** Premium gift-ready rigid box with protective straw bedding, airtight metal lug caps, and sealed glass jars.
+- **Ideal Occasions:** Diwali gift hampers, corporate gifting, wedding favors, housewarming, family feast dining.
+
+### 2. Aam Ka Achar (Homemade Mango Pickle)
 - **Net Weight:** 500 grams (Food-grade glass jar)
+- **Jar Label Color:** Yellow
 - **Price:** INR 299
 - **SKU / Slug:** `aam-ka-achar`
 - **Spice Profile:** Balanced Medium (3/5)
@@ -23,8 +42,9 @@ Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar),
 - **Serving Suggestions:** North Indian parathas (aloo, gobhi, paneer), dal tadka with steamed basmati rice, khichdi, mathri snacks.
 - **Storage Instructions:** Store at room temperature in a dry pantry. Always use a dry stainless steel or wooden spoon. Do not refrigerate.
 
-### 2. Hing Ka Achar (Aromatic Asafoetida Pickle)
+### 3. Hing Ka Achar (Aromatic Asafoetida Pickle)
 - **Net Weight:** 450 grams (Food-grade glass jar)
+- **Jar Label Color:** Red
 - **Price:** INR 279
 - **SKU / Slug:** `hing-ka-achar`
 - **Spice Profile:** Mild to Medium (2/5)
@@ -32,8 +52,9 @@ Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar),
 - **Ingredients:** Pure compounded asafoetida (hing), mustard oil, roasted ground spices, red chilli powder, turmeric powder, salt.
 - **Serving Suggestions:** Plain ghee roti, curd rice, plain moong dal khichdi, poori bhaji.
 
-### 3. Mirch Ka Achar (Spiced Green Chilli Pickle)
+### 4. Mirch Ka Achar (Spiced Green Chilli Pickle)
 - **Net Weight:** 400 grams (Food-grade glass jar)
+- **Jar Label Color:** Green
 - **Price:** INR 259
 - **SKU / Slug:** `mirch-ka-achar`
 - **Spice Profile:** Bold Hot (4.5/5)
@@ -41,8 +62,9 @@ Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar),
 - **Ingredients:** Fresh slit green chillies, yellow mustard seeds (rai), fenugreek (methi dana), turmeric, red chilli, mustard oil, salt.
 - **Serving Suggestions:** Rajma chawal, chole bhature, methi thepla, parathas.
 
-### 4. Mix Veg Achar (Seasonal Vegetable Pickle)
+### 5. Mix Veg Achar (Seasonal Vegetable Pickle)
 - **Net Weight:** 500 grams (Food-grade glass jar)
+- **Jar Label Color:** Red
 - **Price:** INR 289
 - **SKU / Slug:** `mix-veg-achar`
 - **Spice Profile:** Medium (3/5)
@@ -53,8 +75,11 @@ Many supermarket pickles today rely on synthetic acetic acid (chemical vinegar),
 ---
 
 ## Frequently Asked Questions (FAQ) for Search Engines & LLMs
-- **What is the shelf life?** 12 months from the date of packaging when kept in a dry place.
-- **Is it vegetarian?** Yes, 100% vegetarian / vegan.
-- **Is shipping available all across India?** Yes, orders placed on https://khanapeenagharse.in ship pan-India with multi-layered protective bubble wrap and reinforced carton boxes.
+- **What is the shelf life?** 12 months from the date of packaging when kept in a dry place at room temperature.
+- **Is it 100% vegetarian?** Yes, 100% vegetarian and vegan friendly.
+- **What oil is used?** Exclusively 100% pure cold-pressed mustard oil (kacchi ghani). Zero palm oil, zero cottonseed oil, zero refined oil.
+- **Are there chemical preservatives?** Zero artificial chemical preservatives, zero synthetic vinegar (acetic acid), zero artificial food colors.
+- **Is shipping available all across India?** Yes, orders placed on https://khanapeenagharse.in ship pan-India with multi-layered protective bubble wrap and reinforced carton boxes with guaranteed break-free transit.
 - **Is local delivery available in Bahadurgarh?** Yes, via direct online order and on Zomato.
-- **How to contact?** Customers can track their orders directly on the website at https://khanapeenagharse.in/track-order or contact support via the order portal.
+- **Official Customer Care Email:** khanapeena.ghar@gmail.com
+- **How to contact?** Customers can track their orders directly on the website at https://khanapeenagharse.in/track-order or contact support at khanapeena.ghar@gmail.com.
