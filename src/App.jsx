@@ -19,7 +19,7 @@ import {
 
 const ZOMATO_URL =
   "https://www.zomato.com/bahadurgarh/khana-peena-ghar-se-bahadurgarh-locality/order";
-const WHATSAPP_PHONE = "919811200000";
+const WHATSAPP_PHONE = "919812389881";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent("Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.")}`;
 
 export function getWhatsAppOrderUrl(items = [], subtotal = 0, customerInfo = null) {
@@ -5162,7 +5162,7 @@ function RefundPolicyPage() {
                 Take 2–3 clear photos or a short video showing the outer shipping label, damaged box, and affected jar within <strong>48 hours of delivery</strong>.
               </li>
               <li>
-                Send the media along with your Order ID (e.g. <code>KP-123456</code>) via WhatsApp to <strong>+91 98112 00000</strong> or email us at <strong>khanapeena.ghar@gmail.com</strong>.
+                Send the media along with your Order ID (e.g. <code>KP-123456</code>) via WhatsApp to <strong>+91 98123 89881</strong> or email us at <strong>khanapeena.ghar@gmail.com</strong>.
               </li>
               <li>
                 Our customer care team will review and approve your claim within 24 hours. A fresh replacement will be dispatched immediately, or a full refund will be initiated.
@@ -5218,7 +5218,7 @@ function ContactPage() {
               <div className="contact-card-icon">📞</div>
               <div className="contact-card-text">
                 <h3>Phone &amp; WhatsApp Support</h3>
-                <p>+91 98112 00000<br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Mon to Sat, 9:00 AM – 7:00 PM IST</span></p>
+                <p>+91 98123 89881<br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Mon to Sat, 9:00 AM – 7:00 PM IST</span></p>
               </div>
             </div>
 
