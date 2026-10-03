@@ -2266,9 +2266,9 @@ textarea {
 
 .about-founder-frame img {
   width: 100%;
-  height: 480px;
+  height: 540px;
   object-fit: cover;
-  object-position: center 22%;
+  object-position: center 25%;
   display: block;
 }
 
@@ -3458,7 +3458,7 @@ textarea {
   border: 1px solid var(--line-gold);
   box-shadow: var(--shadow-sm);
   background: var(--warm-cream-pure);
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 4 / 5;
   display: flex;
 }
 
@@ -3466,7 +3466,7 @@ textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center 25%;
   display: block;
 }
 
