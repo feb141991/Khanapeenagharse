@@ -1496,13 +1496,13 @@ function StorySpotlightSection() {
             <div className="story-portrait-frame">
               <img
                 src={ABOUT_OWNER_IMAGE}
-                alt="Rachna Gattani preparing traditional achar"
+                alt="Rachna Gattani, Co-founder of Khana Peena Ghar Se"
                 onError={(e) => {
                   e.currentTarget.src = HOME_HERO_IMAGE;
                 }}
               />
               <div className="story-floating-badge">
-                <span>🏺</span> Family Kitchen, Bahadurgarh
+                <span>🏺</span> Rachna Gattani · Co-founder
               </div>
             </div>
             <div className="story-badge-quote">
@@ -2037,7 +2037,7 @@ function Footer() {
               <li><Link to="/privacy-policy">Privacy Policy (IT Act)</Link></li>
               <li><Link to="/terms">Terms &amp; Conditions</Link></li>
               <li><Link to="/how-its-made">12-Month Shelf Life Norms</Link></li>
-              <li><Link to="/about">About Rachna Gattani</Link></li>
+              <li><Link to="/about">About Co-founder Rachna Gattani</Link></li>
               <li><Link to="/account">My Account &amp; Past Orders</Link></li>
             </ul>
           </div>
@@ -3082,15 +3082,15 @@ function AboutPage() {
               <div className="about-founder-frame">
                 <img
                   src={ABOUT_OWNER_IMAGE}
-                  alt="Rachna Gattani preparing traditional homemade pickles in her Bahadurgarh kitchen"
+                  alt="Rachna Gattani, Co-founder & Head Chef of Khana Peena Ghar Se"
                   onError={(e) => { e.currentTarget.src = HOME_HERO_IMAGE; }}
                 />
                 <div className="about-founder-stamp">
-                  📍 Bahadurgarh Kitchen
+                  📍 Bahadurgarh Heritage
                 </div>
                 <div className="about-founder-quote-card">
                   <p>“Spices were never measured by factory scales, but by years of lived intuition and motherly care.”</p>
-                  <span>— Rachna Gattani, Founder & Head Chef</span>
+                  <span>— Rachna Gattani, Co-founder & Head Chef</span>
                 </div>
               </div>
 
@@ -3556,7 +3556,7 @@ function HowItsMadePage() {
                 <div className="how-wisdom-quote-mark">“</div>
                 <div className="how-wisdom-content">
                   <p>{activeStep.wisdom}</p>
-                  <small>— Rachna Sharma, Founder &amp; Kitchen Head</small>
+                  <small>— Rachna Gattani, Co-founder &amp; Kitchen Head</small>
                 </div>
               </div>
 
@@ -4345,7 +4345,7 @@ function AccountPage({ session, refreshSession }) {
               <blockquote className="auth-perks-quote">
                 “Every single jar is sun-cured with patience in our ceramic barnis with 100% pure cold-pressed mustard oil. Welcome to our family table.”
                 <span style={{ display: "block", marginTop: "6px", fontStyle: "normal", fontWeight: "700", color: "var(--mustard-gold-light)", fontSize: "0.82rem" }}>
-                  — Rachna Gattani, Founder
+                  — Rachna Gattani, Co-founder
                 </span>
               </blockquote>
 
@@ -4908,7 +4908,7 @@ function PrivacyPolicyPage() {
           <div className="legal-section">
             <h2>6. Data Retention &amp; User Rights</h2>
             <p>
-              We retain customer order records for legitimate accounting, tax compliance (GST), and dispute resolution purposes. As a customer, you hold the right to request access, correction, or deletion of your personal account data by writing to our Grievance Officer at <strong>care@khanapeenagharse.in</strong>.
+              We retain customer order records for legitimate accounting, tax compliance (GST), and dispute resolution purposes. As a customer, you hold the right to request access, correction, or deletion of your personal account data by writing to our Grievance Officer at <strong>khanapeena.ghar@gmail.com</strong>.
             </p>
           </div>
 
@@ -4924,7 +4924,7 @@ function PrivacyPolicyPage() {
               </div>
               <div className="grievance-item">
                 <strong>Official Email</strong>
-                <span>care@khanapeenagharse.in</span>
+                <span>khanapeena.ghar@gmail.com</span>
               </div>
               <div className="grievance-item">
                 <strong>Kitchen &amp; Office Location</strong>
@@ -5123,7 +5123,7 @@ function RefundPolicyPage() {
                 Take 2–3 clear photos or a short video showing the outer shipping label, damaged box, and affected jar within <strong>48 hours of delivery</strong>.
               </li>
               <li>
-                Send the media along with your Order ID (e.g. <code>KP-123456</code>) via WhatsApp to <strong>+91 98112 00000</strong> or email us at <strong>care@khanapeenagharse.in</strong>.
+                Send the media along with your Order ID (e.g. <code>KP-123456</code>) via WhatsApp to <strong>+91 98112 00000</strong> or email us at <strong>khanapeena.ghar@gmail.com</strong>.
               </li>
               <li>
                 Our customer care team will review and approve your claim within 24 hours. A fresh replacement will be dispatched immediately, or a full refund will be initiated.
@@ -5187,7 +5187,7 @@ function ContactPage() {
               <div className="contact-card-icon">✉️</div>
               <div className="contact-card-text">
                 <h3>Email Support</h3>
-                <p>care@khanapeenagharse.in<br />orders@khanapeenagharse.in</p>
+                <p>khanapeena.ghar@gmail.com</p>
               </div>
             </div>
 
@@ -5212,11 +5212,11 @@ function ContactPage() {
                 </div>
                 <div className="grievance-item">
                   <strong>Designation</strong>
-                  <span>Grievance Officer &amp; Founder</span>
+                  <span>Grievance Officer &amp; Co-founder</span>
                 </div>
                 <div className="grievance-item">
                   <strong>Direct Email</strong>
-                  <span>care@khanapeenagharse.in</span>
+                  <span>khanapeena.ghar@gmail.com</span>
                 </div>
                 <div className="grievance-item">
                   <strong>Resolution Timeline</strong>
