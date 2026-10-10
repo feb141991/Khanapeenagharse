@@ -5,6 +5,7 @@ const loginStatus = document.querySelector("#login-status");
 const ordersStatus = document.querySelector("#orders-status");
 const ordersTableBody = document.querySelector("#orders-table-body");
 const inventoryTableBody = document.querySelector("#inventory-table-body");
+const createProductForm = document.querySelector("#create-product-form");
 const orderCount = document.querySelector("#order-count");
 const refreshButton = document.querySelector("#refresh-orders");
 const logoutButton = document.querySelector("#logout-admin");
@@ -132,6 +133,14 @@ async function patchAdmin(payload) {
   return result;
 }
 
+function slugify(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 loginForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const password = document.querySelector("#admin-password").value.trim();
@@ -143,6 +152,34 @@ loginForm?.addEventListener("submit", (event) => {
   loginStatus.textContent = "";
   showDashboard();
   fetchDashboard();
+});
+
+createProductForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.currentTarget);
+  const payload = {
+    type: "create-product",
+    name: String(formData.get("name") || "").trim(),
+    slug: slugify(formData.get("slug") || formData.get("name")),
+    sizeLabel: String(formData.get("sizeLabel") || "").trim(),
+    price: Number(formData.get("price") || 0),
+    stockQuantity: Number(formData.get("stockQuantity") || 0)
+  };
+
+  if (!payload.name || !payload.slug || !payload.sizeLabel) {
+    ordersStatus.textContent = "Name, slug, and size label are required.";
+    return;
+  }
+
+  try {
+    ordersStatus.textContent = `Creating ${payload.name}...`;
+    await patchAdmin(payload);
+    event.currentTarget.reset();
+    await fetchDashboard();
+    ordersStatus.textContent = `${payload.name} created. Use the slug folder ${payload.slug}/ in the product-images bucket.`;
+  } catch (error) {
+    ordersStatus.textContent = error.message || "Unable to create product.";
+  }
 });
 
 refreshButton?.addEventListener("click", fetchDashboard);

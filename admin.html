@@ -73,6 +73,14 @@
 
         <section class="admin-panel" aria-labelledby="panel-inventory">
           <h3 id="panel-inventory">Inventory</h3>
+          <form class="admin-create-form" id="create-product-form">
+            <label>Product name<input type="text" name="name" required></label>
+            <label>Slug<input type="text" name="slug" required placeholder="nimbu-ka-achar"></label>
+            <label>Size label<input type="text" name="sizeLabel" required placeholder="500 g jar"></label>
+            <label>Price<input type="number" name="price" min="0" required></label>
+            <label>Stock<input type="number" name="stockQuantity" min="0" required></label>
+            <button class="button button-primary" type="submit">Create product</button>
+          </form>
           <div class="admin-table-wrap">
             <table class="orders-table">
               <thead>

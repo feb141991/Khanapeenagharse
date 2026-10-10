@@ -2054,7 +2054,7 @@ function Footer() {
               <li><Link to="/product/hing-ka-achar">Heeng Ka Achar (500g)</Link></li>
               <li><Link to="/product/mirch-ka-achar">Mirch Ka Achar (500g)</Link></li>
               <li><Link to="/product/mix-veg-achar">Mix Veg Achar (500g)</Link></li>
-              <li><Link to="/product/the-ghar-ka-achar-box">The Ghar Ka Achar Box</Link></li>
+              <li><Link to="/product/ghar-ka-achar-box">The Ghar Ka Achar Box</Link></li>
             </ul>
           </div>
 
@@ -2814,7 +2814,8 @@ function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
 function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const { slug } = useParams();
   const productCatalog = useCatalogProducts();
-  const product = useMemo(() => productCatalog.find((item) => item.slug === slug), [productCatalog, slug]);
+  const normalizedSlug = slug === "the-ghar-ka-achar-box" ? "ghar-ka-achar-box" : slug;
+  const product = useMemo(() => productCatalog.find((item) => item.slug === slug || item.slug === normalizedSlug), [productCatalog, slug, normalizedSlug]);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
   const [justAdded, setJustAdded] = useState(false);
