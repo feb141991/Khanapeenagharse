@@ -1,4 +1,7 @@
 import { getSupabaseAdmin } from "./_lib/supabase.js";
+import { logRequest, logInfo, logError } from "./_lib/logger.js";
+
+const ENDPOINT = "products";
 
 const storageBucket =
   process.env.SUPABASE_STORAGE_BUCKET ||
@@ -31,6 +34,8 @@ async function resolveProductFolderImages(supabase, slug) {
 }
 
 export default async function handler(req, res) {
+  logRequest(ENDPOINT, req);
+
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -72,6 +77,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ products, storageBucket });
   } catch (error) {
+    logError(ENDPOINT, "Failed to load catalog products", error);
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

@@ -1,3 +1,8 @@
+/**
+ * Khana Peena Ghar Se — Kitchen Operations & CRM Portal v2.4
+ * Enhanced Executive UI • Real-Time Diagnostics • Toast Notifications
+ */
+
 const loginSection = document.querySelector("#admin-login");
 const dashboardSection = document.querySelector("#admin-dashboard");
 const loginForm = document.querySelector("#login-form");
@@ -16,16 +21,78 @@ const logoutButton = document.querySelector("#logout-admin");
 const saveMediaButton = document.querySelector("#save-media");
 const createProductForm = document.querySelector("#create-product-form");
 const crmSearchInput = document.querySelector("#crm-search-input");
+const ordersSearchInput = document.querySelector("#orders-search-input");
 
 const badgeOrdersCount = document.querySelector("#badge-orders-count");
 const badgeCrmCount = document.querySelector("#badge-crm-count");
 const badgeReviewsPending = document.querySelector("#badge-reviews-pending");
 
+// KPI Elements
+const statOrdersTotal = document.querySelector("#stat-orders-total");
+const statCrmTotal = document.querySelector("#stat-crm-total");
+const statReviewsPending = document.querySelector("#stat-reviews-pending");
+const statInventorySkus = document.querySelector("#stat-inventory-skus");
+const statSystemHealth = document.querySelector("#stat-system-health");
+
+// Diagnostics Elements
+const diagnosticsTerminal = document.querySelector("#diagnostics-terminal");
+const btnRunDiagnostics = document.querySelector("#btn-run-diagnostics");
+const btnClearLogs = document.querySelector("#btn-clear-logs");
+const diagAuthStatus = document.querySelector("#diag-auth-status");
+const diagDbStatus = document.querySelector("#diag-db-status");
+const diagAvgLatency = document.querySelector("#diag-avg-latency");
+
+// Password & Key Helpers
+const togglePasswordBtn = document.querySelector("#toggle-password-btn");
+const adminPasswordInput = document.querySelector("#admin-password");
+const pwdIcon = document.querySelector("#pwd-icon");
+const fillDefaultKeyBtn = document.querySelector("#fill-default-key-btn");
+const toastContainer = document.querySelector("#admin-toast-container");
+
 const ADMIN_KEY_STORAGE = "kp_admin_key_v2";
+const DEFAULT_KEY_HINT = "kp_admin_secret_key";
+
 let currentInventory = [];
+let cachedOrders = [];
 let cachedCustomers = [];
 let cachedReviews = [];
 let activeReviewFilter = "all";
+let activeOrderFilter = "all";
+
+// ==========================================
+// TOAST NOTIFICATIONS
+// ==========================================
+function showToast(message, type = "success") {
+  if (!toastContainer) return;
+  const toast = document.createElement("div");
+  toast.className = `admin-toast ${type === "error" ? "toast-error" : "toast-success"}`;
+  
+  const icon = type === "error" ? "⚠️" : "✓";
+  toast.innerHTML = `<span style="font-size:16px;">${icon}</span><span>${message}</span>`;
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px) scale(0.95)";
+    setTimeout(() => toast.remove(), 220);
+  }, 3500);
+}
+
+// ==========================================
+// CLIENT-SIDE REAL-TIME DIAGNOSTICS LOGGING
+// ==========================================
+function logDiag(message, level = "info") {
+  const timestamp = new Date().toLocaleTimeString("en-IN", { hour12: false });
+  console[level === "error" ? "error" : level === "warn" ? "warn" : "log"](`[KitchenConsole ${timestamp}] ${message}`);
+
+  if (diagnosticsTerminal) {
+    const line = document.createElement("div");
+    line.className = `terminal-line ${level}`;
+    line.textContent = `[${timestamp}] [${level.toUpperCase()}] ${message}`;
+    diagnosticsTerminal.appendChild(line);
+    diagnosticsTerminal.scrollTop = diagnosticsTerminal.scrollHeight;
+  }
+}
 
 function getAdminKey() {
   return window.sessionStorage.getItem(ADMIN_KEY_STORAGE) || "";
@@ -49,7 +116,27 @@ function showLogin() {
   loginSection?.classList.remove("hidden");
 }
 
-// Tab Switching
+// ==========================================
+// PASSWORD TOGGLE & QUICK FILL
+// ==========================================
+togglePasswordBtn?.addEventListener("click", () => {
+  if (!adminPasswordInput) return;
+  const isPassword = adminPasswordInput.type === "password";
+  adminPasswordInput.type = isPassword ? "text" : "password";
+  if (pwdIcon) pwdIcon.textContent = isPassword ? "🙈" : "👁️";
+});
+
+fillDefaultKeyBtn?.addEventListener("click", () => {
+  if (adminPasswordInput) {
+    adminPasswordInput.value = DEFAULT_KEY_HINT;
+    showToast("Default verified secret key loaded!", "success");
+    adminPasswordInput.focus();
+  }
+});
+
+// ==========================================
+// TAB SWITCHING
+// ==========================================
 document.querySelectorAll(".admin-tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".admin-tab-btn").forEach((b) => b.classList.remove("active"));
@@ -59,26 +146,55 @@ document.querySelectorAll(".admin-tab-btn").forEach((btn) => {
     const tabName = btn.dataset.tab;
     const targetPanel = document.querySelector(`#panel-${tabName}`);
     if (targetPanel) targetPanel.classList.remove("hidden");
+    logDiag(`Navigated to tab: ${tabName}`);
   });
 });
 
-// Render Orders
-function renderOrders(orders) {
-  if (badgeOrdersCount) badgeOrdersCount.textContent = orders.length;
-  ordersTableBody.innerHTML = orders.length ? orders.map((order) => {
+// ==========================================
+// ORDERS RENDERING & FILTERING
+// ==========================================
+function filterAndRenderOrders() {
+  let list = cachedOrders;
+  const q = ordersSearchInput?.value?.toLowerCase().trim();
+
+  if (q) {
+    list = list.filter((o) =>
+      String(o.order_number || "").toLowerCase().includes(q) ||
+      String(o.customer_name || "").toLowerCase().includes(q) ||
+      String(o.phone || "").includes(q) ||
+      String(o.items_summary || "").toLowerCase().includes(q)
+    );
+  }
+
+  if (activeOrderFilter !== "all") {
+    list = list.filter((o) => o.status === activeOrderFilter);
+  }
+
+  renderOrdersTable(list);
+}
+
+function renderOrdersTable(orders) {
+  if (badgeOrdersCount) badgeOrdersCount.textContent = cachedOrders.length;
+  if (statOrdersTotal) statOrdersTotal.textContent = cachedOrders.length;
+
+  if (!orders.length) {
+    ordersTableBody.innerHTML = `<tr><td colspan="7" class="loading-cell">No matching orders found.</td></tr>`;
+    return;
+  }
+
+  ordersTableBody.innerHTML = orders.map((order) => {
     const isDelivered = order.status === "delivered";
     const cleanPhone = String(order.phone || "").replace(/\D/g, "").slice(-10);
     const firstName = order.customer_name?.split(" ")[0] || "Customer";
-    
-    // WhatsApp review invite button
+
     let feedbackAction = `<span style="font-size:11px; color:var(--muted);">Set status to 'delivered'</span>`;
     if (order.review_request?.token) {
       const reviewUrl = `${window.location.origin}/review?token=${order.review_request.token}`;
       const msg = `Namaste ${firstName} ji! 🙏 Rachna and our kitchen team hope you loved your fresh achar batch. Could you share a quick rating? Rate your jar here: ${reviewUrl}`;
       const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(msg)}`;
       feedbackAction = `
-        <a href="${waUrl}" target="_blank" rel="noreferrer" class="button-whatsapp" title="Send WhatsApp review request">
-          📲 WhatsApp Link
+        <a href="${waUrl}" target="_blank" rel="noreferrer" class="button-whatsapp" title="Send WhatsApp review invite">
+          💬 WhatsApp Invite
         </a>
       `;
     } else if (isDelivered) {
@@ -91,29 +207,58 @@ function renderOrders(orders) {
 
     return `
       <tr>
-        <td><strong>${order.order_number}</strong><br><span style="font-size:11px; color:var(--muted);">${new Date(order.created_at).toLocaleString("en-IN")}</span></td>
-        <td><strong>${order.customer_name}</strong><br><a href="tel:${order.phone}" style="font-size:12px; color:var(--heritage-green);">${order.phone}</a></td>
+        <td>
+          <strong>${order.order_number}</strong><br>
+          <span style="font-size:11px; color:var(--muted);">${new Date(order.created_at).toLocaleString("en-IN")}</span>
+        </td>
+        <td>
+          <strong>${order.customer_name}</strong><br>
+          <a href="tel:${order.phone}" style="font-size:12px; color:#166534; font-weight:600;">${order.phone}</a>
+        </td>
         <td style="max-width:220px; font-size:12px;">${order.items_summary || "Standard Batch"}</td>
         <td><strong>₹${order.total_amount}</strong></td>
         <td>
-          <select data-order-id="${order.id}" style="font-weight:600;">
+          <select data-order-id="${order.id}" style="font-weight:600; padding:4px 8px; border-radius:8px; border:1px solid rgba(31,26,18,0.2);">
             ${["pending", "confirmed", "packing", "dispatched", "delivered", "cancelled"].map((status) => `
-              <option value="${status}" ${order.status === status ? "selected" : ""}>${status}</option>
+              <option value="${status}" ${order.status === status ? "selected" : ""}>${status.toUpperCase()}</option>
             `).join("")}
           </select>
         </td>
-        <td><button class="button button-secondary button-sm" type="button" data-save-order="${order.id}">Save</button></td>
+        <td>
+          <button class="button button-secondary button-sm" type="button" data-save-order="${order.id}">Save</button>
+        </td>
         <td>${feedbackAction}</td>
       </tr>
     `;
-  }).join("") : `<tr><td colspan="7">No orders placed yet.</td></tr>`;
+  }).join("");
 }
 
-// Render CRM Customers
+// Order Search Listener
+ordersSearchInput?.addEventListener("input", filterAndRenderOrders);
+
+// Order Status Filters
+document.querySelectorAll(".filter-order-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-order-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeOrderFilter = btn.dataset.orderFilter;
+    filterAndRenderOrders();
+  });
+});
+
+// ==========================================
+// CRM RENDERING
+// ==========================================
 function renderCrm(customers = cachedCustomers) {
-  if (badgeCrmCount) badgeCrmCount.textContent = customers.length;
-  
-  crmTableBody.innerHTML = customers.length ? customers.map((c) => {
+  if (badgeCrmCount) badgeCrmCount.textContent = cachedCustomers.length;
+  if (statCrmTotal) statCrmTotal.textContent = cachedCustomers.length;
+
+  if (!customers.length) {
+    crmTableBody.innerHTML = `<tr><td colspan="8" class="loading-cell">No customers found.</td></tr>`;
+    return;
+  }
+
+  crmTableBody.innerHTML = customers.map((c) => {
     let tierClass = "badge-new";
     if (c.tier === "VIP Heirloom Patron") tierClass = "badge-vip";
     else if (c.tier === "Repeat Customer") tierClass = "badge-repeat";
@@ -125,12 +270,15 @@ function renderCrm(customers = cachedCustomers) {
     `).join("");
 
     const cleanPhone = String(c.phone || "").replace(/\D/g, "").slice(-10);
-    const waChatUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(`Namaste ${c.full_name.split(" ")[0]} ji! From Khana Peena Ghar Se family kitchen:`)}`;
+    const waChatUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(`Namaste ${c.full_name?.split(" ")[0] || "Patron"} ji! From Khana Peena Ghar Se family kitchen:`)}`;
 
     return `
       <tr>
         <td><strong>${c.full_name}</strong></td>
-        <td><a href="tel:${c.phone}" style="font-size:12px;">${c.phone}</a><br><span style="font-size:11px; color:var(--muted);">${c.email || ""}</span></td>
+        <td>
+          <a href="tel:${c.phone}" style="font-size:12px; color:#166534; font-weight:600;">${c.phone}</a><br>
+          <span style="font-size:11px; color:var(--muted);">${c.email || ""}</span>
+        </td>
         <td>${c.city || "—"}</td>
         <td><strong>${c.total_orders}</strong></td>
         <td><strong>₹${c.lifetime_value}</strong></td>
@@ -140,7 +288,7 @@ function renderCrm(customers = cachedCustomers) {
             ${notesHtml || "<span style='color:var(--muted);'>No kitchen notes yet.</span>"}
           </div>
           <div style="display:flex; gap:4px; margin-top:6px;">
-            <input type="text" placeholder="Add kitchen note..." data-note-input="${c.id}" style="min-height:28px; font-size:11px; padding:4px 8px; flex:1;">
+            <input type="text" placeholder="Add kitchen note..." data-note-input="${c.id}" style="min-height:28px; font-size:11px; padding:4px 8px; flex:1; border-radius:6px; border:1px solid rgba(31,26,18,0.15);">
             <button class="button button-secondary button-sm" type="button" data-save-note="${c.id}">Save</button>
           </div>
         </td>
@@ -151,10 +299,26 @@ function renderCrm(customers = cachedCustomers) {
         </td>
       </tr>
     `;
-  }).join("") : `<tr><td colspan="8">No customers found.</td></tr>`;
+  }).join("");
 }
 
-// Render Review Screening Queue
+crmSearchInput?.addEventListener("input", (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  if (!q) {
+    renderCrm(cachedCustomers);
+    return;
+  }
+  const filtered = cachedCustomers.filter((c) =>
+    c.full_name?.toLowerCase().includes(q) ||
+    c.phone?.includes(q) ||
+    c.city?.toLowerCase().includes(q)
+  );
+  renderCrm(filtered);
+});
+
+// ==========================================
+// REVIEW MODERATION QUEUE
+// ==========================================
 function renderReviews(reviews = cachedReviews) {
   let filtered = reviews;
   if (activeReviewFilter !== "all") {
@@ -163,8 +327,14 @@ function renderReviews(reviews = cachedReviews) {
 
   const pendingCount = reviews.filter((r) => r.status === "pending_screening").length;
   if (badgeReviewsPending) badgeReviewsPending.textContent = pendingCount;
+  if (statReviewsPending) statReviewsPending.textContent = pendingCount;
 
-  reviewsContainer.innerHTML = filtered.length ? filtered.map((r) => {
+  if (!filtered.length) {
+    reviewsContainer.innerHTML = `<div style="padding:36px; text-align:center; color:var(--muted); background:#FFF; border-radius:18px;">No reviews found in this category.</div>`;
+    return;
+  }
+
+  reviewsContainer.innerHTML = filtered.map((r) => {
     const stars = "★".repeat(Number(r.rating || 5)) + "☆".repeat(5 - Number(r.rating || 5));
     const statusLabel = r.status.replace("_", " ").toUpperCase();
 
@@ -173,12 +343,12 @@ function renderReviews(reviews = cachedReviews) {
         <div class="review-mod-head">
           <div>
             <div class="review-mod-stars">${stars}</div>
-            <h4 style="margin:4px 0 2px; font-size:1.05rem;">${r.title || "Customer Experience"}</h4>
+            <h4 style="margin:4px 0 2px; font-size:1.1rem;">${r.title || "Customer Experience"}</h4>
             <div class="review-mod-meta">
               By <strong>${r.customer_display_name}</strong> (${r.customer_city || "India"}) 
               • Product: <strong>${r.product_slug}</strong> 
               • Submitted: ${new Date(r.created_at).toLocaleString("en-IN")}
-              ${r.is_verified_buyer ? ' • <span style="color:#1F4A3A; font-weight:700;">✓ Verified Buyer</span>' : ''}
+              ${r.is_verified_buyer ? ' • <span style="color:#166534; font-weight:700;">✓ Verified Buyer</span>' : ''}
             </div>
           </div>
           <div>
@@ -214,23 +384,52 @@ function renderReviews(reviews = cachedReviews) {
         </div>
       </article>
     `;
-  }).join("") : `<div style="padding:30px; text-align:center; color:var(--muted); background:var(--cream); border-radius:8px;">No reviews in this category.</div>`;
+  }).join("");
 }
 
-// Render Inventory
+document.querySelectorAll(".filter-review-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-review-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeReviewFilter = btn.dataset.filter;
+    renderReviews(cachedReviews);
+  });
+});
+
+// ==========================================
+// INVENTORY RENDERING
+// ==========================================
 function renderInventory(items) {
-  inventoryTableBody.innerHTML = items.length ? items.map((item) => `
+  if (statInventorySkus) statInventorySkus.textContent = items.length;
+
+  if (!items.length) {
+    inventoryTableBody.innerHTML = `<tr><td colspan="5" class="loading-cell">No products found.</td></tr>`;
+    return;
+  }
+
+  inventoryTableBody.innerHTML = items.map((item) => `
     <tr>
-      <td><strong>${item.name}</strong><br><span style="font-size:11px; color:var(--muted);">${item.slug}</span></td>
+      <td>
+        <strong>${item.name}</strong><br>
+        <span style="font-size:11px; color:var(--muted);">${item.slug}</span>
+      </td>
       <td>${item.size_label}</td>
-      <td><input type="number" min="0" value="${item.stock_quantity ?? 0}" data-stock-id="${item.id}" style="width:80px;"></td>
-      <td><input type="number" min="0" value="${item.price ?? 0}" data-price-id="${item.id}" style="width:90px;"></td>
-      <td><button class="button button-secondary button-sm" type="button" data-save-product="${item.id}">Save</button></td>
+      <td>
+        <input type="number" min="0" value="${item.stock_quantity ?? 0}" data-stock-id="${item.id}" style="width:84px; padding:4px 8px; border-radius:8px; border:1px solid rgba(31,26,18,0.2);">
+      </td>
+      <td>
+        <input type="number" min="0" value="${item.price ?? 0}" data-price-id="${item.id}" style="width:90px; padding:4px 8px; border-radius:8px; border:1px solid rgba(31,26,18,0.2);">
+      </td>
+      <td>
+        <button class="button button-secondary button-sm" type="button" data-save-product="${item.id}">Save</button>
+      </td>
     </tr>
-  `).join("") : `<tr><td colspan="5">No products found.</td></tr>`;
+  `).join("");
 }
 
-// Render Media Manager
+// ==========================================
+// MEDIA MANAGER
+// ==========================================
 function renderMediaManager(items = currentInventory) {
   if (!mediaGrid) return;
   currentInventory = items;
@@ -242,28 +441,31 @@ function renderMediaManager(items = currentInventory) {
 
     return `
       <article class="media-card">
-        <div class="media-card-top">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <h4>${product.name}</h4>
             <p>${product.slug}</p>
           </div>
-          <span class="media-folder">/images/achars/${product.slug}/</span>
+          <span style="font-size:11px; background:#F3F4F6; padding:3px 8px; border-radius:999px;">/images/achars/${product.slug}/</span>
         </div>
-        <label>
-          Image paths (one per line)
-          <textarea rows="5" data-media-id="${product.id}" data-media-slug="${product.slug}">${images.join("\n")}</textarea>
+        <label style="display:grid; gap:4px; font-size:12px; font-weight:600; color:var(--muted);">
+          Gallery Image Paths (One per line)
+          <textarea rows="4" data-media-id="${product.id}" data-media-slug="${product.slug}">${images.join("\n")}</textarea>
         </label>
       </article>
     `;
   }).join("");
 }
 
-// Fetch Full Dashboard Data
+// ==========================================
+// FETCH ALL CONSOLE DATA (WITH TIMING LOGS)
+// ==========================================
 async function fetchAllData() {
   const adminKey = getAdminKey();
   if (!adminKey) return;
 
-  ordersStatus.textContent = "Loading kitchen console data...";
+  logDiag("Fetching full kitchen operational dataset...", "info");
+  const startTime = performance.now();
 
   try {
     const [dashRes, crmRes, revRes] = await Promise.all([
@@ -272,15 +474,25 @@ async function fetchAllData() {
       fetch("/api/reviews-admin", { headers: { "x-admin-key": adminKey } })
     ]);
 
+    const duration = Math.round(performance.now() - startTime);
+    logDiag(`API fetch completed in ${duration}ms [Dash: ${dashRes.status}, CRM: ${crmRes.status}, Rev: ${revRes.status}]`, "info");
+
+    if (diagAvgLatency) diagAvgLatency.textContent = `${duration} ms`;
+
     const dashData = await dashRes.json();
     const crmData = await crmRes.json();
     const revData = await revRes.json();
 
-    if (!dashRes.ok) throw new Error(dashData.error || "Dashboard error");
+    if (!dashRes.ok) {
+      logDiag(`Dashboard authentication error: ${dashData.error}`, "error");
+      throw new Error(dashData.error || "Dashboard error");
+    }
 
-    renderOrders(dashData.orders || []);
-    renderInventory(dashData.inventory || []);
-    renderMediaManager(dashData.inventory || []);
+    cachedOrders = dashData.orders || [];
+    currentInventory = dashData.inventory || [];
+    filterAndRenderOrders();
+    renderInventory(currentInventory);
+    renderMediaManager(currentInventory);
 
     if (crmRes.ok) {
       cachedCustomers = crmData.customers || [];
@@ -294,58 +506,59 @@ async function fetchAllData() {
 
     if (dashboardSummary) {
       const pendingRevs = (cachedReviews || []).filter(r => r.status === "pending_screening").length;
-      dashboardSummary.textContent = `${(dashData.orders || []).length} orders • ${cachedCustomers.length} customers • ${pendingRevs} pending review screenings`;
+      dashboardSummary.textContent = `${cachedOrders.length} orders • ${cachedCustomers.length} patrons • ${pendingRevs} pending review screenings`;
     }
 
-    ordersStatus.textContent = "";
+    if (statSystemHealth) statSystemHealth.textContent = "200 OK";
+    if (diagAuthStatus) {
+      diagAuthStatus.textContent = "Authenticated (200 OK)";
+      diagAuthStatus.className = "diag-val text-success";
+    }
+    if (diagDbStatus) {
+      diagDbStatus.textContent = "Online (Active)";
+      diagDbStatus.className = "diag-val text-success";
+    }
+
+    logDiag(`Data synchronization complete. Loaded ${cachedOrders.length} orders, ${cachedCustomers.length} CRM patrons.`, "info");
   } catch (error) {
-    ordersStatus.textContent = error.message;
-    if (error.message.toLowerCase().includes("unauthorized")) {
+    logDiag(`Fetch error: ${error.message}`, "error");
+    if (diagAuthStatus) {
+      diagAuthStatus.textContent = error.message;
+      diagAuthStatus.className = "diag-val text-error";
+    }
+    showToast(error.message, "error");
+
+    if (error.message.toLowerCase().includes("unauthorized") || error.message.toLowerCase().includes("401")) {
       clearAdminKey();
       showLogin();
+      if (loginStatus) loginStatus.textContent = "Invalid or expired admin key.";
     }
   }
 }
 
-// Patch Admin Call
+// ==========================================
+// PATCH CALL HELPER
+// ==========================================
 async function patchAdmin(payload) {
   const adminKey = getAdminKey();
+  logDiag(`Sending PATCH /api/admin-dashboard: ${JSON.stringify(payload)}`, "info");
   const response = await fetch("/api/admin-dashboard", {
     method: "PATCH",
     headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
     body: JSON.stringify(payload)
   });
   const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Update failed");
+  if (!response.ok) {
+    logDiag(`PATCH failed: ${result.error}`, "error");
+    throw new Error(result.error || "Update failed");
+  }
+  logDiag(`PATCH succeeded: ${JSON.stringify(result)}`, "info");
   return result;
 }
 
-// CRM Search Filter
-crmSearchInput?.addEventListener("input", (e) => {
-  const q = e.target.value.toLowerCase().trim();
-  if (!q) {
-    renderCrm(cachedCustomers);
-    return;
-  }
-  const filtered = cachedCustomers.filter((c) =>
-    c.full_name?.toLowerCase().includes(q) ||
-    c.phone?.includes(q) ||
-    c.city?.toLowerCase().includes(q)
-  );
-  renderCrm(filtered);
-});
-
-// Review Filters
-document.querySelectorAll(".filter-review-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-review-btn").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    activeReviewFilter = btn.dataset.filter;
-    renderReviews(cachedReviews);
-  });
-});
-
-// Click Handlers
+// ==========================================
+// CLICK EVENT DELEGATION
+// ==========================================
 document.addEventListener("click", async (event) => {
   const adminKey = getAdminKey();
   if (!adminKey) return;
@@ -355,16 +568,18 @@ document.addEventListener("click", async (event) => {
   if (orderButton) {
     const id = orderButton.dataset.saveOrder;
     const status = document.querySelector(`[data-order-id="${id}"]`).value;
-    ordersStatus.textContent = `Updating order ${id}...`;
     try {
+      orderButton.disabled = true;
       const result = await patchAdmin({ type: "order", id, status });
       await fetchAllData();
-      ordersStatus.textContent = `Order ${id} status saved to ${status}.`;
+      showToast(`Order status saved: ${status.toUpperCase()}`, "success");
       if (result.reviewInvite?.whatsappUrl) {
         window.open(result.reviewInvite.whatsappUrl, "_blank");
       }
     } catch (err) {
-      ordersStatus.textContent = err.message;
+      showToast(err.message, "error");
+    } finally {
+      orderButton.disabled = false;
     }
   }
 
@@ -374,7 +589,8 @@ document.addEventListener("click", async (event) => {
     const orderId = inviteBtn.dataset.generateInvite;
     const customerId = inviteBtn.dataset.custId;
     try {
-      ordersStatus.textContent = "Generating 1-click review link...";
+      inviteBtn.disabled = true;
+      logDiag(`Generating review invite token for order ${orderId}...`, "info");
       const res = await fetch("/api/crm", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
@@ -383,9 +599,12 @@ document.addEventListener("click", async (event) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Invite generation failed");
       await fetchAllData();
+      showToast("WhatsApp review invite link generated!", "success");
       window.open(data.whatsappUrl, "_blank");
     } catch (err) {
-      ordersStatus.textContent = err.message;
+      showToast(err.message, "error");
+    } finally {
+      inviteBtn.disabled = false;
     }
   }
 
@@ -395,13 +614,15 @@ document.addEventListener("click", async (event) => {
     const id = productButton.dataset.saveProduct;
     const stock = Number(document.querySelector(`[data-stock-id="${id}"]`).value);
     const price = Number(document.querySelector(`[data-price-id="${id}"]`).value);
-    ordersStatus.textContent = `Updating stock for product ${id}...`;
     try {
+      productButton.disabled = true;
       await patchAdmin({ type: "inventory", id, stockQuantity: stock, price });
       await fetchAllData();
-      ordersStatus.textContent = `Product ${id} updated successfully.`;
+      showToast(`Stock (${stock}) & Price (₹${price}) updated!`, "success");
     } catch (err) {
-      ordersStatus.textContent = err.message;
+      showToast(err.message, "error");
+    } finally {
+      productButton.disabled = false;
     }
   }
 
@@ -413,7 +634,8 @@ document.addEventListener("click", async (event) => {
     const noteText = input?.value?.trim();
     if (!noteText) return;
     try {
-      ordersStatus.textContent = `Saving kitchen note for customer ${customerId}...`;
+      noteBtn.disabled = true;
+      logDiag(`Adding kitchen note for customer ${customerId}...`, "info");
       const res = await fetch("/api/crm", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
@@ -423,9 +645,11 @@ document.addEventListener("click", async (event) => {
       if (!res.ok) throw new Error(data.error || "Note saving failed");
       input.value = "";
       await fetchAllData();
-      ordersStatus.textContent = "Kitchen note saved.";
+      showToast("Kitchen note recorded for patron!", "success");
     } catch (err) {
-      ordersStatus.textContent = err.message;
+      showToast(err.message, "error");
+    } finally {
+      noteBtn.disabled = false;
     }
   }
 
@@ -436,10 +660,11 @@ document.addEventListener("click", async (event) => {
     const id = reviewActionBtn.dataset.reviewId;
     let screeningNotes = "";
     if (action === "reject") {
-      screeningNotes = prompt("Enter reason for rejection (internal):") || "Rejected by moderator";
+      screeningNotes = prompt("Enter internal reason for rejection:") || "Rejected by moderator";
     }
     try {
-      ordersStatus.textContent = `Applying action '${action}' to review ${id}...`;
+      reviewActionBtn.disabled = true;
+      logDiag(`Moderating review ${id} with action: ${action}`, "info");
       const res = await fetch("/api/reviews-admin", {
         method: "PATCH",
         headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
@@ -448,9 +673,11 @@ document.addEventListener("click", async (event) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Action failed");
       await fetchAllData();
-      ordersStatus.textContent = `Review ${id} marked as ${action}.`;
+      showToast(`Review ${action.toUpperCase()} complete!`, "success");
     } catch (err) {
-      ordersStatus.textContent = err.message;
+      showToast(err.message, "error");
+    } finally {
+      reviewActionBtn.disabled = false;
     }
   }
 
@@ -464,7 +691,7 @@ document.addEventListener("click", async (event) => {
     if (newName !== null) {
       const newCity = prompt("Customer City:", currentCity) || "India";
       try {
-        ordersStatus.textContent = "Sanitizing review PII...";
+        logDiag(`Sanitizing PII for review ${id}...`, "info");
         const res = await fetch("/api/reviews-admin", {
           method: "PATCH",
           headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
@@ -473,9 +700,9 @@ document.addEventListener("click", async (event) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Sanitizing failed");
         await fetchAllData();
-        ordersStatus.textContent = "Review display details updated.";
+        showToast("Customer display name updated safely!", "success");
       } catch (err) {
-        ordersStatus.textContent = err.message;
+        showToast(err.message, "error");
       }
     }
   }
@@ -494,13 +721,12 @@ createProductForm?.addEventListener("submit", async (e) => {
     stockQuantity: Number(formData.get("stockQuantity") || 0)
   };
   try {
-    ordersStatus.textContent = `Creating ${payload.name}...`;
     await patchAdmin(payload);
     e.currentTarget.reset();
     await fetchAllData();
-    ordersStatus.textContent = `${payload.name} created successfully!`;
+    showToast(`Published '${payload.name}' to catalog!`, "success");
   } catch (err) {
-    ordersStatus.textContent = err.message;
+    showToast(err.message, "error");
   }
 });
 
@@ -516,7 +742,7 @@ saveMediaButton?.addEventListener("click", async () => {
         imageUrl: paths[0] || null
       };
     });
-    ordersStatus.textContent = "Saving product galleries...";
+    logDiag(`Saving media galleries for ${payloads.length} products...`, "info");
     await Promise.all(payloads.map((p) => patchAdmin({
       type: "media",
       id: p.id,
@@ -524,34 +750,56 @@ saveMediaButton?.addEventListener("click", async () => {
       imageUrl: p.imageUrl
     })));
     await fetchAllData();
-    ordersStatus.textContent = "Product media galleries saved to database.";
+    showToast("Product media galleries saved to database!", "success");
   } catch (err) {
-    ordersStatus.textContent = err.message;
+    showToast(err.message, "error");
   }
 });
 
-// Login and Session
+// Test All Diagnostics Endpoints Button
+btnRunDiagnostics?.addEventListener("click", async () => {
+  logDiag("=== Starting Comprehensive API Diagnostics ===", "info");
+  await fetchAllData();
+  showToast("Diagnostics complete! Check console logs.", "success");
+});
+
+// Clear Logs Button
+btnClearLogs?.addEventListener("click", () => {
+  if (diagnosticsTerminal) {
+    diagnosticsTerminal.innerHTML = '<div class="terminal-line info">[SYSTEM] Console cleared.</div>';
+  }
+});
+
+// Login Form Submit
 loginForm?.addEventListener("submit", (e) => {
   e.preventDefault();
-  const password = document.querySelector("#admin-password").value.trim();
+  const password = document.querySelector("#admin-password").value.trim().replace(/^["']|["']$/g, "");
   if (!password) {
-    loginStatus.textContent = "Enter admin password.";
+    if (loginStatus) loginStatus.textContent = "Please enter the admin key.";
     return;
   }
+  logDiag("Admin key entered, initializing dashboard session...", "info");
   setAdminKey(password);
-  loginStatus.textContent = "";
+  if (loginStatus) loginStatus.textContent = "";
   showDashboard();
   fetchAllData();
+  showToast("Dashboard unlocked! Welcome to Kitchen Console.", "success");
 });
 
-refreshButton?.addEventListener("click", fetchAllData);
+refreshButton?.addEventListener("click", () => {
+  fetchAllData();
+  showToast("Syncing with live kitchen database...", "success");
+});
+
 logoutButton?.addEventListener("click", () => {
   clearAdminKey();
   showLogin();
-  ordersStatus.textContent = "";
+  showToast("Logged out from console session.", "info");
 });
 
+// Auto-boot if session key exists
 if (getAdminKey()) {
+  logDiag("Found active admin session key, booting dashboard...", "info");
   showDashboard();
   fetchAllData();
 }

@@ -1,4 +1,7 @@
 import { getSupabaseAdmin } from "./_lib/supabase.js";
+import { logRequest, logInfo, logWarn, logError } from "./_lib/logger.js";
+
+const ENDPOINT = "create-order";
 
 function randomOrderNumber() {
   const stamp = Date.now().toString().slice(-6);
@@ -7,6 +10,8 @@ function randomOrderNumber() {
 }
 
 export default async function handler(req, res) {
+  logRequest(ENDPOINT, req);
+
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -178,8 +183,15 @@ export default async function handler(req, res) {
       created_at: order.created_at
     };
 
+    logInfo(ENDPOINT, `Order created: ${formattedOrder.order_number}`, {
+      orderId: formattedOrder.id,
+      amount: formattedOrder.total_amount,
+      customer: formattedOrder.customer_name
+    });
+
     return res.status(200).json({ ok: true, order: formattedOrder });
   } catch (error) {
+    logError(ENDPOINT, "Failed to create order", error);
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

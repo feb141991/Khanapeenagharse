@@ -11,6 +11,10 @@ export function getSupabaseAdmin() {
     process.env.SUPABASE_ANON_KEY;
 
   if (!url || !serviceRole) {
+    console.error("[SUPABASE_INIT_ERROR] Missing Supabase credentials:", {
+      hasUrl: Boolean(url),
+      hasKey: Boolean(serviceRole)
+    });
     throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
   }
 

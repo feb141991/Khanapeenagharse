@@ -1,4 +1,7 @@
 import { getSupabaseAdmin } from "./_lib/supabase.js";
+import { logRequest, logInfo, logWarn, logError } from "./_lib/logger.js";
+
+const ENDPOINT = "submit-review";
 
 function maskCustomerName(fullName) {
   if (!fullName) return "Verified Patron";
@@ -8,6 +11,8 @@ function maskCustomerName(fullName) {
 }
 
 export default async function handler(req, res) {
+  logRequest(ENDPOINT, req);
+
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -111,6 +116,7 @@ export default async function handler(req, res) {
 
     return res.status(405).json({ error: "Method not allowed" });
   } catch (error) {
+    logError(ENDPOINT, "Submit review execution failed", error);
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

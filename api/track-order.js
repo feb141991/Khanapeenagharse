@@ -1,6 +1,11 @@
 import { getSupabaseAdmin } from "./_lib/supabase.js";
+import { logRequest, logInfo, logWarn, logError } from "./_lib/logger.js";
+
+const ENDPOINT = "track-order";
 
 export default async function handler(req, res) {
+  logRequest(ENDPOINT, req);
+
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -19,6 +24,7 @@ export default async function handler(req, res) {
     const phone = req.query?.phone;
 
     if (!orderNumber || !phone) {
+      logWarn(ENDPOINT, "Missing search query parameters", { orderNumber: Boolean(orderNumber), phone: Boolean(phone) });
       return res.status(400).json({ error: "Order number and phone are required" });
     }
 
@@ -62,6 +68,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ order: formattedOrder });
   } catch (error) {
+    logError(ENDPOINT, "Track order lookup failed", error);
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

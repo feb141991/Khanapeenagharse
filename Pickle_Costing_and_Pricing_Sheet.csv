@@ -1,0 +1,10 @@
+S.No.,Category / Section,Description,Qty,Pickle Cost (INR),Jar Cost (INR),Outer Packaging (INR),Unit Cost (INR),Profit (INR),Shipping (INR),Total Selling Price (INR),Margin %
+1,500g Singles & Combo,Aam Ka Achaar,500gm,100,20,15,135,150,80,365,41.1%
+2,500g Singles & Combo,Mirch Ka Achaar,500gm,75,20,15,110,150,80,340,44.1%
+3,500g Singles & Combo,Mix Veg Achaar,500gm,100,20,15,135,150,80,365,41.1%
+-,500g Singles & Combo,Combo Pack (Aam + Mirch + Mix Veg),3 x 500gm,-,-,-,380,150,70,600,25.0%
+1,250g Singles & Combo,Aam Ka Achaar,250gm,50,15,20,85,100,70,255,39.2%
+2,250g Singles & Combo,Mirch Ka Achaar,250gm,38,15,20,73,100,70,243,41.2%
+3,250g Singles & Combo,Mix Veg Achaar,250gm,50,15,20,85,100,70,255,39.2%
+-,250g Singles & Combo,Combo Pack (Aam + Mirch + Mix Veg),3 x 250gm,-,-,-,243,100,70,413,24.2%
+1,125g Specialty,Hing Ka Achaar,125gm,100,12,15,127,100,70,297,33.7%

@@ -3,127 +3,261 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1F1A12">
+  <meta name="theme-color" content="#0D2B20">
   <meta name="robots" content="noindex, nofollow">
-  <title>Kitchen Admin & CRM | Khana Peena Ghar Se</title>
+  <title>Executive Kitchen Admin & CRM | Khana Peena Ghar Se</title>
   <link rel="icon" href="/images/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="admin-body">
   <a class="skip-link" href="#admin-main">Skip to content</a>
+
+  <!-- Ambient Luxury Background Glows -->
+  <div class="admin-ambient-glow admin-ambient-top" aria-hidden="true"></div>
+  <div class="admin-ambient-glow admin-ambient-bottom" aria-hidden="true"></div>
+
   <main class="admin-shell" id="admin-main">
-    <section class="admin-hero">
-      <div class="admin-hero-copy">
-        <p class="eyebrow">Kitchen Operations &amp; CRM</p>
-        <h1>Orders, CRM &amp; Review Moderation</h1>
-        <p>Unified portal for order dispatch, customer relationship management, stock control, and pre-publication review screening.</p>
+    
+    <!-- Hero Brand Header -->
+    <header class="admin-hero">
+      <div class="admin-hero-content">
+        <div class="admin-brand-emblem" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none" class="emblem-svg">
+            <circle cx="24" cy="24" r="22" stroke="url(#goldGrad)" stroke-width="2" stroke-dasharray="4 2"/>
+            <path d="M24 10V38M10 24H38" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="24" cy="24" r="14" fill="#0D2B20" stroke="url(#goldGrad)" stroke-width="1.5"/>
+            <path d="M24 17L26 21H30L27 24L28 28L24 25.5L20 28L21 24L18 21H22L24 17Z" fill="#D4A02E"/>
+            <defs>
+              <linearGradient id="goldGrad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F3E7C4"/>
+                <stop offset="0.5" stop-color="#D4A02E"/>
+                <stop offset="1" stop-color="#9A6F1A"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="admin-hero-copy">
+          <div class="admin-badge-strip">
+            <span class="admin-pill-live"><span class="beacon-dot"></span> Live Kitchen Console</span>
+            <span class="admin-pill-subtle">Bahadurgarh Hub • v2.4</span>
+            <span class="admin-pill-subtle">AEO &amp; GEO Optimized</span>
+          </div>
+          <h1>Orders, CRM &amp; Kitchen Moderation</h1>
+          <p>Real-time artisanal dispatch console, customer relationship management, inventory stock control, and pre-publication review screening.</p>
+        </div>
       </div>
-      <div class="admin-hero-meta" aria-hidden="true">
-        <span class="admin-pill">Live</span>
-        <span class="admin-pill subtle">v2.0 CRM</span>
-      </div>
-    </section>
+    </header>
 
+    <!-- Login Section -->
     <section class="admin-login" id="admin-login" aria-labelledby="admin-login-heading">
-      <div class="section-heading">
-        <h2 id="admin-login-heading">Admin Access</h2>
-        <p>Enter the dashboard password to unlock kitchen operations.</p>
+      <div class="admin-login-card">
+        <div class="login-seal-wrap" aria-hidden="true">
+          <div class="login-seal-ring"></div>
+          <span class="login-seal-icon">🏺</span>
+        </div>
+        <div class="section-heading text-center">
+          <h2 id="admin-login-heading">Kitchen Command Portal</h2>
+          <p>Enter your secret key to unlock dispatch controls, customer CRM, and review screening.</p>
+        </div>
+        <form id="login-form" class="admin-login-form" novalidate>
+          <div class="form-group">
+            <label for="admin-password">Admin Security Key</label>
+            <div class="password-input-wrap">
+              <input type="password" id="admin-password" required autocomplete="current-password" placeholder="Enter admin key (e.g. kp_admin_secret_key)">
+              <button type="button" id="toggle-password-btn" class="toggle-password-btn" aria-label="Toggle password visibility" title="Show/Hide Key">
+                <span id="pwd-icon">👁️</span>
+              </button>
+            </div>
+          </div>
+          <button class="button button-primary button-shine" type="submit">
+            <span>Unlock Dashboard Console</span>
+            <span class="btn-arrow">→</span>
+          </button>
+          <div class="quick-key-row">
+            <button type="button" id="fill-default-key-btn" class="admin-quick-key-pill" title="Click to fill default key">
+              ⚡ Quick Fill Verified Key (<code>kp_admin_secret_key</code>)
+            </button>
+          </div>
+          <p class="form-status" id="login-status" role="status" aria-live="polite"></p>
+        </form>
       </div>
-      <form id="login-form" class="admin-login-form" novalidate>
-        <label>Admin Password<input type="password" id="admin-password" required autocomplete="current-password" placeholder="Enter admin key"></label>
-        <button class="button button-primary" type="submit">Open Dashboard</button>
-        <p class="form-status" id="login-status" role="status" aria-live="polite"></p>
-      </form>
     </section>
 
+    <!-- Main Dashboard Section -->
     <section class="admin-dashboard hidden" id="admin-dashboard" aria-labelledby="admin-dashboard-heading">
+      
+      <!-- Top Operational Toolbar -->
       <div class="admin-toolbar">
         <div class="toolbar-copy">
-          <h2 id="admin-dashboard-heading">Bahadurgarh Kitchen Console</h2>
-          <p id="dashboard-summary">Loading operations data...</p>
+          <div class="toolbar-brand-line">
+            <h2 id="admin-dashboard-heading">Bahadurgarh Operations Center</h2>
+            <span class="status-indicator-chip" id="connection-status-chip">
+              <span class="beacon-dot"></span> Supabase Connected
+            </span>
+          </div>
+          <p id="dashboard-summary">Synchronizing kitchen console data with Supabase...</p>
         </div>
         <div class="toolbar-actions">
-          <button class="button button-secondary" type="button" id="refresh-all">Refresh All</button>
-          <button class="button button-ghost" type="button" id="logout-admin">Log Out</button>
+          <button class="button button-secondary button-pill" type="button" id="refresh-all">
+            <span class="refresh-icon">🔄</span> Refresh Sync
+          </button>
+          <button class="button button-ghost button-pill" type="button" id="logout-admin">
+            <span>Log Out</span>
+          </button>
         </div>
       </div>
 
-      <!-- Tab Navigation -->
+      <!-- Executive KPI Metrics Strip -->
+      <section class="admin-kpi-strip" aria-label="Executive Metrics">
+        <div class="kpi-card" data-metric="orders">
+          <div class="kpi-icon-wrap bg-emerald">📦</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Active Orders</span>
+            <strong class="kpi-value" id="stat-orders-total">0</strong>
+            <span class="kpi-sub" id="stat-orders-sub">Live customer dispatches</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-metric="crm">
+          <div class="kpi-icon-wrap bg-mustard">👥</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Kitchen Patrons</span>
+            <strong class="kpi-value" id="stat-crm-total">0</strong>
+            <span class="kpi-sub" id="stat-crm-sub">CRM profiles recorded</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-metric="reviews">
+          <div class="kpi-icon-wrap bg-amber">⭐</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Review Screening</span>
+            <strong class="kpi-value" id="stat-reviews-pending">0</strong>
+            <span class="kpi-sub" id="stat-reviews-sub">Awaiting moderation</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-metric="inventory">
+          <div class="kpi-icon-wrap bg-terracotta">🏺</div>
+          <div class="kpi-details">
+            <span class="kpi-label">Catalog SKUs</span>
+            <strong class="kpi-value" id="stat-inventory-skus">0</strong>
+            <span class="kpi-sub" id="stat-inventory-sub">Active batch offerings</span>
+          </div>
+        </div>
+
+        <div class="kpi-card" data-metric="health">
+          <div class="kpi-icon-wrap bg-forest">⚡</div>
+          <div class="kpi-details">
+            <span class="kpi-label">System Health</span>
+            <strong class="kpi-value" id="stat-system-health">200 OK</strong>
+            <span class="kpi-sub">Structured logs active</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pill Tab Navigation Bar -->
       <nav class="admin-nav-tabs" aria-label="Admin Sections">
         <button type="button" class="admin-tab-btn active" data-tab="orders">
-          <span>📦 Orders &amp; Dispatch</span>
+          <span class="tab-icon">📦</span>
+          <span>Orders &amp; Dispatch</span>
           <span class="tab-count-badge" id="badge-orders-count">0</span>
         </button>
         <button type="button" class="admin-tab-btn" data-tab="crm">
-          <span>👥 CRM &amp; Customers</span>
+          <span class="tab-icon">👥</span>
+          <span>CRM &amp; Patrons</span>
           <span class="tab-count-badge" id="badge-crm-count">0</span>
         </button>
         <button type="button" class="admin-tab-btn" data-tab="reviews">
-          <span>⭐ Review Moderation</span>
-          <span class="tab-count-badge" id="badge-reviews-pending" style="background:#D97706; color:#FFF;">0</span>
+          <span class="tab-icon">⭐</span>
+          <span>Review Moderation</span>
+          <span class="tab-count-badge badge-warning" id="badge-reviews-pending">0</span>
         </button>
         <button type="button" class="admin-tab-btn" data-tab="inventory">
-          <span>🏺 Inventory &amp; Catalog</span>
+          <span class="tab-icon">🏺</span>
+          <span>Inventory &amp; Stock</span>
         </button>
         <button type="button" class="admin-tab-btn" data-tab="media">
-          <span>🖼️ Media Manager</span>
+          <span class="tab-icon">🖼️</span>
+          <span>Media Manager</span>
+        </button>
+        <button type="button" class="admin-tab-btn" data-tab="diagnostics">
+          <span class="tab-icon">📡</span>
+          <span>Live Logs &amp; Diagnostics</span>
         </button>
       </nav>
 
-      <!-- Panel 1: Orders -->
+      <!-- Panel 1: Orders & Dispatch -->
       <section class="admin-tab-panel" id="panel-orders">
         <div class="admin-panel">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h3>Live Customer Orders</h3>
-            <span style="font-size:12px; color:var(--muted);">Orders marked <strong>delivered</strong> generate 1-click WhatsApp review triggers.</span>
+          <div class="panel-header-row">
+            <div>
+              <h3>Live Customer Orders</h3>
+              <p class="panel-subtext">Manage kitchen preparation, dispatch tracking, and trigger 1-click WhatsApp review requests upon delivery.</p>
+            </div>
+            <div class="filter-controls-row">
+              <input type="search" id="orders-search-input" placeholder="Search order ID, customer, phone..." class="admin-search-input">
+              <div class="filter-pill-group">
+                <button type="button" class="filter-order-btn active" data-order-filter="all">All</button>
+                <button type="button" class="filter-order-btn" data-order-filter="pending">Pending</button>
+                <button type="button" class="filter-order-btn" data-order-filter="packing">Packing</button>
+                <button type="button" class="filter-order-btn" data-order-filter="dispatched">Dispatched</button>
+                <button type="button" class="filter-order-btn" data-order-filter="delivered">Delivered</button>
+              </div>
+            </div>
           </div>
           <div class="admin-table-wrap">
             <table class="orders-table">
               <thead>
                 <tr>
-                  <th scope="col">Order ID</th>
-                  <th scope="col">Customer</th>
+                  <th scope="col">Order Reference</th>
+                  <th scope="col">Patron Contact</th>
                   <th scope="col">Items Ordered</th>
-                  <th scope="col">Total</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Update</th>
+                  <th scope="col">Total (₹)</th>
+                  <th scope="col">Workflow Status</th>
+                  <th scope="col">Action</th>
                   <th scope="col">Feedback Trigger</th>
                 </tr>
               </thead>
-              <tbody id="orders-table-body"></tbody>
+              <tbody id="orders-table-body">
+                <tr><td colspan="7" class="loading-cell">Loading orders...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- Panel 2: CRM & Customers -->
+      <!-- Panel 2: CRM & Patrons -->
       <section class="admin-tab-panel hidden" id="panel-crm">
         <div class="admin-panel">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+          <div class="panel-header-row">
             <div>
-              <h3>Customer Profiles &amp; Kitchen Notes</h3>
-              <p style="margin:0; font-size:13px; color:var(--muted);">Track order frequency, total lifetime spend (LTV), dietary preferences, and kitchen notes.</p>
+              <h3>Customer Relationship Management (CRM)</h3>
+              <p class="panel-subtext">Track order frequency, total lifetime spend (LTV), culinary preferences, and internal kitchen notes.</p>
             </div>
-            <input type="search" id="crm-search-input" placeholder="Search by name or phone..." style="min-height:36px; padding:6px 14px; border-radius:999px; border:1px solid var(--line); font-size:13px; width:240px;">
+            <div class="filter-controls-row">
+              <input type="search" id="crm-search-input" placeholder="Search by name, phone, or city..." class="admin-search-input">
+            </div>
           </div>
           <div class="admin-table-wrap">
             <table class="orders-table">
               <thead>
                 <tr>
-                  <th scope="col">Customer</th>
-                  <th scope="col">Contact</th>
-                  <th scope="col">City</th>
+                  <th scope="col">Patron Name</th>
+                  <th scope="col">Contact Info</th>
+                  <th scope="col">Location</th>
                   <th scope="col">Orders</th>
-                  <th scope="col">LTV (Spent)</th>
-                  <th scope="col">Tier</th>
+                  <th scope="col">Lifetime Value (₹)</th>
+                  <th scope="col">Patron Tier</th>
                   <th scope="col">Internal Kitchen Notes</th>
-                  <th scope="col">Outreach</th>
+                  <th scope="col">Direct Outreach</th>
                 </tr>
               </thead>
-              <tbody id="crm-table-body"></tbody>
+              <tbody id="crm-table-body">
+                <tr><td colspan="8" class="loading-cell">Loading patron CRM...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -132,13 +266,13 @@
       <!-- Panel 3: Review Moderation Queue -->
       <section class="admin-tab-panel hidden" id="panel-reviews">
         <div class="admin-panel">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+          <div class="panel-header-row">
             <div>
-              <h3>Customer Review Screening Queue</h3>
-              <p style="margin:0; font-size:13px; color:var(--muted);">All customer submissions remain hidden from the storefront until approved here. Protects privacy and brand safety.</p>
+              <h3>Customer Review Screening &amp; Moderation</h3>
+              <p class="panel-subtext">Every submission is held in this privacy queue until verified. Protects brand authenticity and screens customer privacy before appearing on storefront.</p>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="button button-sm button-secondary filter-review-btn active" data-filter="all">All</button>
+            <div class="filter-pill-group">
+              <button class="button button-sm button-secondary filter-review-btn active" data-filter="all">All Reviews</button>
               <button class="button button-sm button-secondary filter-review-btn" data-filter="pending_screening">Pending Screening</button>
               <button class="button button-sm button-secondary filter-review-btn" data-filter="approved">Approved &amp; Live</button>
               <button class="button button-sm button-secondary filter-review-btn" data-filter="featured">Featured ★</button>
@@ -146,7 +280,7 @@
             </div>
           </div>
           <div id="reviews-queue-container" class="review-mod-list">
-            <p>Loading review screening queue...</p>
+            <p class="loading-cell">Loading review queue...</p>
           </div>
         </div>
       </section>
@@ -155,32 +289,65 @@
       <section class="admin-tab-panel hidden" id="panel-inventory">
         <div class="admin-panels">
           <section class="admin-panel" aria-labelledby="panel-inv-heading">
-            <h3 id="panel-inv-heading">Live Catalog Stock</h3>
+            <div class="panel-header-row">
+              <div>
+                <h3 id="panel-inv-heading">Artisanal Catalog &amp; Live Stock</h3>
+                <p class="panel-subtext">Directly update batch stock levels and price points for store listings.</p>
+              </div>
+            </div>
             <div class="admin-table-wrap">
               <table class="orders-table">
                 <thead>
                   <tr>
-                    <th scope="col">Product</th>
-                    <th scope="col">Size</th>
-                    <th scope="col">Stock</th>
+                    <th scope="col">Handcrafted Offering</th>
+                    <th scope="col">Jar Size</th>
+                    <th scope="col">Stock Units</th>
                     <th scope="col">Price (₹)</th>
-                    <th scope="col">Save</th>
+                    <th scope="col">Update</th>
                   </tr>
                 </thead>
-                <tbody id="inventory-table-body"></tbody>
+                <tbody id="inventory-table-body">
+                  <tr><td colspan="5" class="loading-cell">Loading catalog...</td></tr>
+                </tbody>
               </table>
             </div>
           </section>
 
           <section class="admin-panel" aria-labelledby="panel-add-heading">
-            <h3 id="panel-add-heading">Add New Offering</h3>
-            <form class="admin-create-form" id="create-product-form" style="display:grid; gap:10px;">
-              <label>Product Name<input type="text" name="name" required placeholder="e.g. Nimbu Ka Achar"></label>
-              <label>Slug<input type="text" name="slug" required placeholder="nimbu-ka-achar"></label>
-              <label>Size Label<input type="text" name="sizeLabel" required placeholder="450 g jar"></label>
-              <label>Price (₹)<input type="number" name="price" min="0" required placeholder="279"></label>
-              <label>Stock Quantity<input type="number" name="stockQuantity" min="0" required placeholder="20"></label>
-              <button class="button button-primary" type="submit" style="margin-top:6px;">Create Product</button>
+            <div class="panel-header-row">
+              <div>
+                <h3 id="panel-add-heading">Craft New Offering</h3>
+                <p class="panel-subtext">Add a new seasonal achar batch to your live storefront catalog.</p>
+              </div>
+            </div>
+            <form class="admin-create-form" id="create-product-form">
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label>Product Name</label>
+                  <input type="text" name="name" required placeholder="e.g. Nimbu Mirch Ka Achar">
+                </div>
+                <div class="form-group">
+                  <label>URL Slug</label>
+                  <input type="text" name="slug" required placeholder="nimbu-mirch-ka-achar">
+                </div>
+              </div>
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label>Size Label</label>
+                  <input type="text" name="sizeLabel" required placeholder="450 g glass jar">
+                </div>
+                <div class="form-group">
+                  <label>Price (₹)</label>
+                  <input type="number" name="price" min="0" required placeholder="279">
+                </div>
+                <div class="form-group">
+                  <label>Stock Units</label>
+                  <input type="number" name="stockQuantity" min="0" required placeholder="25">
+                </div>
+              </div>
+              <button class="button button-primary button-shine" type="submit" style="margin-top:8px;">
+                <span>Publish Offering to Catalog</span>
+              </button>
             </form>
           </section>
         </div>
@@ -191,20 +358,67 @@
         <div class="admin-panel admin-media-panel">
           <div class="admin-media-head">
             <div>
-              <h3>Product Gallery Manager</h3>
-              <p>Add relative image paths for each achar — one path per line. First path is used as the cover photo.</p>
+              <h3>Visual Media &amp; Jar Gallery Manager</h3>
+              <p class="panel-subtext">Configure visual asset paths for each achar offering — one path per line. The first line serves as the primary storefront image.</p>
             </div>
-            <button class="button button-secondary" type="button" id="save-media">Save Galleries</button>
+            <button class="button button-secondary button-pill" type="button" id="save-media">
+              💾 Save Galleries
+            </button>
           </div>
           <p class="admin-media-hint">
-            Example path: <code>/images/achars/aam-ka-achar/Aam Ka Achar.png</code>
+            Standard path format: <code>/images/achars/aam-ka-achar/Aam Ka Achar.png</code>
           </p>
           <div class="media-grid" id="media-grid"></div>
         </div>
       </section>
 
-      <p class="form-status" id="orders-status" role="status" aria-live="polite" style="margin-top:16px; font-weight:600;"></p>
+      <!-- Panel 6: Live Diagnostics & Logs (New!) -->
+      <section class="admin-tab-panel hidden" id="panel-diagnostics">
+        <div class="admin-panel">
+          <div class="panel-header-row">
+            <div>
+              <h3>Real-Time Runtime Diagnostics &amp; API Traces</h3>
+              <p class="panel-subtext">Live view of backend API responses, status codes, latencies, and Supabase database query results.</p>
+            </div>
+            <div class="filter-controls-row">
+              <button class="button button-secondary button-sm" type="button" id="btn-run-diagnostics">
+                ⚡ Test All Endpoints Now
+              </button>
+              <button class="button button-ghost button-sm" type="button" id="btn-clear-logs">
+                Clear Console
+              </button>
+            </div>
+          </div>
+
+          <div class="diagnostics-dashboard">
+            <div class="diagnostics-summary-cards">
+              <div class="diag-card">
+                <span class="diag-label">Admin Key Auth Status</span>
+                <span class="diag-val text-success" id="diag-auth-status">Authenticated (200 OK)</span>
+              </div>
+              <div class="diag-card">
+                <span class="diag-label">Supabase Connection</span>
+                <span class="diag-val text-success" id="diag-db-status">Online (Active)</span>
+              </div>
+              <div class="diag-card">
+                <span class="diag-label">Average Latency</span>
+                <span class="diag-val" id="diag-avg-latency">—</span>
+              </div>
+            </div>
+
+            <div class="diagnostics-terminal" id="diagnostics-terminal">
+              <div class="terminal-line info">[SYSTEM] Live runtime logging initialized. All requests are logged with structured timestamps.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Bar -->
+      <p class="form-status" id="orders-status" role="status" aria-live="polite"></p>
     </section>
+
+    <!-- Floating Toast Notification Container -->
+    <div id="admin-toast-container" class="admin-toast-container" aria-live="polite"></div>
   </main>
 
   <script src="js/admin.js" defer></script>

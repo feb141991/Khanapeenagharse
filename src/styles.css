@@ -6944,4 +6944,214 @@ textarea {
   }
 }
 
+/* ==========================================================================
+   OAuth 2.1 Server Consent UI Styles
+   ========================================================================== */
+.oauth-consent-shell {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px 100px;
+  background: radial-gradient(circle at 50% 20%, rgba(200, 155, 60, 0.08), transparent 70%),
+              radial-gradient(circle at 10% 80%, rgba(31, 74, 58, 0.06), transparent 60%),
+              var(--warm-cream-pure);
+}
+
+.oauth-consent-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 36px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.oauth-consent-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--heritage-green), var(--mustard-gold), var(--heritage-green));
+}
+
+.oauth-handshake-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.oauth-app-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: var(--warm-cream);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.oauth-app-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oauth-connection-arrow {
+  color: var(--mustard-gold);
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.85;
+}
+
+.oauth-header-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  color: var(--heritage-green-dark);
+  text-align: center;
+  margin: 0 0 8px;
+  line-height: 1.25;
+}
+
+.oauth-header-desc {
+  font-size: 0.92rem;
+  color: var(--text-soft);
+  text-align: center;
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.oauth-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--heritage-green-soft);
+  border: 1px solid rgba(31, 74, 58, 0.15);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 24px;
+}
+
+.oauth-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--heritage-green);
+  color: var(--warm-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.oauth-user-meta {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.oauth-user-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+.oauth-user-email {
+  color: var(--heritage-green-dark);
+  font-weight: 600;
+}
+
+.oauth-scopes-box {
+  background: var(--warm-cream-pure);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.oauth-scopes-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.oauth-scope-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+.oauth-scope-item:last-child {
+  margin-bottom: 0;
+}
+
+.oauth-scope-check {
+  color: var(--heritage-green);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.oauth-actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.oauth-actions-row .button {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+}
+
+.oauth-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--mustard-gold-soft);
+  color: var(--mustard-gold-dark);
+  border: 1px solid var(--line-gold);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 auto 16px;
+}
+
+.oauth-security-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 20px;
+  line-height: 1.4;
+}
+
+
 

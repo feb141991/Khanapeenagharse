@@ -5852,6 +5852,541 @@ function NotFoundPage() {
   );
 }
 
+function OAuthConsentPage({ session, refreshSession }) {
+  useDocumentMeta({
+    title: "Authorize Application | Khana Peena Ghar Se",
+    description: "Review and grant permissions for third-party applications connecting to Khana Peena Ghar Se."
+  });
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const authorizationId = searchParams.get("authorization_id");
+
+  const [loading, setLoading] = useState(Boolean(authorizationId));
+  const [authDetails, setAuthDetails] = useState(null);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // Inline auth state for unauthenticated users
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
+  const [previewActionMessage, setPreviewActionMessage] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchAuthDetails() {
+      if (!authorizationId) {
+        setLoading(false);
+        return;
+      }
+
+      if (!session) {
+        setLoading(false);
+        return;
+      }
+
+      if (!supabase) {
+        setError("Supabase client is not configured.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError("");
+        const { data, error: fetchErr } = await supabase.auth.oauth.getAuthorizationDetails(authorizationId);
+
+        if (cancelled) return;
+
+        if (fetchErr) {
+          setError(fetchErr.message || "Failed to load authorization request.");
+          setLoading(false);
+          return;
+        }
+
+        // If user already consented, Supabase returns redirect_url directly
+        if (data?.redirect_url && !data?.client) {
+          window.location.replace(data.redirect_url);
+          return;
+        }
+
+        setAuthDetails(data);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || "An unexpected error occurred while fetching authorization details.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchAuthDetails();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authorizationId, session]);
+
+  const handleInlineLogin = async (e) => {
+    e.preventDefault();
+    setLoginError("");
+
+    if (!supabase) {
+      setLoginError("Supabase client is unavailable.");
+      return;
+    }
+
+    setLoginLoading(true);
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: loginEmail,
+      password: loginPassword
+    });
+    setLoginLoading(false);
+
+    if (signInError) {
+      setLoginError(signInError.message);
+      return;
+    }
+
+    if (refreshSession) {
+      await refreshSession();
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!authorizationId || !supabase) return;
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const { data, error: approveErr } = await supabase.auth.oauth.approveAuthorization(authorizationId);
+      if (approveErr) {
+        setError(approveErr.message || "Failed to approve authorization request.");
+        setSubmitting(false);
+        return;
+      }
+
+      if (data?.redirect_url) {
+        window.location.href = data.redirect_url;
+      } else {
+        navigate("/account");
+      }
+    } catch (err) {
+      setError(err.message || "An unexpected error occurred.");
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeny = async () => {
+    if (!authorizationId || !supabase) return;
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      const { data, error: denyErr } = await supabase.auth.oauth.denyAuthorization(authorizationId);
+      if (denyErr) {
+        setError(denyErr.message || "Failed to deny authorization request.");
+        setSubmitting(false);
+        return;
+      }
+
+      if (data?.redirect_url) {
+        window.location.href = data.redirect_url;
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      setError(err.message || "An unexpected error occurred.");
+      setSubmitting(false);
+    }
+  };
+
+  const getScopeDescription = (scope) => {
+    switch (scope.toLowerCase()) {
+      case "openid":
+        return "Verify your Khana Peena Ghar Se account identity";
+      case "email":
+        return "View your registered email address";
+      case "profile":
+        return "Access your member name and culinary preferences";
+      case "phone":
+        return "View your delivery phone number";
+      case "orders.read":
+      case "orders":
+        return "Read your order receipts and delivery dispatches";
+      default:
+        return `Permission scope: ${scope}`;
+    }
+  };
+
+  // Preview Mode: Rendered when user visits /oauth/consent directly without an authorization_id
+  if (!authorizationId) {
+    return (
+      <div className="oauth-consent-shell">
+        <div className="oauth-consent-card">
+          <div style={{ textAlign: "center" }}>
+            <span className="oauth-preview-badge">✦ OAuth 2.1 Server Active</span>
+          </div>
+
+          <div className="oauth-handshake-visual">
+            <div className="oauth-app-icon" title="External App / AI Agent">
+              🤖
+            </div>
+            <div className="oauth-connection-arrow">
+              <span>●</span>
+              <span>—</span>
+              <span>●</span>
+            </div>
+            <div className="oauth-app-icon" title="Khana Peena Ghar Se">
+              <img src="/images/logo.png" alt="Khana Peena Ghar Se" />
+            </div>
+          </div>
+
+          <h1 className="oauth-header-title">OAuth Consent Screen</h1>
+          <p className="oauth-header-desc">
+            This endpoint is live and verified for your <strong>Supabase OAuth 2.1 Server</strong>. When an external client (such as Claude Desktop, Cursor MCP, or a partner app) initiates an OAuth handshake, users will see requested scopes and authorize access here.
+          </p>
+
+          <div className="oauth-scopes-box">
+            <div className="oauth-scopes-title">
+              <span>🔒 Sample Requested Permissions</span>
+            </div>
+            <div className="oauth-scope-item">
+              <span className="oauth-scope-check">✓</span>
+              <div>
+                <strong>Verify Member Identity</strong>
+                <p style={{ margin: "2px 0 0", fontSize: "0.8rem", color: "var(--text-soft)" }}>
+                  Scope: <code>openid</code>
+                </p>
+              </div>
+            </div>
+            <div className="oauth-scope-item">
+              <span className="oauth-scope-check">✓</span>
+              <div>
+                <strong>View Email &amp; Account Profile</strong>
+                <p style={{ margin: "2px 0 0", fontSize: "0.8rem", color: "var(--text-soft)" }}>
+                  Scopes: <code>email</code>, <code>profile</code>
+                </p>
+              </div>
+            </div>
+            <div className="oauth-scope-item">
+              <span className="oauth-scope-check">✓</span>
+              <div>
+                <strong>Access Order Dispatches &amp; Tracking</strong>
+                <p style={{ margin: "2px 0 0", fontSize: "0.8rem", color: "var(--text-soft)" }}>
+                  Scope: <code>orders.read</code>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="oauth-user-badge">
+            <div className="oauth-user-avatar">
+              {session?.user?.email ? session.user.email.charAt(0).toUpperCase() : "G"}
+            </div>
+            <div className="oauth-user-meta">
+              <span className="oauth-user-label">
+                {session ? "Connected As" : "Test Environment"}
+              </span>
+              <span className="oauth-user-email">
+                {session?.user?.email || "guest@khanapeenagharse.in"}
+              </span>
+            </div>
+          </div>
+
+          {previewActionMessage && (
+            <div style={{
+              background: "var(--mustard-gold-soft)",
+              border: "1px solid var(--line-gold)",
+              borderRadius: "var(--radius)",
+              padding: "10px 14px",
+              fontSize: "0.85rem",
+              color: "var(--text-dark)",
+              marginBottom: "16px",
+              textAlign: "center"
+            }}>
+              {previewActionMessage}
+            </div>
+          )}
+
+          <div className="oauth-actions-row">
+            <button
+              type="button"
+              className="button button-cream-secondary"
+              onClick={() => setPreviewActionMessage("Deny test passed: In a live OAuth flow, the user would be redirected back to the client with an access_denied error.")}
+            >
+              Deny
+            </button>
+            <button
+              type="button"
+              className="button button-primary"
+              onClick={() => setPreviewActionMessage("Authorize test passed: In a live OAuth flow, an authorization code is issued to the client application.")}
+            >
+              Authorize App
+            </button>
+          </div>
+
+          <p className="oauth-security-note">
+            🛡️ Production Endpoint: <code>https://khanapeenagharse.in/oauth/consent</code>
+            <br />
+            Configured in Supabase Project: <code>mrdsjinicjhkefuxsxtz</code>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is not signed in, prompt them to sign in to proceed
+  if (!session) {
+    return (
+      <div className="oauth-consent-shell">
+        <div className="oauth-consent-card">
+          <div className="oauth-handshake-visual">
+            <div className="oauth-app-icon">
+              🔑
+            </div>
+            <div className="oauth-connection-arrow">
+              <span>●</span>
+              <span>—</span>
+              <span>●</span>
+            </div>
+            <div className="oauth-app-icon">
+              <img src="/images/logo.png" alt="Khana Peena Ghar Se" />
+            </div>
+          </div>
+
+          <h1 className="oauth-header-title">Sign In to Continue</h1>
+          <p className="oauth-header-desc">
+            An external application is requesting authorization to connect with your Khana Peena Ghar Se account. Please sign in below to review requested permissions.
+          </p>
+
+          {loginError && (
+            <div style={{
+              background: "rgba(220, 53, 69, 0.1)",
+              border: "1px solid rgba(220, 53, 69, 0.3)",
+              color: "#c92a2a",
+              padding: "10px 14px",
+              borderRadius: "var(--radius)",
+              fontSize: "0.85rem",
+              marginBottom: "16px"
+            }}>
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleInlineLogin} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: "600", color: "var(--text-soft)", marginBottom: "4px" }}>
+                Email Address
+              </label>
+              <input
+                type="email"
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="you@example.com"
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "var(--radius)",
+                  border: "1px solid var(--line-strong)",
+                  fontSize: "0.95rem"
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: "600", color: "var(--text-soft)", marginBottom: "4px" }}>
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "var(--radius)",
+                  border: "1px solid var(--line-strong)",
+                  fontSize: "0.95rem"
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loginLoading}
+              className="button button-primary button-full"
+              style={{ marginTop: "8px" }}
+            >
+              {loginLoading ? "Signing In..." : "Sign In & Review Permissions →"}
+            </button>
+          </form>
+
+          <p className="oauth-security-note">
+            Don't have an account yet? <Link to="/account" style={{ color: "var(--heritage-green)", fontWeight: "600" }}>Register here</Link>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading authorization details from Supabase
+  if (loading) {
+    return (
+      <div className="oauth-consent-shell">
+        <div className="oauth-consent-card" style={{ textAlign: "center", padding: "60px 32px" }}>
+          <div style={{ fontSize: "2.5rem", marginBottom: "16px" }}>⏳</div>
+          <h2 style={{ fontFamily: "var(--font-serif)", color: "var(--heritage-green)", fontSize: "1.4rem", margin: "0 0 8px" }}>
+            Verifying Authorization Request...
+          </h2>
+          <p style={{ color: "var(--text-soft)", fontSize: "0.9rem" }}>
+            Connecting with Supabase Auth to retrieve requested scopes and client credentials.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error fetching authorization details
+  if (error && !authDetails) {
+    return (
+      <div className="oauth-consent-shell">
+        <div className="oauth-consent-card" style={{ textAlign: "center", padding: "40px 32px" }}>
+          <div style={{ fontSize: "2.5rem", marginBottom: "16px" }}>⚠️</div>
+          <h2 style={{ fontFamily: "var(--font-serif)", color: "var(--heritage-green-dark)", fontSize: "1.4rem", margin: "0 0 8px" }}>
+            Authorization Request Invalid
+          </h2>
+          <p style={{ color: "var(--text-soft)", fontSize: "0.92rem", lineHeight: 1.5, marginBottom: "24px" }}>
+            {error || "The authorization token may have expired or is not recognized by Supabase OAuth Server."}
+          </p>
+          <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+            <Link to="/" className="button button-cream-secondary">
+              Return Home
+            </Link>
+            <Link to="/account" className="button button-primary">
+              Account Portal
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const clientName = authDetails?.client?.client_name || authDetails?.client?.name || "Third-Party Application";
+  const clientLogo = authDetails?.client?.logo_uri;
+  const clientUri = authDetails?.client?.client_uri;
+  const scopesList = Array.isArray(authDetails?.scopes)
+    ? authDetails.scopes
+    : (typeof authDetails?.scopes === "string" ? authDetails.scopes.split(" ").filter(Boolean) : ["openid", "email"]);
+
+  return (
+    <div className="oauth-consent-shell">
+      <div className="oauth-consent-card">
+        <div className="oauth-handshake-visual">
+          <div className="oauth-app-icon" title={clientName}>
+            {clientLogo ? (
+              <img src={clientLogo} alt={clientName} />
+            ) : (
+              <span>⚡</span>
+            )}
+          </div>
+          <div className="oauth-connection-arrow">
+            <span>●</span>
+            <span>—</span>
+            <span>●</span>
+          </div>
+          <div className="oauth-app-icon" title="Khana Peena Ghar Se">
+            <img src="/images/logo.png" alt="Khana Peena Ghar Se" />
+          </div>
+        </div>
+
+        <h1 className="oauth-header-title">Authorize {clientName}</h1>
+        <p className="oauth-header-desc">
+          <strong>{clientName}</strong> {clientUri && <span>({clientUri}) </span>}
+          is requesting permission to access your Khana Peena Ghar Se account.
+        </p>
+
+        {error && (
+          <div style={{
+            background: "rgba(220, 53, 69, 0.1)",
+            border: "1px solid rgba(220, 53, 69, 0.3)",
+            color: "#c92a2a",
+            padding: "10px 14px",
+            borderRadius: "var(--radius)",
+            fontSize: "0.85rem",
+            marginBottom: "16px"
+          }}>
+            {error}
+          </div>
+        )}
+
+        <div className="oauth-user-badge">
+          <div className="oauth-user-avatar">
+            {(session.user.user_metadata?.full_name || session.user.email || "G").charAt(0).toUpperCase()}
+          </div>
+          <div className="oauth-user-meta">
+            <span className="oauth-user-label">Authorizing As</span>
+            <span className="oauth-user-email">
+              {session.user.user_metadata?.full_name ? `${session.user.user_metadata.full_name} (${session.user.email})` : session.user.email}
+            </span>
+          </div>
+        </div>
+
+        <div className="oauth-scopes-box">
+          <div className="oauth-scopes-title">
+            <span>Permissions Requested</span>
+          </div>
+          {scopesList.map((scope, idx) => (
+            <div key={idx} className="oauth-scope-item">
+              <span className="oauth-scope-check">✓</span>
+              <div>
+                <strong>{getScopeDescription(scope)}</strong>
+                <p style={{ margin: "2px 0 0", fontSize: "0.78rem", color: "var(--text-soft)" }}>
+                  Scope: <code>{scope}</code>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="oauth-actions-row">
+          <button
+            type="button"
+            disabled={submitting}
+            className="button button-cream-secondary"
+            onClick={handleDeny}
+          >
+            {submitting ? "Processing..." : "Deny Access"}
+          </button>
+          <button
+            type="button"
+            disabled={submitting}
+            className="button button-primary"
+            onClick={handleApprove}
+          >
+            {submitting ? "Authorizing..." : "Allow Access →"}
+          </button>
+        </div>
+
+        <p className="oauth-security-note">
+          🔒 Secure OAuth 2.1 Connection. You can revoke access at any time from your Member Portal.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const shop = useShopState();
   const location = useLocation();
@@ -5988,6 +6523,7 @@ export default function App() {
               <Route path="/wa" element={<WhatsAppRedirectPage />} />
               <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} />} />
+              <Route path="/oauth/consent" element={<OAuthConsentPage session={session} refreshSession={refreshSession} />} />
               <Route path="/track-order" element={<TrackPage session={session} />} />
               <Route path="/review" element={<ReviewSubmissionPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
