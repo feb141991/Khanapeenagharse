@@ -85,7 +85,7 @@ function useCatalogProducts() {
 
     async function loadProducts() {
       try {
-        const response = await fetch("/.netlify/functions/products");
+        const response = await fetch("/api/products");
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "Unable to load products.");
         if (!cancelled) {
@@ -3928,7 +3928,7 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
     setLoading(true);
     setStatus("Placing your order request with our Bahadurgarh kitchen...");
     try {
-      const response = await fetch("/.netlify/functions/create-order", {
+      const response = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ customer: formData, items: payloadItems })
@@ -4712,7 +4712,7 @@ function TrackPage({ session }) {
     const params = new URLSearchParams(new FormData(e.currentTarget));
     setStatus("Locating your order in our Bahadurgarh kitchen...");
     try {
-      const res = await fetch(`/.netlify/functions/track-order?${params.toString()}`);
+      const res = await fetch(`/api/track-order?${params.toString()}`);
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Order not found. Please verify your details.");
       setResult(payload.order);

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "vite build && node --check netlify/functions/create-order.js && node --check netlify/functions/admin-dashboard.js && node --check netlify/functions/track-order.js && node --check netlify/functions/products.js && node --check netlify/functions/customer-profile.js && node --check netlify/functions/_lib/supabase.js"
+    "check": "vite build && node --check api/create-order.js && node --check api/admin-dashboard.js && node --check api/track-order.js && node --check api/products.js && node --check api/customer-profile.js && node --check api/_lib/supabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",

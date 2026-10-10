@@ -103,7 +103,7 @@ async function fetchDashboard() {
   ordersStatus.textContent = "Loading dashboard...";
 
   try {
-    const response = await fetch("/.netlify/functions/admin-dashboard", {
+    const response = await fetch("/api/admin-dashboard", {
       headers: { "x-admin-key": adminKey }
     });
     const result = await response.json();
@@ -123,7 +123,7 @@ async function fetchDashboard() {
 
 async function patchAdmin(payload) {
   const adminKey = getAdminKey();
-  const response = await fetch("/.netlify/functions/admin-dashboard", {
+  const response = await fetch("/api/admin-dashboard", {
     method: "PATCH",
     headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
     body: JSON.stringify(payload)
