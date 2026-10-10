@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1F1A12">
   <meta name="robots" content="noindex, nofollow">
-  <title>Admin | Khana Peena Ghar Se</title>
+  <title>Kitchen Admin & CRM | Khana Peena Ghar Se</title>
   <link rel="icon" href="/images/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,24 +17,24 @@
   <main class="admin-shell" id="admin-main">
     <section class="admin-hero">
       <div class="admin-hero-copy">
-        <p class="eyebrow">Staff only</p>
-        <h1>Orders &amp; inventory</h1>
-        <p>Protected dashboard for order status, stock levels, pricing, and product gallery management.</p>
+        <p class="eyebrow">Kitchen Operations &amp; CRM</p>
+        <h1>Orders, CRM &amp; Review Moderation</h1>
+        <p>Unified portal for order dispatch, customer relationship management, stock control, and pre-publication review screening.</p>
       </div>
       <div class="admin-hero-meta" aria-hidden="true">
         <span class="admin-pill">Live</span>
-        <span class="admin-pill subtle">v1</span>
+        <span class="admin-pill subtle">v2.0 CRM</span>
       </div>
     </section>
 
     <section class="admin-login" id="admin-login" aria-labelledby="admin-login-heading">
       <div class="section-heading">
-        <h2 id="admin-login-heading">Admin access</h2>
-        <p>Enter the dashboard password to load orders and inventory.</p>
+        <h2 id="admin-login-heading">Admin Access</h2>
+        <p>Enter the dashboard password to unlock kitchen operations.</p>
       </div>
       <form id="login-form" class="admin-login-form" novalidate>
-        <label>Admin password<input type="password" id="admin-password" required autocomplete="current-password"></label>
-        <button class="button button-primary" type="submit">Open admin</button>
+        <label>Admin Password<input type="password" id="admin-password" required autocomplete="current-password" placeholder="Enter admin key"></label>
+        <button class="button button-primary" type="submit">Open Dashboard</button>
         <p class="form-status" id="login-status" role="status" aria-live="polite"></p>
       </form>
     </section>
@@ -42,79 +42,171 @@
     <section class="admin-dashboard hidden" id="admin-dashboard" aria-labelledby="admin-dashboard-heading">
       <div class="admin-toolbar">
         <div class="toolbar-copy">
-          <h2 id="admin-dashboard-heading">Dashboard</h2>
-          <p id="order-count">0 orders</p>
+          <h2 id="admin-dashboard-heading">Bahadurgarh Kitchen Console</h2>
+          <p id="dashboard-summary">Loading operations data...</p>
         </div>
         <div class="toolbar-actions">
-          <button class="button button-secondary" type="button" id="refresh-orders">Refresh</button>
-          <button class="button button-ghost" type="button" id="logout-admin">Log out</button>
+          <button class="button button-secondary" type="button" id="refresh-all">Refresh All</button>
+          <button class="button button-ghost" type="button" id="logout-admin">Log Out</button>
         </div>
       </div>
 
-      <div class="admin-panels">
-        <section class="admin-panel" aria-labelledby="panel-orders">
-          <h3 id="panel-orders">Orders</h3>
+      <!-- Tab Navigation -->
+      <nav class="admin-nav-tabs" aria-label="Admin Sections">
+        <button type="button" class="admin-tab-btn active" data-tab="orders">
+          <span>📦 Orders &amp; Dispatch</span>
+          <span class="tab-count-badge" id="badge-orders-count">0</span>
+        </button>
+        <button type="button" class="admin-tab-btn" data-tab="crm">
+          <span>👥 CRM &amp; Customers</span>
+          <span class="tab-count-badge" id="badge-crm-count">0</span>
+        </button>
+        <button type="button" class="admin-tab-btn" data-tab="reviews">
+          <span>⭐ Review Moderation</span>
+          <span class="tab-count-badge" id="badge-reviews-pending" style="background:#D97706; color:#FFF;">0</span>
+        </button>
+        <button type="button" class="admin-tab-btn" data-tab="inventory">
+          <span>🏺 Inventory &amp; Catalog</span>
+        </button>
+        <button type="button" class="admin-tab-btn" data-tab="media">
+          <span>🖼️ Media Manager</span>
+        </button>
+      </nav>
+
+      <!-- Panel 1: Orders -->
+      <section class="admin-tab-panel" id="panel-orders">
+        <div class="admin-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3>Live Customer Orders</h3>
+            <span style="font-size:12px; color:var(--muted);">Orders marked <strong>delivered</strong> generate 1-click WhatsApp review triggers.</span>
+          </div>
           <div class="admin-table-wrap">
             <table class="orders-table">
               <thead>
                 <tr>
-                  <th scope="col">Order</th>
+                  <th scope="col">Order ID</th>
                   <th scope="col">Customer</th>
-                  <th scope="col">Items</th>
+                  <th scope="col">Items Ordered</th>
                   <th scope="col">Total</th>
                   <th scope="col">Status</th>
                   <th scope="col">Update</th>
+                  <th scope="col">Feedback Trigger</th>
                 </tr>
               </thead>
               <tbody id="orders-table-body"></tbody>
             </table>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="admin-panel" aria-labelledby="panel-inventory">
-          <h3 id="panel-inventory">Inventory</h3>
-          <form class="admin-create-form" id="create-product-form">
-            <label>Product name<input type="text" name="name" required></label>
-            <label>Slug<input type="text" name="slug" required placeholder="nimbu-ka-achar"></label>
-            <label>Size label<input type="text" name="sizeLabel" required placeholder="500 g jar"></label>
-            <label>Price<input type="number" name="price" min="0" required></label>
-            <label>Stock<input type="number" name="stockQuantity" min="0" required></label>
-            <button class="button button-primary" type="submit">Create product</button>
-          </form>
+      <!-- Panel 2: CRM & Customers -->
+      <section class="admin-tab-panel hidden" id="panel-crm">
+        <div class="admin-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+            <div>
+              <h3>Customer Profiles &amp; Kitchen Notes</h3>
+              <p style="margin:0; font-size:13px; color:var(--muted);">Track order frequency, total lifetime spend (LTV), dietary preferences, and kitchen notes.</p>
+            </div>
+            <input type="search" id="crm-search-input" placeholder="Search by name or phone..." style="min-height:36px; padding:6px 14px; border-radius:999px; border:1px solid var(--line); font-size:13px; width:240px;">
+          </div>
           <div class="admin-table-wrap">
             <table class="orders-table">
               <thead>
                 <tr>
-                  <th scope="col">Product</th>
-                  <th scope="col">Size</th>
-                  <th scope="col">Stock</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Update</th>
+                  <th scope="col">Customer</th>
+                  <th scope="col">Contact</th>
+                  <th scope="col">City</th>
+                  <th scope="col">Orders</th>
+                  <th scope="col">LTV (Spent)</th>
+                  <th scope="col">Tier</th>
+                  <th scope="col">Internal Kitchen Notes</th>
+                  <th scope="col">Outreach</th>
                 </tr>
               </thead>
-              <tbody id="inventory-table-body"></tbody>
+              <tbody id="crm-table-body"></tbody>
             </table>
           </div>
-        </section>
-      </div>
-
-      <section class="admin-panel admin-media-panel" aria-labelledby="panel-media">
-        <div class="admin-media-head">
-          <div>
-            <h3 id="panel-media">Product gallery manager</h3>
-            <p>Add relative image paths for each achar — one path per line. First path is used as the card cover.</p>
-          </div>
-          <button class="button button-secondary" type="button" id="save-media">Save galleries</button>
         </div>
-        <p class="admin-media-hint">
-          Example path: <code>/images/achars/aam-ka-achar/hero.jpg</code>
-        </p>
-        <div class="media-grid" id="media-grid"></div>
       </section>
 
-      <p class="form-status" id="orders-status" role="status" aria-live="polite"></p>
+      <!-- Panel 3: Review Moderation Queue -->
+      <section class="admin-tab-panel hidden" id="panel-reviews">
+        <div class="admin-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+            <div>
+              <h3>Customer Review Screening Queue</h3>
+              <p style="margin:0; font-size:13px; color:var(--muted);">All customer submissions remain hidden from the storefront until approved here. Protects privacy and brand safety.</p>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="button button-sm button-secondary filter-review-btn active" data-filter="all">All</button>
+              <button class="button button-sm button-secondary filter-review-btn" data-filter="pending_screening">Pending Screening</button>
+              <button class="button button-sm button-secondary filter-review-btn" data-filter="approved">Approved &amp; Live</button>
+              <button class="button button-sm button-secondary filter-review-btn" data-filter="featured">Featured ★</button>
+              <button class="button button-sm button-secondary filter-review-btn" data-filter="rejected">Rejected</button>
+            </div>
+          </div>
+          <div id="reviews-queue-container" class="review-mod-list">
+            <p>Loading review screening queue...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 4: Inventory & Catalog -->
+      <section class="admin-tab-panel hidden" id="panel-inventory">
+        <div class="admin-panels">
+          <section class="admin-panel" aria-labelledby="panel-inv-heading">
+            <h3 id="panel-inv-heading">Live Catalog Stock</h3>
+            <div class="admin-table-wrap">
+              <table class="orders-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Price (₹)</th>
+                    <th scope="col">Save</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="admin-panel" aria-labelledby="panel-add-heading">
+            <h3 id="panel-add-heading">Add New Offering</h3>
+            <form class="admin-create-form" id="create-product-form" style="display:grid; gap:10px;">
+              <label>Product Name<input type="text" name="name" required placeholder="e.g. Nimbu Ka Achar"></label>
+              <label>Slug<input type="text" name="slug" required placeholder="nimbu-ka-achar"></label>
+              <label>Size Label<input type="text" name="sizeLabel" required placeholder="450 g jar"></label>
+              <label>Price (₹)<input type="number" name="price" min="0" required placeholder="279"></label>
+              <label>Stock Quantity<input type="number" name="stockQuantity" min="0" required placeholder="20"></label>
+              <button class="button button-primary" type="submit" style="margin-top:6px;">Create Product</button>
+            </form>
+          </section>
+        </div>
+      </section>
+
+      <!-- Panel 5: Media Manager -->
+      <section class="admin-tab-panel hidden" id="panel-media">
+        <div class="admin-panel admin-media-panel">
+          <div class="admin-media-head">
+            <div>
+              <h3>Product Gallery Manager</h3>
+              <p>Add relative image paths for each achar — one path per line. First path is used as the cover photo.</p>
+            </div>
+            <button class="button button-secondary" type="button" id="save-media">Save Galleries</button>
+          </div>
+          <p class="admin-media-hint">
+            Example path: <code>/images/achars/aam-ka-achar/Aam Ka Achar.png</code>
+          </p>
+          <div class="media-grid" id="media-grid"></div>
+        </div>
+      </section>
+
+      <p class="form-status" id="orders-status" role="status" aria-live="polite" style="margin-top:16px; font-weight:600;"></p>
     </section>
   </main>
+
   <script src="js/admin.js" defer></script>
 </body>
 </html>

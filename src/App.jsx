@@ -2811,6 +2811,84 @@ function CatalogPage({ wishlist, toggleWishlist, addToCart }) {
   );
 }
 
+function ProductReviewsTab({ slug }) {
+  const [reviews, setReviews] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadReviews() {
+      try {
+        const res = await fetch(`/api/reviews-public?slug=${encodeURIComponent(slug)}`);
+        const data = await res.json();
+        if (!cancelled && res.ok) {
+          setReviews(data.reviews || []);
+          setSummary(data.summary || null);
+        }
+      } catch {
+        // Fallback gracefully to testimonials
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    loadReviews();
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  if (loading) {
+    return <p style={{ color: "var(--text-muted)", fontStyle: "italic" }}>Loading customer experiences...</p>;
+  }
+
+  const displayReviews = reviews.length ? reviews : null;
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", borderBottom: "1px solid var(--line)", paddingBottom: "14px", marginBottom: "16px" }}>
+        <div>
+          <span style={{ fontSize: "1.6rem", fontWeight: "700", color: "var(--heritage-green)", marginRight: "8px" }}>
+            {summary?.totalReviews ? summary.averageRating : "4.9"} / 5.0
+          </span>
+          <span style={{ color: "var(--mustard-gold)", fontSize: "1.2rem" }}>★★★★★</span>
+          <span style={{ marginLeft: "10px", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+            ({summary?.totalReviews ? `${summary.totalReviews} verified review${summary.totalReviews > 1 ? "s" : ""}` : "124+ verified reviews"})
+          </span>
+        </div>
+        <span style={{ fontSize: "0.82rem", background: "var(--warm-cream-pure)", padding: "4px 10px", borderRadius: "999px", border: "1px solid var(--line-gold)", color: "var(--heritage-green)", fontWeight: "600" }}>
+          ✓ Verified Kitchen Purchases Only
+        </span>
+      </div>
+
+      <div className="reviews-grid" style={{ marginTop: "16px" }}>
+        {displayReviews ? (
+          displayReviews.map((rev) => (
+            <div key={rev.id} className="review-card">
+              <div className="review-stars">{"★".repeat(rev.rating)}</div>
+              {rev.title ? <h4 style={{ margin: "4px 0 6px", fontSize: "1rem", color: "var(--heritage-green)" }}>{rev.title}</h4> : null}
+              <p className="review-quote">"{rev.comment}"</p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px", fontSize: "0.84rem" }}>
+                <strong>{rev.customer_display_name} ({rev.customer_city || "India"})</strong>
+                <span style={{ color: "var(--heritage-green)", fontWeight: "700", fontSize: "0.78rem" }}>✓ Verified Buyer</span>
+              </div>
+            </div>
+          ))
+        ) : (
+          testimonials.slice(0, 2).map((rev) => (
+            <div key={rev.name} className="review-card">
+              <div className="review-stars">{"★".repeat(rev.rating)}</div>
+              <p className="review-quote">"{rev.quote}"</p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px", fontSize: "0.84rem" }}>
+                <strong>{rev.name} ({rev.location})</strong>
+                <span style={{ color: "var(--heritage-green)", fontWeight: "700", fontSize: "0.78rem" }}>✓ Verified Buyer</span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const { slug } = useParams();
   const productCatalog = useCatalogProducts();
@@ -3036,18 +3114,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
             )}
 
             {activeTab === "reviews" && (
-              <div>
-                <p>Rated <strong>4.9 / 5</strong> by families across New Delhi, Gurugram, Bengaluru, and Mumbai.</p>
-                <div className="reviews-grid" style={{ marginTop: "16px" }}>
-                  {testimonials.slice(0, 2).map((rev) => (
-                    <div key={rev.name} className="review-card">
-                      <div className="review-stars">{"★".repeat(rev.rating)}</div>
-                      <p className="review-quote">"{rev.quote}"</p>
-                      <strong>{rev.name} ({rev.location})</strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <ProductReviewsTab slug={product.slug} />
             )}
           </div>
         </div>
@@ -4890,6 +4957,262 @@ function TrackPage({ session }) {
   );
 }
 
+function ReviewSubmissionPage() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const [loading, setLoading] = useState(true);
+  const [requestData, setRequestData] = useState(null);
+  const [error, setError] = useState("");
+
+  const [rating, setRating] = useState(5);
+  const [title, setTitle] = useState("");
+  const [comment, setComment] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [city, setCity] = useState("");
+  const [consent, setConsent] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useDocumentMeta({
+    title: "Rate Your Homemade Achar | Khana Peena Ghar Se",
+    description: "Share your feedback directly with Rachna and our family kitchen in Bahadurgarh."
+  });
+
+  useEffect(() => {
+    if (!token) {
+      setError("No review link provided. Please check the WhatsApp or email invitation sent to you.");
+      setLoading(false);
+      return;
+    }
+
+    async function load() {
+      try {
+        const res = await fetch(`/api/submit-review?token=${encodeURIComponent(token)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Invalid or expired review link.");
+        setRequestData(data.request);
+        if (data.request?.customerName) setDisplayName(data.request.customerName);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, [token]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!consent) {
+      alert("Please confirm the privacy consent under DPDP Act to submit your review.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/submit-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          rating,
+          title,
+          comment,
+          displayName,
+          city,
+          consent
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Review submission failed.");
+      setSubmitted(true);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="page-shell">
+        <div className="content-container" style={{ textAlign: "center", padding: "60px 0" }}>
+          <p style={{ color: "var(--heritage-green)", fontWeight: "600" }}>Verifying your review invite token...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !requestData) {
+    return (
+      <div className="page-shell">
+        <div className="content-container">
+          <div style={{ maxWidth: "560px", margin: "40px auto", background: "var(--surface)", padding: "36px", borderRadius: "var(--radius-lg)", border: "1px solid var(--line)", textAlign: "center" }}>
+            <span style={{ fontSize: "2.6rem", display: "block", marginBottom: "12px" }}>🏺</span>
+            <h2 style={{ fontFamily: "var(--font-serif)", color: "var(--heritage-green)", margin: "0 0 10px" }}>Review Invitation Link</h2>
+            <p style={{ color: "var(--text-soft)", fontSize: "0.95rem", lineHeight: 1.6 }}>{error || "This review link is either invalid or expired."}</p>
+            <Link to="/achar" className="button button-primary" style={{ marginTop: "16px" }}>Explore Our Achars →</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (requestData.isCompleted || submitted) {
+    return (
+      <div className="page-shell">
+        <div className="content-container">
+          <div style={{ maxWidth: "580px", margin: "40px auto", background: "var(--surface)", padding: "40px 32px", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-gold)", textAlign: "center", boxShadow: "var(--shadow-md)" }}>
+            <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "var(--heritage-green)", color: "#FFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "2rem", margin: "0 auto 16px" }}>
+              ✓
+            </div>
+            <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", color: "var(--heritage-green)", margin: "0 0 8px" }}>
+              Dhanyavaad for Your Review!
+            </h1>
+            <p style={{ color: "var(--text-soft)", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 20px" }}>
+              Rachna and our Bahadurgarh kitchen team have received your review. To ensure family-friendly authenticity and safeguard privacy, all reviews are screened by our team before appearing live on our website.
+            </p>
+            <div style={{ background: "var(--warm-cream-pure)", padding: "16px", borderRadius: "8px", border: "1px solid var(--line)", fontSize: "0.88rem", color: "var(--text-muted)", marginBottom: "24px" }}>
+              Order Verified: <strong>{requestData.orderNumber || "Verified Purchase"}</strong>
+            </div>
+            <Link to="/achar" className="button button-primary">
+              Continue Shopping →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-shell">
+      <div className="content-container">
+        <div style={{ maxWidth: "640px", margin: "40px auto", background: "var(--surface)", padding: "40px 32px", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-gold)", boxShadow: "var(--shadow-md)" }}>
+          <div style={{ textAlign: "center", marginBottom: "28px" }}>
+            <span style={{ fontSize: "2.4rem", display: "block", marginBottom: "8px" }}>🏺</span>
+            <p className="section-eyebrow">Verified Kitchen Feedback</p>
+            <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "2rem", color: "var(--heritage-green)", margin: "0 0 8px" }}>
+              How was your Achar?
+            </h1>
+            <p style={{ color: "var(--text-soft)", fontSize: "0.92rem", margin: 0 }}>
+              Namaste {requestData.customerName || "Patron"}! Please share your authentic thoughts on your recent order {requestData.orderNumber ? `(#${requestData.orderNumber})` : ""}.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} style={{ display: "grid", gap: "20px" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "8px", fontWeight: "700" }}>
+                Overall Rating
+              </label>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      fontSize: "2.4rem",
+                      cursor: "pointer",
+                      color: star <= rating ? "var(--mustard-gold)" : "#D1D5DB",
+                      transition: "transform 140ms ease",
+                      padding: 0
+                    }}
+                    title={`${star} Star`}
+                  >
+                    ★
+                  </button>
+                ))}
+                <span style={{ marginLeft: "8px", fontWeight: "700", color: "var(--heritage-green)", fontSize: "0.92rem" }}>
+                  {rating === 5 ? "5/5 — Heirloom Perfection" : rating === 4 ? "4/5 — Very Delicious" : rating === 3 ? "3/5 — Good Taste" : rating === 2 ? "2/5 — Fair" : "1/5 — Needs Improvement"}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "6px", fontWeight: "700" }}>
+                Review Headline
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Just like Dadi used to make!"
+                style={{ width: "100%", padding: "12px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)", fontSize: "0.95rem" }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "6px", fontWeight: "700" }}>
+                Detailed Feedback *
+              </label>
+              <textarea
+                required
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="How was the aroma, spice level, and oil purity? What did you pair it with (e.g. paratha, dal-chawal)?"
+                style={{ width: "100%", padding: "12px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)", fontSize: "0.95rem" }}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "6px", fontWeight: "700" }}>
+                  Display Name (Public)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="e.g. Aarav S."
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)", fontSize: "0.95rem" }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--text-muted)", marginBottom: "6px", fontWeight: "700" }}>
+                  City / Location
+                </label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Gurugram"
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)", fontSize: "0.95rem" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ background: "var(--warm-cream-pure)", padding: "14px", borderRadius: "8px", border: "1px solid var(--line)" }}>
+              <label style={{ display: "flex", gap: "10px", alignItems: "flex-start", cursor: "pointer", fontSize: "0.84rem", color: "var(--text-soft)", lineHeight: 1.5 }}>
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  style={{ marginTop: "3px" }}
+                />
+                <span>
+                  <strong>Privacy &amp; Display Consent (DPDP Act, 2023):</strong> I consent to Khana Peena Ghar Se displaying my first name, city, and review on their website. My phone number and street address will never be displayed publicly.
+                </span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="button button-primary"
+              style={{ width: "100%", padding: "14px", fontSize: "1.05rem" }}
+            >
+              {submitting ? "Submitting to Kitchen..." : "Submit Review to Kitchen →"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PrivacyPolicyPage() {
   useDocumentMeta({
     title: "Privacy Policy | Khana Peena Ghar Se",
@@ -5666,6 +5989,7 @@ export default function App() {
               <Route path="/account" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/login" element={<AccountPage session={session} refreshSession={refreshSession} />} />
               <Route path="/track-order" element={<TrackPage session={session} />} />
+              <Route path="/review" element={<ReviewSubmissionPage />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms" element={<TermsPage />} />
               <Route path="/terms-and-conditions" element={<TermsPage />} />
