@@ -92,8 +92,23 @@ export default async function handler(req, res) {
     }
 
     const itemsSummary = validatedItems
-      .map((item) => `${item.name} (${item.sizeLabel || "Standard"}) x${item.quantity}`)
+      .map((item) => `${item.name} (${item.sizeLabel || item.size || "Standard"}) x${item.quantity}`)
       .join(", ");
+
+    const shippingAddress = {
+      recipient_name: customer.customerName,
+      phone: customer.phone,
+      address_line_1: customer.addressLine1,
+      address_line_2: customer.addressLine2 || "",
+      city: customer.city,
+      state: customer.state,
+      pincode: customer.pincode
+    };
+
+    const metadata = {
+      payment_method: customer.paymentMethod || "COD",
+      notes: customer.notes || null
+    };
 
     const orderPayload = {
       order_number: randomOrderNumber(),
@@ -101,22 +116,21 @@ export default async function handler(req, res) {
       customer_name: customer.customerName,
       phone: customer.phone,
       email: customer.email || null,
-      address_line_1: customer.addressLine1,
-      address_line_2: customer.addressLine2 || null,
-      city: customer.city,
-      state: customer.state,
-      pincode: customer.pincode,
-      payment_method: customer.paymentMethod || "COD",
-      payment_status: "pending",
       status: "pending",
+      payment_status: customer.paymentMethod === "PREPAID_UPI" ? "paid" : "payment_pending",
       total_amount: totalAmount,
-      items_summary: itemsSummary
+      subtotal_amount: totalAmount,
+      shipping_amount: 0,
+      delivery_notes: customer.notes || null,
+      items_summary: itemsSummary,
+      shipping_address: shippingAddress,
+      metadata: metadata
     };
 
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert(orderPayload)
-      .select("id, order_number, customer_name, phone, address_line_1, city, state, pincode, status, total_amount, payment_method, created_at")
+      .select("id, order_number, customer_name, phone, email, status, payment_status, total_amount, delivery_notes, items_summary, shipping_address, metadata, created_at")
       .single();
     if (orderError) throw orderError;
 
@@ -124,10 +138,11 @@ export default async function handler(req, res) {
       order_id: order.id,
       product_slug: item.slug,
       product_name: item.name,
-      size_label: item.sizeLabel || "Standard",
+      size_label: item.sizeLabel || item.size || "Standard",
       quantity: Number(item.quantity),
       unit_price: Number(item.unitPrice),
-      total_price: Number(item.unitPrice) * Number(item.quantity)
+      line_total: Number(item.unitPrice) * Number(item.quantity),
+      product_image: liveProductMap.get(item.slug)?.image_url || null
     }));
 
     const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
@@ -143,7 +158,27 @@ export default async function handler(req, res) {
       if (stockError) throw stockError;
     }
 
-    return res.status(200).json({ ok: true, order });
+    const formattedOrder = {
+      id: order.id,
+      order_number: order.order_number,
+      customer_name: order.customer_name,
+      phone: order.phone,
+      email: order.email,
+      address_line_1: customer.addressLine1,
+      address_line_2: customer.addressLine2 || null,
+      city: customer.city,
+      state: customer.state,
+      pincode: customer.pincode,
+      shipping_address: order.shipping_address,
+      status: order.status,
+      total_amount: order.total_amount,
+      payment_method: customer.paymentMethod || "COD",
+      payment_status: order.payment_status,
+      items_summary: order.items_summary,
+      created_at: order.created_at
+    };
+
+    return res.status(200).json({ ok: true, order: formattedOrder });
   } catch (error) {
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
