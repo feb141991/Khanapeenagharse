@@ -206,6 +206,9 @@
                 <button type="button" class="filter-order-btn" data-order-filter="dispatched">Dispatched</button>
                 <button type="button" class="filter-order-btn" data-order-filter="delivered">Delivered</button>
               </div>
+              <button class="button button-secondary button-sm" type="button" id="btn-export-orders-csv" title="Download live dispatch data as CSV">
+                📥 Export Orders CSV
+              </button>
             </div>
           </div>
           <div class="admin-table-wrap">
@@ -218,11 +221,12 @@
                   <th scope="col">Total (₹)</th>
                   <th scope="col">Workflow Status</th>
                   <th scope="col">Action</th>
+                  <th scope="col">Dispatch Slip</th>
                   <th scope="col">Feedback Trigger</th>
                 </tr>
               </thead>
               <tbody id="orders-table-body">
-                <tr><td colspan="7" class="loading-cell">Loading orders...</td></tr>
+                <tr><td colspan="8" class="loading-cell">Loading orders...</td></tr>
               </tbody>
             </table>
           </div>
@@ -416,6 +420,30 @@
       <!-- Status Bar -->
       <p class="form-status" id="orders-status" role="status" aria-live="polite"></p>
     </section>
+
+    <!-- Printable Packing Slip Modal -->
+    <div id="packing-slip-modal" class="modal-backdrop hidden" aria-modal="true" role="dialog">
+      <div class="packing-slip-card">
+        <div class="packing-slip-header-bar">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:20px;">🏺</span>
+            <strong style="color:var(--ink); font-size:15px;">Kitchen Dispatch &amp; Packaging Slip</strong>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="button button-primary button-sm" id="btn-print-slip-action">
+              🖨️ Print Dispatch Slip
+            </button>
+            <button type="button" class="button button-ghost button-sm" id="btn-close-slip-modal">
+              ✕ Close
+            </button>
+          </div>
+        </div>
+
+        <div class="printable-slip-content" id="printable-slip-content">
+          <!-- Populated dynamically by js/admin.js -->
+        </div>
+      </div>
+    </div>
 
     <!-- Floating Toast Notification Container -->
     <div id="admin-toast-container" class="admin-toast-container" aria-live="polite"></div>

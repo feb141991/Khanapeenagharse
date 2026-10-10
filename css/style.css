@@ -1284,6 +1284,350 @@ textarea { min-height: 110px; resize: vertical; }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* Packing Slip Modal & Print Layout */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 36, 27, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.packing-slip-card {
+  background: #FFFFFF;
+  color: #1F1A12;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  max-width: 820px;
+  width: 100%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(212, 160, 46, 0.35);
+  animation: modalPopIn 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.packing-slip-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: #FAF7F2;
+  border-bottom: 1px solid rgba(31, 26, 18, 0.1);
+}
+
+.printable-slip-content {
+  padding: 24px 28px;
+  overflow-y: auto;
+  font-family: var(--font-body, system-ui, sans-serif);
+  color: #1A1A1A;
+}
+
+.packing-slip-sheet {
+  background: #FFF;
+  border: 2px dashed #D4A02E;
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-sizing: border-box;
+}
+
+.slip-header-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #0A241B;
+}
+
+.slip-brand-col h2 {
+  font-family: var(--font-display, serif);
+  font-size: 22px;
+  margin: 0 0 4px;
+  color: #0A241B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slip-kitchen-tagline {
+  font-size: 13px;
+  font-weight: 600;
+  color: #D4A02E;
+  margin: 0 0 6px;
+}
+
+.slip-origin-text {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.slip-meta-col {
+  text-align: right;
+  min-width: 200px;
+}
+
+.slip-order-badge {
+  display: inline-block;
+  background: #0A241B;
+  color: #F8F3EA;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.slip-pay-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.slip-pay-badge.cod {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #F59E0B;
+}
+
+.slip-pay-badge.paid {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #10B981;
+}
+
+.slip-date-text {
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.slip-routing-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.slip-box {
+  background: #FDFBF7;
+  border: 1px solid rgba(31, 26, 18, 0.12);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.slip-box-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 800;
+  color: #0A241B;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.slip-recipient-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 4px;
+}
+
+.slip-recipient-phone {
+  font-size: 13px;
+  font-weight: 700;
+  color: #047857;
+  margin: 0 0 6px;
+}
+
+.slip-recipient-addr {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+
+.slip-pincode-pill {
+  display: inline-block;
+  background: #0A241B;
+  color: #FFF;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  letter-spacing: 1px;
+}
+
+.slip-manifest-list {
+  font-size: 12px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.slip-manifest-list strong {
+  color: #111;
+}
+
+.slip-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  font-size: 13px;
+}
+
+.slip-items-table th {
+  background: #F3EFE6;
+  color: #0A241B;
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid #D5C9B3;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.slip-items-table td {
+  padding: 10px 12px;
+  border: 1px solid #E5DEC9;
+  vertical-align: middle;
+}
+
+.slip-check-col {
+  width: 44px;
+  text-align: center;
+  font-size: 18px;
+  color: #888;
+}
+
+.slip-check-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #0A241B;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.slip-total-bar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  margin: 12px 0 18px;
+  padding: 10px 16px;
+  background: #F8F4EC;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.slip-total-bar strong {
+  font-size: 16px;
+  color: #0A241B;
+}
+
+.slip-notes-alert {
+  background: #FFFBEB;
+  border-left: 4px solid #D4A02E;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin: 14px 0;
+  font-size: 12px;
+  color: #78350F;
+}
+
+.slip-fragile-notice {
+  margin-top: 18px;
+  padding: 12px 16px;
+  background: #FEF2F2;
+  border: 1.5px dashed #EF4444;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #991B1B;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slip-sign-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid #D5C9B3;
+  font-size: 11px;
+  color: #666;
+}
+
+/* Print Media Query */
+@media print {
+  body {
+    background: #FFF !important;
+    color: #000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .site-header,
+  .site-footer,
+  .admin-header,
+  .admin-kpi-grid,
+  .admin-nav-tabs,
+  .admin-tab-panel,
+  .admin-toast-container,
+  .packing-slip-header-bar,
+  #admin-toast-container,
+  .filter-controls-row {
+    display: none !important;
+  }
+  .modal-backdrop {
+    position: static !important;
+    inset: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    display: block !important;
+  }
+  .packing-slip-card {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    animation: none !important;
+  }
+  .printable-slip-content {
+    padding: 0 !important;
+  }
+  .packing-slip-sheet {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    padding: 16px 20px !important;
+    page-break-inside: avoid;
+  }
+  @page {
+    margin: 10mm;
+    size: auto;
+  }
+}
+
 .hidden { display: none !important; }
 
 /* Footer */

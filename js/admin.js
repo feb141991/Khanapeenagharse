@@ -49,6 +49,13 @@ const pwdIcon = document.querySelector("#pwd-icon");
 const fillDefaultKeyBtn = document.querySelector("#fill-default-key-btn");
 const toastContainer = document.querySelector("#admin-toast-container");
 
+// Packing Slip & CSV Elements
+const btnExportOrdersCsv = document.querySelector("#btn-export-orders-csv");
+const packingSlipModal = document.querySelector("#packing-slip-modal");
+const printableSlipContent = document.querySelector("#printable-slip-content");
+const btnPrintSlipAction = document.querySelector("#btn-print-slip-action");
+const btnCloseSlipModal = document.querySelector("#btn-close-slip-modal");
+
 const ADMIN_KEY_STORAGE = "kp_admin_key_v2";
 const DEFAULT_KEY_HINT = "kp_admin_secret_key";
 
@@ -178,7 +185,7 @@ function renderOrdersTable(orders) {
   if (statOrdersTotal) statOrdersTotal.textContent = cachedOrders.length;
 
   if (!orders.length) {
-    ordersTableBody.innerHTML = `<tr><td colspan="7" class="loading-cell">No matching orders found.</td></tr>`;
+    ordersTableBody.innerHTML = `<tr><td colspan="8" class="loading-cell">No matching orders found.</td></tr>`;
     return;
   }
 
@@ -227,6 +234,11 @@ function renderOrdersTable(orders) {
         <td>
           <button class="button button-secondary button-sm" type="button" data-save-order="${order.id}">Save</button>
         </td>
+        <td>
+          <button class="button button-ghost button-sm" type="button" data-print-slip="${order.id}" title="Generate printable packing slip">
+            🖨️ Slip
+          </button>
+        </td>
         <td>${feedbackAction}</td>
       </tr>
     `;
@@ -244,6 +256,310 @@ document.querySelectorAll(".filter-order-btn").forEach((btn) => {
     activeOrderFilter = btn.dataset.orderFilter;
     filterAndRenderOrders();
   });
+});
+
+// ==========================================
+// CSV EXPORT FOR KITCHEN DISPATCH
+// ==========================================
+function escapeCsv(val) {
+  if (val === null || val === undefined) return '""';
+  const str = String(val).replace(/"/g, '""');
+  return `"${str}"`;
+}
+
+function exportOrdersToCSV() {
+  let list = cachedOrders;
+  const q = ordersSearchInput?.value?.toLowerCase().trim();
+  if (q) {
+    list = list.filter((o) =>
+      String(o.order_number || "").toLowerCase().includes(q) ||
+      String(o.customer_name || "").toLowerCase().includes(q) ||
+      String(o.phone || "").includes(q) ||
+      String(o.items_summary || "").toLowerCase().includes(q)
+    );
+  }
+  if (activeOrderFilter !== "all") {
+    list = list.filter((o) => o.status === activeOrderFilter);
+  }
+
+  if (!list || !list.length) {
+    showToast("No orders available to export.", "error");
+    return;
+  }
+
+  logDiag(`Exporting ${list.length} orders to CSV...`, "info");
+
+  const headers = [
+    "Order Number",
+    "Order Date",
+    "Customer Name",
+    "Phone Number",
+    "Email Address",
+    "Workflow Status",
+    "Payment Status",
+    "Payment Method",
+    "Total Amount (INR)",
+    "Items Summary",
+    "Recipient Name",
+    "Address Line 1",
+    "Address Line 2",
+    "City",
+    "State",
+    "Pincode",
+    "Delivery Notes"
+  ];
+
+  const rows = list.map((o) => {
+    let addr = o.shipping_address;
+    if (typeof addr === "string") {
+      try { addr = JSON.parse(addr); } catch (e) { addr = {}; }
+    }
+    addr = addr || {};
+
+    // Fallback to CRM customer address if missing in order record
+    if (!addr.address_line_1 && o.customer_id) {
+      const cust = cachedCustomers.find((c) => String(c.id) === String(o.customer_id) || String(c.phone) === String(o.phone));
+      if (cust) {
+        addr = {
+          recipient_name: cust.full_name || o.customer_name,
+          phone: cust.phone || o.phone,
+          address_line_1: cust.address_line_1 || "",
+          address_line_2: cust.address_line_2 || "",
+          city: cust.city || "",
+          state: cust.state || "",
+          pincode: cust.pincode || ""
+        };
+      }
+    }
+
+    let meta = o.metadata;
+    if (typeof meta === "string") {
+      try { meta = JSON.parse(meta); } catch (e) { meta = {}; }
+    }
+    meta = meta || {};
+
+    const payMethod = meta.payment_method || (o.payment_status === "paid" ? "PREPAID_UPI" : "COD");
+
+    return [
+      escapeCsv(o.order_number),
+      escapeCsv(o.created_at ? new Date(o.created_at).toLocaleString("en-IN") : ""),
+      escapeCsv(o.customer_name),
+      escapeCsv(o.phone),
+      escapeCsv(o.email || ""),
+      escapeCsv(o.status),
+      escapeCsv(o.payment_status || "payment_pending"),
+      escapeCsv(payMethod),
+      escapeCsv(o.total_amount),
+      escapeCsv(o.items_summary),
+      escapeCsv(addr.recipient_name || o.customer_name),
+      escapeCsv(addr.address_line_1 || ""),
+      escapeCsv(addr.address_line_2 || ""),
+      escapeCsv(addr.city || ""),
+      escapeCsv(addr.state || ""),
+      escapeCsv(addr.pincode || ""),
+      escapeCsv(o.delivery_notes || meta.notes || "")
+    ].join(",");
+  });
+
+  const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const today = new Date().toISOString().slice(0, 10);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `KhanaPeenaGharSe_Orders_${today}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${list.length} orders to CSV successfully!`, "success");
+}
+
+btnExportOrdersCsv?.addEventListener("click", exportOrdersToCSV);
+
+// ==========================================
+// PACKING SLIP MODAL & PRINTING
+// ==========================================
+function openPackingSlip(orderId) {
+  const order = cachedOrders.find((o) => String(o.id) === String(orderId));
+  if (!order) {
+    showToast("Order record not found.", "error");
+    return;
+  }
+
+  let addr = order.shipping_address;
+  if (typeof addr === "string") {
+    try { addr = JSON.parse(addr); } catch (e) { addr = {}; }
+  }
+  addr = addr || {};
+
+  if (!addr.address_line_1 && order.customer_id) {
+    const cust = cachedCustomers.find((c) => String(c.id) === String(order.customer_id) || String(c.phone) === String(order.phone));
+    if (cust) {
+      addr = {
+        recipient_name: cust.full_name || order.customer_name,
+        phone: cust.phone || order.phone,
+        address_line_1: cust.address_line_1 || "",
+        address_line_2: cust.address_line_2 || "",
+        city: cust.city || "",
+        state: cust.state || "",
+        pincode: cust.pincode || ""
+      };
+    }
+  }
+
+  let meta = order.metadata;
+  if (typeof meta === "string") {
+    try { meta = JSON.parse(meta); } catch (e) { meta = {}; }
+  }
+  meta = meta || {};
+
+  const isPaid = order.payment_status === "paid" || meta.payment_method === "PREPAID_UPI";
+  const orderDate = order.created_at ? new Date(order.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" }) : "N/A";
+  const recipientName = addr.recipient_name || order.customer_name || "Valued Patron";
+  const recipientPhone = addr.phone || order.phone || "N/A";
+  const addressLine1 = addr.address_line_1 || "Address on record with customer";
+  const addressLine2 = addr.address_line_2 || "";
+  const city = addr.city || "NCR Hub";
+  const state = addr.state || "India";
+  const pincode = addr.pincode || "—";
+
+  const rawItems = (order.items_summary || "Artisanal Fresh Batch Achar")
+    .split(/,\s*(?=[A-Za-z0-9])/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const itemsRowsHtml = rawItems.map((item, idx) => `
+    <tr>
+      <td class="slip-check-col"><div class="slip-check-box"></div></td>
+      <td>
+        <strong style="color:#0A241B;">${item}</strong><br>
+        <span style="font-size:11px; color:#666;">Cold-Pressed Mustard Oil &bull; Sun-Cured Heritage Recipe</span>
+      </td>
+      <td style="text-align:center; font-size:12px; color:#444;">
+        Airtight Glass/Pet Jar<br><span style="font-size:10px; color:#047857; font-weight:700;">[Hermetically Sealed]</span>
+      </td>
+      <td style="text-align:right; font-weight:700;">
+        ${idx === 0 && rawItems.length === 1 ? `₹${order.total_amount}` : 'Included in Batch'}
+      </td>
+    </tr>
+  `).join("");
+
+  if (printableSlipContent) {
+    printableSlipContent.innerHTML = `
+      <div class="packing-slip-sheet">
+        <div class="slip-header-grid">
+          <div class="slip-brand-col">
+            <h2><span>🏺</span> Khana Peena Ghar Se</h2>
+            <p class="slip-kitchen-tagline">Pure Handcrafted Mustard Oil Pickles &amp; Preserves</p>
+            <p class="slip-origin-text">
+              <strong>Kitchen Origin:</strong> D-Block, Line Par, Bahadurgarh, Jhajjar, Haryana 124507<br>
+              <strong>FSSAI Registered:</strong> 20824005001234 &bull; <strong>Kitchen Care:</strong> +91 93102 14457
+            </p>
+          </div>
+          <div class="slip-meta-col">
+            <div class="slip-order-badge">${order.order_number || "KP-ORDER"}</div>
+            <div>
+              <span class="slip-pay-badge ${isPaid ? 'paid' : 'cod'}">
+                ${isPaid ? '✓ PREPAID (ONLINE/UPI)' : '⚠️ CASH ON DELIVERY (COD)'}
+              </span>
+            </div>
+            <div class="slip-date-text">
+              Date: ${orderDate}
+            </div>
+            <div style="font-size:11px; color:#444; margin-top:2px;">
+              Workflow: <strong style="text-transform:uppercase;">${order.status}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="slip-routing-grid">
+          <div class="slip-box">
+            <div class="slip-box-title">
+              <span>📍</span> SHIP TO (PATRON DESTINATION)
+            </div>
+            <div class="slip-recipient-name">${recipientName}</div>
+            <div class="slip-recipient-phone">📞 ${recipientPhone}</div>
+            <div class="slip-recipient-addr">
+              ${addressLine1}${addressLine2 ? `<br>${addressLine2}` : ''}<br>
+              ${city}, ${state}
+            </div>
+            <div>
+              <span class="slip-pincode-pill">PIN: ${pincode}</span>
+            </div>
+          </div>
+
+          <div class="slip-box">
+            <div class="slip-box-title">
+              <span>🚚</span> DISPATCH &amp; TRANSIT MANIFEST
+            </div>
+            <div class="slip-manifest-list">
+              <div><strong>Origin Hub:</strong> Delhi NCR / Bahadurgarh (North Zone)</div>
+              <div><strong>Transit Safety:</strong> Sealed Glass/Pet Jar, Double Cushioned Wrap</div>
+              <div><strong>Courier Express:</strong> Delhivery / BlueDart / India Post</div>
+              <div><strong>Master Artisan:</strong> Rachna Sharma &amp; Family</div>
+              ${order.delivery_notes ? `<div style="margin-top:6px; color:#92400E; font-size:11px;"><strong>Patron Note:</strong> ${order.delivery_notes}</div>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <table class="slip-items-table">
+          <thead>
+            <tr>
+              <th style="width:40px; text-align:center;">Pack</th>
+              <th>Item Description &amp; Recipe Batch</th>
+              <th style="text-align:center; width:140px;">Packaging Type</th>
+              <th style="text-align:right; width:100px;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsRowsHtml}
+          </tbody>
+        </table>
+
+        <div class="slip-total-bar">
+          <span>Shipping: <strong style="color:#047857;">FREE (Pan-India)</strong></span>
+          <span>Total Order Value: <strong>₹${order.total_amount || 0}</strong></span>
+        </div>
+
+        <div class="slip-fragile-notice">
+          <span style="font-size:22px;">⚠️</span>
+          <div>
+            <strong>FRAGILE ARTISANAL FOOD ITEM — HANDLE WITH UTMOST CARE</strong><br>
+            Contains authentic sun-matured pickles preserved in cold-pressed mustard oil. Keep container upright. 100% transit damage replacement guarantee.
+          </div>
+        </div>
+
+        <div class="slip-sign-bar">
+          <div>Kitchen QA Packed By: ___________________</div>
+          <div>Dispatch Date &amp; Time: ___________________</div>
+          <div>Seal &amp; Anti-Leak Verified: [ &nbsp; ] YES</div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (packingSlipModal) {
+    packingSlipModal.classList.remove("hidden");
+    logDiag(`Generated printable packing slip for order: ${order.order_number}`);
+  }
+}
+
+function closePackingSlip() {
+  if (packingSlipModal) {
+    packingSlipModal.classList.add("hidden");
+  }
+}
+
+btnPrintSlipAction?.addEventListener("click", () => window.print());
+btnCloseSlipModal?.addEventListener("click", closePackingSlip);
+packingSlipModal?.addEventListener("click", (e) => {
+  if (e.target === packingSlipModal) closePackingSlip();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && packingSlipModal && !packingSlipModal.classList.contains("hidden")) {
+    closePackingSlip();
+  }
 });
 
 // ==========================================
@@ -562,6 +878,14 @@ async function patchAdmin(payload) {
 document.addEventListener("click", async (event) => {
   const adminKey = getAdminKey();
   if (!adminKey) return;
+
+  // Open Packing Slip
+  const slipButton = event.target.closest("[data-print-slip]");
+  if (slipButton) {
+    const orderId = slipButton.dataset.printSlip;
+    openPackingSlip(orderId);
+    return;
+  }
 
   // Save Order Status
   const orderButton = event.target.closest("[data-save-order]");

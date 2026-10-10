@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
     if (req.method === "GET") {
       const [{ data: orders, error: ordersError }, { data: inventory, error: inventoryError }, { data: reviewReqs }] = await Promise.all([
-        supabase.from("orders").select("id, order_number, customer_id, customer_name, phone, status, total_amount, items_summary, created_at").order("created_at", { ascending: false }),
+        supabase.from("orders").select("id, order_number, customer_id, customer_name, phone, email, status, payment_status, total_amount, items_summary, shipping_address, metadata, delivery_notes, created_at").order("created_at", { ascending: false }),
         supabase.from("products").select("id, slug, name, size_label, stock_quantity, price, image_url, gallery_images").order("name", { ascending: true }),
         supabase.from("review_requests").select("order_id, token, is_completed")
       ]);
