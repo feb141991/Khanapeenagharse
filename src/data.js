@@ -247,5 +247,18 @@ export const faqs = [
   {
     q: "Are these achars 100% vegetarian and vegan-friendly?",
     a: "Yes, all our achars are 100% vegetarian, plant-based, and vegan. We do not use any animal fats, dairy derivatives, or hidden chemical processing agents."
+  },
+  {
+    q: "How can I track my order once dispatched?",
+    a: "Once your batch is packed and dispatched from our kitchen, you receive live SMS and WhatsApp tracking updates. You can also visit our Live Track Order page on the website and enter your order number or phone number for instant real-time shipment updates."
+  },
+  {
+    q: "What happens if a glass jar arrives damaged or leaking during transit?",
+    a: "We pack every jar with multi-layered shockproof cushioning. In the rare event of transit damage or leakage, simply share a quick photo on WhatsApp (+91 98123 89881) or email us, and we will send a 100% free immediate replacement jar or issue a full refund with zero questions asked."
+  },
+  {
+    q: "Where is Khana Peena Ghar Se located?",
+    a: "Our culinary kitchen is located in Bahadurgarh, Jhajjar district, Haryana (PIN: 124507). We serve our local neighborhood via Zomato and ship freshly prepared small batches to food lovers pan-India."
   }
 ];
+

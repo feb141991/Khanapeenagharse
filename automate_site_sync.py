@@ -194,6 +194,12 @@ PAGES_CONFIG = [
         "priority": "0.60",
         "changefreq": "monthly",
         "images": []
+    },
+    {
+        "url_path": "/faq",
+        "priority": "0.80",
+        "changefreq": "monthly",
+        "images": []
     }
 ]
 

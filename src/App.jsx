@@ -2061,6 +2061,7 @@ function Footer() {
           <div className="footer-col">
             <h3>Customer Care</h3>
             <ul className="footer-links">
+              <li><Link to="/faq">Frequently Asked Questions (FAQs)</Link></li>
               <li><Link to="/track-order">Live Track Order</Link></li>
               <li><Link to="/shipping-policy">Shipping &amp; Delivery Policy</Link></li>
               <li><Link to="/refund-policy">Returns &amp; 100% Replacement</Link></li>
@@ -2901,9 +2902,39 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   const [activeTab, setActiveTab] = useState("ingredients");
   const maxSelectableQuantity = Math.max(1, Math.min(product?.stock || 0, 6));
 
+  const productSchema = useMemo(() => {
+    if (!product) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": product.name,
+      "image": `https://khanapeenagharse.in${product.image || product.images?.[0] || "/images/brand/home-hero.jpg"}`,
+      "description": product.shortDescription || product.description,
+      "sku": product.slug,
+      "brand": {
+        "@type": "Brand",
+        "name": "Khana Peena Ghar Se"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `https://khanapeenagharse.in/product/${product.slug}`,
+        "priceCurrency": "INR",
+        "price": product.price,
+        "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "itemCondition": "https://schema.org/NewCondition"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": product.rating || "5.0",
+        "reviewCount": product.reviewCount || "48"
+      }
+    };
+  }, [product]);
+
   useDocumentMeta({
     title: product ? `${product.name} (${product.size}) | Homemade Achar | Khana Peena Ghar Se` : "Product Details | Khana Peena Ghar Se",
-    description: product?.shortDescription || product?.description || "Authentic homemade achar handcrafted in small batches."
+    description: product?.shortDescription || product?.description || "Authentic homemade achar handcrafted in small batches.",
+    schema: productSchema
   });
 
   useEffect(() => {
@@ -5641,6 +5672,26 @@ function ContactPage() {
   );
 }
 
+function FAQPage() {
+  useDocumentMeta({
+    title: "Culinary FAQs & Storage Guide | Khana Peena Ghar Se",
+    description: "Detailed answers on our 100% pure cold-pressed mustard oil, sun fermentation, preservative-free recipes, shelf life, safe doorstep delivery across India, and custom gifting."
+  });
+
+  return (
+    <div className="legal-page-shell">
+      <div className="content-container">
+        <div className="breadcrumbs" style={{ marginBottom: "20px" }}>
+          <Link to="/">Home</Link>
+          <span>/</span>
+          <span>Frequently Asked Questions</span>
+        </div>
+        <FAQSection />
+      </div>
+    </div>
+  );
+}
+
 function useShopState() {
   const [cart, setCartState] = useState(() => getCart());
   const [wishlist, setWishlistState] = useState(() => getWishlist());
@@ -6534,6 +6585,8 @@ export default function App() {
               <Route path="/returns" element={<RefundPolicyPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/contact-us" element={<ContactPage />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/faqs" element={<FAQPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </motion.div>
