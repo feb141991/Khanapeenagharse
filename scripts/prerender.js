@@ -352,19 +352,27 @@ let generatedCount = 0;
 for (const route of routes) {
   const rendered = renderPage(template, route);
 
-  let targetFilePath;
   if (route.path === "/") {
-    targetFilePath = path.resolve(distDir, "index.html");
+    fs.writeFileSync(path.resolve(distDir, "index.html"), rendered, "utf-8");
   } else {
     const relativeCleanPath = route.path.replace(/^\/+/, "");
+    
+    // 1. Write as folder/index.html
     const targetFolder = path.resolve(distDir, relativeCleanPath);
     if (!fs.existsSync(targetFolder)) {
       fs.mkdirSync(targetFolder, { recursive: true });
     }
-    targetFilePath = path.resolve(targetFolder, "index.html");
+    fs.writeFileSync(path.resolve(targetFolder, "index.html"), rendered, "utf-8");
+
+    // 2. Write as folder.html (for cleanUrls resolution)
+    const flatFile = path.resolve(distDir, `${relativeCleanPath}.html`);
+    const flatParent = path.dirname(flatFile);
+    if (!fs.existsSync(flatParent)) {
+      fs.mkdirSync(flatParent, { recursive: true });
+    }
+    fs.writeFileSync(flatFile, rendered, "utf-8");
   }
 
-  fs.writeFileSync(targetFilePath, rendered, "utf-8");
   generatedCount++;
 }
 
