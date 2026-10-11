@@ -107,13 +107,46 @@ function useCatalogProducts() {
   return catalog;
 }
 
-function useDocumentMeta({ title, description, schema }) {
+function useDocumentMeta({ title, description, schema, canonical, ogImage }) {
   useEffect(() => {
-    if (title) document.title = title;
-    if (description) {
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (metaDesc) metaDesc.setAttribute("content", description);
+    if (title) {
+      document.title = title;
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute("content", title);
+      const twTitle = document.querySelector('meta[name="twitter:title"]');
+      if (twTitle) twTitle.setAttribute("content", title);
     }
+
+    if (description) {
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute("content", description);
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute("content", description);
+      const twDesc = document.querySelector('meta[name="twitter:description"]');
+      if (twDesc) twDesc.setAttribute("content", description);
+    }
+
+    const currentUrl = canonical || (typeof window !== "undefined" ? window.location.href.split("?")[0].split("#")[0] : "https://khanapeenagharse.in/");
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (canonicalLink) {
+      canonicalLink.setAttribute("href", currentUrl);
+    }
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      ogUrl.setAttribute("content", currentUrl);
+    }
+    const twUrl = document.querySelector('meta[name="twitter:url"]');
+    if (twUrl) {
+      twUrl.setAttribute("content", currentUrl);
+    }
+
+    if (ogImage) {
+      const ogImg = document.querySelector('meta[property="og:image"]');
+      if (ogImg) ogImg.setAttribute("content", ogImage);
+      const twImg = document.querySelector('meta[name="twitter:image"]');
+      if (twImg) twImg.setAttribute("content", ogImage);
+    }
+
     if (schema) {
       const scriptId = "dynamic-route-schema";
       let script = document.getElementById(scriptId);
@@ -129,7 +162,7 @@ function useDocumentMeta({ title, description, schema }) {
         if (el) el.remove();
       };
     }
-  }, [title, description, schema]);
+  }, [title, description, schema, canonical, ogImage]);
 }
 
 function TopAnnouncement() {
@@ -2922,11 +2955,6 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
         "price": product.price,
         "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
         "itemCondition": "https://schema.org/NewCondition"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": product.rating || "5.0",
-        "reviewCount": product.reviewCount || "48"
       }
     };
   }, [product]);
@@ -2934,6 +2962,8 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
   useDocumentMeta({
     title: product ? `${product.name} (${product.size}) | Homemade Achar | Khana Peena Ghar Se` : "Product Details | Khana Peena Ghar Se",
     description: product?.shortDescription || product?.description || "Authentic homemade achar handcrafted in small batches.",
+    canonical: product ? `https://khanapeenagharse.in/product/${product.slug}` : undefined,
+    ogImage: product ? `https://khanapeenagharse.in${product.image || product.images?.[0] || "/images/brand/home-hero.jpg"}` : undefined,
     schema: productSchema
   });
 

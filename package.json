@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.js && python3 automate_site_sync.py",
     "preview": "vite preview",
-    "check": "vite build && node --check api/create-order.js && node --check api/admin-dashboard.js && node --check api/track-order.js && node --check api/products.js && node --check api/customer-profile.js && node --check api/crm.js && node --check api/reviews-admin.js && node --check api/reviews-public.js && node --check api/submit-review.js && node --check api/_lib/supabase.js"
+    "check": "npm run build && node --check api/create-order.js && node --check api/admin-dashboard.js && node --check api/track-order.js && node --check api/products.js && node --check api/customer-profile.js && node --check api/crm.js && node --check api/reviews-admin.js && node --check api/reviews-public.js && node --check api/submit-review.js && node --check api/_lib/supabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
