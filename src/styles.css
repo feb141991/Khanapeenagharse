@@ -687,6 +687,18 @@ textarea {
     0 0 14px rgba(200, 155, 60, 0.12);
 }
 
+/* Chapter 4 (Combo Box) Specific: Keep Pan-India message higher up near the top badge to avoid covering the product */
+.hero-stage-slide-combo {
+  justify-content: flex-start !important;
+  gap: 12px;
+}
+
+.hero-stage-slide-combo .hero-scene-bottom-card {
+  align-self: flex-end;
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
 .hero-scene-bottom-tag {
   display: inline-flex;
   align-items: center;
@@ -747,7 +759,7 @@ textarea {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(200, 155, 60, 0.18);
   border-radius: var(--radius-md);
-  padding: 8px 12px;
+  padding: 6px 10px;
   text-align: left;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -755,6 +767,9 @@ textarea {
   overflow: hidden;
   color: rgba(247, 241, 231, 0.75);
   backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .hero-tab-btn:hover {
@@ -771,16 +786,22 @@ textarea {
 }
 
 .hero-tab-num {
-  font-size: 0.62rem;
+  font-size: 0.60rem;
   font-weight: 700;
-  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--mustard-gold-light);
-  display: block;
-  margin-bottom: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 5px;
+  background: rgba(200, 155, 60, 0.18);
+  border-radius: 4px;
+  line-height: 1.1;
+  flex-shrink: 0;
 }
 
 .hero-tab-title {
-  font-size: 0.80rem;
+  font-size: 0.76rem;
   font-weight: 600;
   line-height: 1.2;
   display: block;
@@ -4392,6 +4413,54 @@ textarea {
   color: rgba(247, 241, 231, 0.65);
   flex-wrap: wrap;
   gap: 12px;
+}
+
+.footer-made-in-india {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--warm-cream);
+  letter-spacing: 0.03em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(200, 155, 60, 0.35);
+  transition: all 0.2s ease;
+}
+
+.footer-made-in-india:hover {
+  background: rgba(200, 155, 60, 0.12);
+  border-color: var(--mustard-gold);
+}
+
+.india-flag {
+  display: flex;
+  flex-direction: column;
+  width: 18px;
+  height: 12px;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.india-flag .flag-s {
+  flex: 1;
+}
+
+.india-flag .flag-top {
+  background: #FF9933;
+}
+
+.india-flag .flag-mid {
+  background: #FFFFFF;
+}
+
+.india-flag .flag-bot {
+  background: #138808;
 }
 
 /* --- Internal Pages (Product Page, About, Cart, Checkout, Auth) --- */

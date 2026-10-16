@@ -1064,7 +1064,7 @@ function HeroCarousel() {
 
           {/* Hero Right Column: Floating Interactive Scene Spotlights */}
           <div className="hero-media-wrap">
-            <div className="hero-scene-interactive-stage">
+            <div className={`hero-scene-interactive-stage hero-stage-${slide.id}`}>
               {/* Top Floating Badge */}
               <AnimatePresence mode="wait">
                 <motion.div
@@ -1121,7 +1121,7 @@ function HeroCarousel() {
                 className={`hero-tab-btn ${isActive ? "active" : ""}`}
                 onClick={() => goToSlide(idx)}
               >
-                <span className="hero-tab-num">Chapter 0{idx + 1}</span>
+                <span className="hero-tab-num">0{idx + 1}</span>
                 <span className="hero-tab-title">{s.tabTitle}</span>
                 {isActive && (
                   <div className="hero-tab-progress-bar">
@@ -2111,17 +2111,20 @@ function Footer() {
               <li><Link to="/terms">Terms &amp; Conditions</Link></li>
               <li><Link to="/how-its-made">12-Month Shelf Life Norms</Link></li>
               <li><Link to="/about">About Co-founder Rachna Gattani</Link></li>
-              <li><Link to="/account">My Account &amp; Past Orders</Link></li>
+              <li><Link to="/account">My Account</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Khana Peena Ghar Se. All rights reserved. Registered Indian Food Brand.</span>
-          <div style={{ display: "flex", gap: "16px", alignItems: "center", flexWrap: "wrap", fontSize: "0.8rem" }}>
-            <span>🔒 256-Bit SSL Encrypted</span>
-            <span>💳 UPI • Cards • NetBanking • COD</span>
-            <span>Made with love in Bahadurgarh, Haryana</span>
+          <div className="footer-made-in-india">
+            <div className="india-flag" aria-hidden="true">
+              <span className="flag-s flag-top" />
+              <span className="flag-s flag-mid" />
+              <span className="flag-s flag-bot" />
+            </div>
+            <span>Made in India</span>
           </div>
         </div>
       </div>
