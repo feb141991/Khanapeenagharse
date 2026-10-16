@@ -65,15 +65,32 @@ function mergeProductsFromDatabase(baseProducts, remoteProducts) {
     const remote = remoteMap.get(product.slug);
     if (!remote) return product;
 
+    const isBadMediaUrl = (url) =>
+      !url ||
+      typeof url !== "string" ||
+      url.includes("/images/logo.png") ||
+      url.includes("supabase.co/storage/v1/object/public/product-images") ||
+      url.endsWith("cover.jpg") ||
+      url.endsWith("detail-1.jpg") ||
+      url.endsWith("detail-2.jpg");
+
+    const validRemoteGallery = Array.isArray(remote.gallery_images)
+      ? remote.gallery_images.filter((img) => !isBadMediaUrl(img))
+      : [];
+
+    const validRemoteImage = !isBadMediaUrl(remote.image_url)
+      ? remote.image_url
+      : (validRemoteGallery[0] || product.image);
+
+    const mergedImages = validRemoteGallery.length > 0 ? validRemoteGallery : product.images;
+
     return {
       ...product,
       price: typeof remote.price === "number" ? remote.price : product.price,
       stock: typeof remote.stock_quantity === "number" ? remote.stock_quantity : product.stock,
       description: remote.description || product.description,
-      image: remote.image_url || product.image,
-      images: Array.isArray(remote.gallery_images) && remote.gallery_images.length
-        ? remote.gallery_images
-        : (remote.image_url ? [remote.image_url] : product.images)
+      image: validRemoteImage || product.image,
+      images: mergedImages && mergedImages.length ? mergedImages : product.images
     };
   });
 }

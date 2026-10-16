@@ -6,25 +6,77 @@ const storageBucket =
   process.env.SUPABASE_STORAGE_BUCKET ||
   "product-images";
 
-function toPublicMediaUrl(supabase, value) {
-  if (!value) return null;
-  if (/^https?:\/\//i.test(value) || value.startsWith("/")) return value;
-  return supabase.storage.from(storageBucket).getPublicUrl(value).data.publicUrl;
+const CANONICAL_PRODUCT_ASSETS = {
+  "ghar-ka-achar-box": {
+    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+    gallery: [
+      "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+      "/images/achars/aam-ka-achar/Aam ka aachar.png",
+      "/images/achars/hing-ka-achar/Hing Aachar.png",
+      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
+      "/images/achars/mix-veg-achar/mix aachar.png"
+    ]
+  },
+  "the-ghar-ka-achar-box": {
+    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+    gallery: [
+      "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+      "/images/achars/aam-ka-achar/Aam ka aachar.png",
+      "/images/achars/hing-ka-achar/Hing Aachar.png",
+      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
+      "/images/achars/mix-veg-achar/mix aachar.png"
+    ]
+  },
+  "aam-ka-achar": {
+    image: "/images/achars/aam-ka-achar/Aam ka aachar.png",
+    gallery: [
+      "/images/achars/aam-ka-achar/Aam ka aachar.png",
+      "/images/achars/aam-ka-achar/aam ka aach.png"
+    ]
+  },
+  "hing-ka-achar": {
+    image: "/images/achars/hing-ka-achar/Hing Aachar.png",
+    gallery: [
+      "/images/achars/hing-ka-achar/Hing Aachar.png",
+      "/images/achars/hing-ka-achar/Hing.png",
+      "/images/achars/hing-ka-achar/hing---1.png"
+    ]
+  },
+  "mirch-ka-achar": {
+    image: "/images/achars/mirch-ka-achar/MirchKa aachar.png",
+    gallery: [
+      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
+      "/images/achars/mirch-ka-achar/mirchh.png"
+    ]
+  },
+  "mix-veg-achar": {
+    image: "/images/achars/mix-veg-achar/mix aachar.png",
+    gallery: [
+      "/images/achars/mix-veg-achar/mix aachar.png",
+      "/images/achars/mix-veg-achar/mixxx.png"
+    ]
+  }
+};
+
+function isValidMediaUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  if (url.includes("/images/logo.png")) return false;
+  if (url.includes("supabase.co/storage/v1/object/public/product-images")) return false;
+  if (url.endsWith("cover.jpg") || url.endsWith("detail-1.jpg") || url.endsWith("detail-2.jpg")) return false;
+  return true;
 }
 
-async function resolveProductFolderImages(supabase, slug) {
-  const { data, error } = await supabase.storage
-    .from(storageBucket)
-    .list(slug, {
-      limit: 100,
-      sortBy: { column: "name", order: "asc" }
-    });
+function toPublicMediaUrl(value, slug) {
+  if (!value || typeof value !== "string") return null;
+  if (value.startsWith("/images/")) return value;
+  if (/^[a-z0-9_-]+\/[^/]+$/i.test(value)) {
+    const candidate = `/images/achars/${value}`;
+    if (isValidMediaUrl(candidate)) return candidate;
+  }
+  if (/^https?:\/\//i.test(value) && isValidMediaUrl(value)) return value;
 
-  if (error) throw error;
-
-  return (data || [])
-    .filter((item) => item.name && !item.name.startsWith("."))
-    .map((item) => `${slug}/${item.name}`);
+  const fallback = CANONICAL_PRODUCT_ASSETS[slug];
+  return fallback ? fallback.image : null;
 }
 
 exports.handler = async (event) => {
@@ -42,22 +94,32 @@ exports.handler = async (event) => {
 
     if (error) throw error;
 
-    const products = await Promise.all((data || []).map(async (product) => {
-      const folderImages = await resolveProductFolderImages(supabase, product.slug);
-      const rawImages = folderImages.length
-        ? folderImages
-        : Array.isArray(product.gallery_images) && product.gallery_images.length
-          ? product.gallery_images
-          : (product.image_url ? [product.image_url] : []);
+    const products = (data || []).map((product) => {
+      const canonical = CANONICAL_PRODUCT_ASSETS[product.slug] || CANONICAL_PRODUCT_ASSETS["the-ghar-ka-achar-box"];
 
-      const galleryImages = rawImages.map((image) => toPublicMediaUrl(supabase, image)).filter(Boolean);
+      const rawGallery = Array.isArray(product.gallery_images) && product.gallery_images.length
+        ? product.gallery_images
+        : (product.image_url ? [product.image_url] : []);
+
+      const resolvedGallery = rawGallery
+        .map((img) => toPublicMediaUrl(img, product.slug))
+        .filter((img) => isValidMediaUrl(img));
+
+      const galleryImages = resolvedGallery.length > 0
+        ? resolvedGallery
+        : (canonical ? canonical.gallery : []);
+
+      const resolvedMainImage = toPublicMediaUrl(product.image_url, product.slug);
+      const imageUrl = isValidMediaUrl(resolvedMainImage)
+        ? resolvedMainImage
+        : (galleryImages[0] || (canonical ? canonical.image : "/images/brand/home-hero.jpg"));
 
       return {
         ...product,
-        image_url: galleryImages[0] || toPublicMediaUrl(supabase, product.image_url),
+        image_url: imageUrl,
         gallery_images: galleryImages
       };
-    }));
+    });
 
     return { statusCode: 200, headers, body: JSON.stringify({ products, storageBucket }) };
   } catch (error) {
