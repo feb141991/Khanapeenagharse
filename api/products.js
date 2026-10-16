@@ -10,52 +10,52 @@ const storageBucket =
 
 const CANONICAL_PRODUCT_ASSETS = {
   "ghar-ka-achar-box": {
-    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+    image: "/images/achars/combo-box/ghar-ka-achar-box.webp",
     gallery: [
-      "/images/achars/combo-box/ghar-ka-achar-box.jpg",
-      "/images/achars/aam-ka-achar/Aam ka aachar.png",
-      "/images/achars/hing-ka-achar/Hing Aachar.png",
-      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
-      "/images/achars/mix-veg-achar/mix aachar.png"
+      "/images/achars/combo-box/ghar-ka-achar-box.webp",
+      "/images/achars/aam-ka-achar/Aam ka aachar.webp",
+      "/images/achars/hing-ka-achar/Hing Aachar.webp",
+      "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
+      "/images/achars/mix-veg-achar/mix aachar.webp"
     ]
   },
   "the-ghar-ka-achar-box": {
-    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+    image: "/images/achars/combo-box/ghar-ka-achar-box.webp",
     gallery: [
-      "/images/achars/combo-box/ghar-ka-achar-box.jpg",
-      "/images/achars/aam-ka-achar/Aam ka aachar.png",
-      "/images/achars/hing-ka-achar/Hing Aachar.png",
-      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
-      "/images/achars/mix-veg-achar/mix aachar.png"
+      "/images/achars/combo-box/ghar-ka-achar-box.webp",
+      "/images/achars/aam-ka-achar/Aam ka aachar.webp",
+      "/images/achars/hing-ka-achar/Hing Aachar.webp",
+      "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
+      "/images/achars/mix-veg-achar/mix aachar.webp"
     ]
   },
   "aam-ka-achar": {
-    image: "/images/achars/aam-ka-achar/Aam ka aachar.png",
+    image: "/images/achars/aam-ka-achar/Aam ka aachar.webp",
     gallery: [
-      "/images/achars/aam-ka-achar/Aam ka aachar.png",
-      "/images/achars/aam-ka-achar/aam ka aach.png"
+      "/images/achars/aam-ka-achar/Aam ka aachar.webp",
+      "/images/achars/aam-ka-achar/aam ka aach.webp"
     ]
   },
   "hing-ka-achar": {
-    image: "/images/achars/hing-ka-achar/Hing Aachar.png",
+    image: "/images/achars/hing-ka-achar/Hing Aachar.webp",
     gallery: [
-      "/images/achars/hing-ka-achar/Hing Aachar.png",
-      "/images/achars/hing-ka-achar/Hing.png",
-      "/images/achars/hing-ka-achar/hing---1.png"
+      "/images/achars/hing-ka-achar/Hing Aachar.webp",
+      "/images/achars/hing-ka-achar/Hing.webp",
+      "/images/achars/hing-ka-achar/hing---1.webp"
     ]
   },
   "mirch-ka-achar": {
-    image: "/images/achars/mirch-ka-achar/MirchKa aachar.png",
+    image: "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
     gallery: [
-      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
-      "/images/achars/mirch-ka-achar/mirchh.png"
+      "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
+      "/images/achars/mirch-ka-achar/mirchh.webp"
     ]
   },
   "mix-veg-achar": {
-    image: "/images/achars/mix-veg-achar/mix aachar.png",
+    image: "/images/achars/mix-veg-achar/mix aachar.webp",
     gallery: [
-      "/images/achars/mix-veg-achar/mix aachar.png",
-      "/images/achars/mix-veg-achar/mixxx.png"
+      "/images/achars/mix-veg-achar/mix aachar.webp",
+      "/images/achars/mix-veg-achar/mixxx.webp"
     ]
   }
 };

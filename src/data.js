@@ -11,13 +11,13 @@ export const products = [
     size: "1,850 g box (4 full glass jars)",
     stock: 15,
     spice: "Assorted (Mild to Bold)",
-    image: "/images/achars/combo-box/ghar-ka-achar-box.jpg",
+    image: "/images/achars/combo-box/ghar-ka-achar-box.webp",
     images: [
-      "/images/achars/combo-box/ghar-ka-achar-box.jpg",
-      "/images/achars/aam-ka-achar/Aam ka aachar.png",
-      "/images/achars/hing-ka-achar/Hing Aachar.png",
-      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
-      "/images/achars/mix-veg-achar/mix aachar.png"
+      "/images/achars/combo-box/ghar-ka-achar-box.webp",
+      "/images/achars/aam-ka-achar/Aam ka aachar.webp",
+      "/images/achars/hing-ka-achar/Hing Aachar.webp",
+      "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
+      "/images/achars/mix-veg-achar/mix aachar.webp"
     ],
     dietaryBadges: [
       "4 Full Glass Jars",
@@ -47,10 +47,10 @@ export const products = [
     size: "500 g jar",
     stock: 24,
     spice: "Medium",
-    image: "/images/achars/aam-ka-achar/Aam ka aachar.png",
+    image: "/images/achars/aam-ka-achar/Aam ka aachar.webp",
     images: [
-      "/images/achars/aam-ka-achar/Aam ka aachar.png",
-      "/images/achars/aam-ka-achar/aam ka aach.png"
+      "/images/achars/aam-ka-achar/Aam ka aachar.webp",
+      "/images/achars/aam-ka-achar/aam ka aach.webp"
     ],
     dietaryBadges: [
       "100% Vegetarian",
@@ -80,11 +80,11 @@ export const products = [
     size: "450 g jar",
     stock: 18,
     spice: "Mild to Medium",
-    image: "/images/achars/hing-ka-achar/Hing Aachar.png",
+    image: "/images/achars/hing-ka-achar/Hing Aachar.webp",
     images: [
-      "/images/achars/hing-ka-achar/Hing Aachar.png",
-      "/images/achars/hing-ka-achar/Hing.png",
-      "/images/achars/hing-ka-achar/hing---1.png"
+      "/images/achars/hing-ka-achar/Hing Aachar.webp",
+      "/images/achars/hing-ka-achar/Hing.webp",
+      "/images/achars/hing-ka-achar/hing---1.webp"
     ],
     dietaryBadges: [
       "100% Vegetarian",
@@ -114,10 +114,10 @@ export const products = [
     size: "400 g jar",
     stock: 20,
     spice: "Hot",
-    image: "/images/achars/mirch-ka-achar/MirchKa aachar.png",
+    image: "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
     images: [
-      "/images/achars/mirch-ka-achar/MirchKa aachar.png",
-      "/images/achars/mirch-ka-achar/mirchh.png"
+      "/images/achars/mirch-ka-achar/MirchKa aachar.webp",
+      "/images/achars/mirch-ka-achar/mirchh.webp"
     ],
     dietaryBadges: [
       "100% Vegetarian",
@@ -147,10 +147,10 @@ export const products = [
     size: "500 g jar",
     stock: 16,
     spice: "Medium",
-    image: "/images/achars/mix-veg-achar/mix aachar.png",
+    image: "/images/achars/mix-veg-achar/mix aachar.webp",
     images: [
-      "/images/achars/mix-veg-achar/mix aachar.png",
-      "/images/achars/mix-veg-achar/mixxx.png"
+      "/images/achars/mix-veg-achar/mix aachar.webp",
+      "/images/achars/mix-veg-achar/mixxx.webp"
     ],
     dietaryBadges: [
       "100% Vegetarian",
