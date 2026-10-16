@@ -2365,6 +2365,63 @@ const POPULAR_PIN_HUBS = [
   { pin: "226001", name: "Lucknow" }
 ];
 
+const PINCODE_DISTRICT_MAP = {
+  // Punjab
+  "141": "Ludhiana",
+  "142": "Moga / Jagraon",
+  "143": "Amritsar",
+  "144": "Jalandhar",
+  "145": "Pathankot",
+  "146": "Hoshiarpur",
+  "147": "Patiala",
+  "148": "Sangrur / Barnala",
+  "151": "Bathinda",
+  "152": "Firozpur / Fazilka",
+  // Haryana
+  "121": "Faridabad",
+  "122": "Gurugram",
+  "124": "Bahadurgarh / Rohtak",
+  "125": "Hisar",
+  "126": "Jind",
+  "127": "Bhiwani",
+  "131": "Sonipat",
+  "132": "Panipat / Karnal",
+  "133": "Ambala",
+  "134": "Panchkula",
+  "135": "Yamunanagar",
+  "136": "Kurukshetra",
+  // Delhi & NCR
+  "110": "Delhi NCR",
+  "160": "Chandigarh",
+  "201": "Noida / Ghaziabad",
+  // UP
+  "226": "Lucknow",
+  "208": "Kanpur",
+  "221": "Varanasi",
+  "211": "Prayagraj",
+  "282": "Agra",
+  "248": "Dehradun",
+  // Rajasthan
+  "302": "Jaipur",
+  "342": "Jodhpur",
+  "313": "Udaipur",
+  "324": "Kota",
+  // Gujarat
+  "380": "Ahmedabad",
+  "395": "Surat",
+  "390": "Vadodara",
+  "360": "Rajkot",
+  // Maharashtra
+  "400": "Mumbai",
+  "411": "Pune",
+  "440": "Nagpur",
+  // South
+  "500": "Hyderabad",
+  "560": "Bengaluru",
+  "600": "Chennai",
+  "700": "Kolkata"
+};
+
 function formatEstimatedDeliveryDate(minDays, maxDays) {
   const now = new Date();
   const addBusinessDays = (startDate, days) => {
@@ -2405,6 +2462,7 @@ function getPincodeEstimate(rawPin) {
       pin,
       state: "Haryana",
       region: "Bahadurgarh (Origin Kitchen & Batching Hub)",
+      district: "Bahadurgarh",
       zone: "Local Origin Kitchen Hub (Same-Day / Next-Day Express)",
       etaDays: "1 Business Day",
       etaDate: formatEstimatedDeliveryDate(1, 1),
@@ -2415,15 +2473,20 @@ function getPincodeEstimate(rawPin) {
     };
   }
 
+  const prefix3 = pin.slice(0, 3);
+  const districtMatch = PINCODE_DISTRICT_MAP[prefix3];
+
   const prefix2 = pin.slice(0, 2);
   const match = PINCODE_REGION_MAP[prefix2];
 
   if (match) {
+    const finalRegion = districtMatch || match.region;
     return {
       valid: true,
       pin,
       state: match.state,
-      region: match.region,
+      region: finalRegion,
+      district: districtMatch || undefined,
       zone: match.hub,
       etaDays: `${match.minDays}–${match.maxDays} Business Days`,
       etaDate: formatEstimatedDeliveryDate(match.minDays, match.maxDays),
@@ -2478,7 +2541,13 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
     try {
       const saved = localStorage.getItem("kp_pincode");
       if (saved && /^\d{6}$/.test(saved)) {
-        return getPincodeEstimate(saved);
+        const est = getPincodeEstimate(saved);
+        const cachedDistrict = localStorage.getItem(`kp_district_${saved}`);
+        if (est && cachedDistrict) {
+          est.district = cachedDistrict;
+          est.region = cachedDistrict;
+        }
+        return est;
       }
     } catch {
       return null;
@@ -2498,7 +2567,7 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
       const updated = [
         {
           pin,
-          region: est.region?.split("/")[0]?.trim() || est.state,
+          region: est.district || est.region?.split("/")[0]?.trim() || est.state,
           state: est.state,
           etaDays: est.etaDays
         },
@@ -2529,11 +2598,15 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
               ...curr,
               postOffice: `${po.Name} (${po.District})`,
               district: po.District,
+              region: po.District || curr.region,
               state: po.State || curr.state
             };
           }
           return curr;
         });
+        try {
+          localStorage.setItem(`kp_district_${cleanPin}`, po.District || "");
+        } catch {}
       }
     } catch {
       // Fallback stays in place smoothly
@@ -2541,6 +2614,16 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
       setIsLoading(false);
     }
   }, []);
+
+  // On mount: enrich stored pincode with real-time post office data if available
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("kp_pincode");
+      if (saved && /^\d{6}$/.test(saved)) {
+        enrichWithIndiaPost(saved, getPincodeEstimate(saved));
+      }
+    } catch {}
+  }, [enrichWithIndiaPost]);
 
   const runCheck = useCallback(
     (pinToCheck) => {
@@ -2598,7 +2681,7 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
         {result && result.valid && !isChanging ? (
           <div className="pincode-compact-display">
             <span className="pincode-compact-pin">
-              📍 Deliver to: <strong>{result.pin}</strong> ({result.region?.split("/")[0] || result.state})
+              📍 Deliver to: <strong>{result.pin}</strong> ({result.district || result.region?.split("/")[0]?.trim() || result.state})
             </span>
             <span className="pincode-compact-eta">⚡ {result.etaDays}</span>
             <button
