@@ -413,6 +413,66 @@ const routes = [
         <h1>Your Shopping Cart - Khana Peena Ghar Se</h1>
       </header>
     `
+  },
+  {
+    path: "/checkout",
+    title: "Secure Checkout | Khana Peena Ghar Se",
+    description: "Complete your order for handcrafted artisanal pickles with doorstep pan-India delivery.",
+    canonical: "https://khanapeenagharse.in/checkout",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Secure Checkout - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/account",
+    title: "My Account & Member Portal | Khana Peena Ghar Se",
+    description: "Sign in to manage your orders, delivery addresses, and account details.",
+    canonical: "https://khanapeenagharse.in/account",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>My Account - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/login",
+    title: "Member Sign In | Khana Peena Ghar Se",
+    description: "Sign in to your Khana Peena Ghar Se account.",
+    canonical: "https://khanapeenagharse.in/account",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Member Sign In - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/review",
+    title: "Share Your Experience | Khana Peena Ghar Se",
+    description: "Submit your honest review for Khana Peena Ghar Se handcrafted achars.",
+    canonical: "https://khanapeenagharse.in/review",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Submit A Review - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/oauth/consent",
+    title: "Authorize Application | Khana Peena Ghar Se",
+    description: "OAuth Authorization Consent - Khana Peena Ghar Se",
+    canonical: "https://khanapeenagharse.in/oauth/consent",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Authorize Application - Khana Peena Ghar Se</h1>
+      </header>
+    `
   }
 ];
 
@@ -472,8 +532,20 @@ products.forEach((p) => {
     </article>
   `;
 
+  // Canonical /product/:slug route
   routes.push({
     path: `/product/${p.slug}`,
+    title: `${p.name} (${p.size}) | Homemade Achar | Khana Peena Ghar Se`,
+    description: p.shortDescription || p.description,
+    canonical: `https://khanapeenagharse.in/product/${p.slug}`,
+    ogImage: `https://khanapeenagharse.in${productImg}`,
+    schema: productSchema,
+    content: productHtml
+  });
+
+  // /achar/:slug alias route
+  routes.push({
+    path: `/achar/${p.slug}`,
     title: `${p.name} (${p.size}) | Homemade Achar | Khana Peena Ghar Se`,
     description: p.shortDescription || p.description,
     canonical: `https://khanapeenagharse.in/product/${p.slug}`,
@@ -486,6 +558,15 @@ products.forEach((p) => {
   if (p.slug === "ghar-ka-achar-box") {
     routes.push({
       path: `/product/the-ghar-ka-achar-box`,
+      title: `${p.name} (${p.size}) | Homemade Achar | Khana Peena Ghar Se`,
+      description: p.shortDescription || p.description,
+      canonical: `https://khanapeenagharse.in/product/ghar-ka-achar-box`,
+      ogImage: `https://khanapeenagharse.in${productImg}`,
+      schema: productSchema,
+      content: productHtml
+    });
+    routes.push({
+      path: `/achar/the-ghar-ka-achar-box`,
       title: `${p.name} (${p.size}) | Homemade Achar | Khana Peena Ghar Se`,
       description: p.shortDescription || p.description,
       canonical: `https://khanapeenagharse.in/product/ghar-ka-achar-box`,
