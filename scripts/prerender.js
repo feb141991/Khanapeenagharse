@@ -177,6 +177,242 @@ const routes = [
         </ul>
       </main>
     `
+  },
+  {
+    path: "/whatsapp",
+    title: "Connecting to WhatsApp | Khana Peena Ghar Se",
+    description: "Opening direct WhatsApp chat with Rachna's kitchen in Bahadurgarh. Handcrafted homemade achars made with 100% pure mustard oil.",
+    canonical: "https://khanapeenagharse.in/whatsapp",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <div class="page-shell" style="min-height: 65vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="text-align: center; padding: 40px 20px; max-width: 480px; margin: 0 auto;">
+          <div style="font-size: 3.5rem; margin-bottom: 16px;">💬</div>
+          <h1 style="font-size: 1.9rem; color: #0B2218; margin: 0 0 10px; font-weight: 700;">
+            Connecting to WhatsApp...
+          </h1>
+          <p style="color: #4A5568; font-size: 1rem; line-height: 1.5; margin: 0 0 24px;">
+            Opening direct WhatsApp chat with Rachna's kitchen in Bahadurgarh.
+          </p>
+          <a
+            id="wa-direct-btn"
+            href="https://wa.me/919812389881?text=Namaste%20Khana%20Peena%20Ghar%20Se!%20I%20would%20like%20to%20order%20fresh%20homemade%20achar%20from%20Bahadurgarh."
+            style="background: #25D366; color: #FFFFFF; text-decoration: none; padding: 14px 28px; border-radius: 9999px; font-weight: 700; font-size: 1.05rem; display: inline-block; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);"
+          >
+            Open WhatsApp Now ↗
+          </a>
+          <script>
+            (function() {
+              try {
+                var params = new URLSearchParams(window.location.search);
+                var customMsg = params.get("msg") || params.get("text");
+                var orderId = params.get("order");
+                var productSlug = params.get("product") || params.get("item");
+                var isCombo = params.get("combo");
+                var isBulk = params.get("bulk");
+                var msg = "Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.";
+                if (customMsg) {
+                  msg = customMsg;
+                } else if (orderId) {
+                  msg = "Namaste Khana Peena Ghar Se! I would like to check the status of my Order #" + orderId + ".";
+                } else if (productSlug) {
+                  msg = "Namaste Khana Peena Ghar Se! I would like to order " + productSlug + ". Please share details.";
+                } else if (isCombo) {
+                  msg = "Namaste Khana Peena Ghar Se! I want to order The Ghar Ka Achar 4-in-1 Signature Combo Box (₹999).";
+                } else if (isBulk) {
+                  msg = "Namaste Khana Peena Ghar Se! I am interested in bulk orders / festive gifting hampers for homemade achars.";
+                }
+                var target = "https://wa.me/919812389881?text=" + encodeURIComponent(msg);
+                var btn = document.getElementById("wa-direct-btn");
+                if (btn) btn.href = target;
+                setTimeout(function() {
+                  window.location.replace(target);
+                }, 350);
+              } catch(e) {}
+            })();
+          </script>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/wa",
+    title: "Connecting to WhatsApp | Khana Peena Ghar Se",
+    description: "Opening direct WhatsApp chat with Rachna's kitchen in Bahadurgarh. Handcrafted homemade achars made with 100% pure mustard oil.",
+    canonical: "https://khanapeenagharse.in/whatsapp",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <div class="page-shell" style="min-height: 65vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="text-align: center; padding: 40px 20px; max-width: 480px; margin: 0 auto;">
+          <div style="font-size: 3.5rem; margin-bottom: 16px;">💬</div>
+          <h1 style="font-size: 1.9rem; color: #0B2218; margin: 0 0 10px; font-weight: 700;">
+            Connecting to WhatsApp...
+          </h1>
+          <p style="color: #4A5568; font-size: 1rem; line-height: 1.5; margin: 0 0 24px;">
+            Opening direct WhatsApp chat with Rachna's kitchen in Bahadurgarh.
+          </p>
+          <a
+            id="wa-direct-btn-2"
+            href="https://wa.me/919812389881?text=Namaste%20Khana%20Peena%20Ghar%20Se!%20I%20would%20like%20to%20order%20fresh%20homemade%20achar%20from%20Bahadurgarh."
+            style="background: #25D366; color: #FFFFFF; text-decoration: none; padding: 14px 28px; border-radius: 9999px; font-weight: 700; font-size: 1.05rem; display: inline-block; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);"
+          >
+            Open WhatsApp Now ↗
+          </a>
+          <script>
+            (function() {
+              try {
+                var params = new URLSearchParams(window.location.search);
+                var customMsg = params.get("msg") || params.get("text");
+                var orderId = params.get("order");
+                var productSlug = params.get("product") || params.get("item");
+                var isCombo = params.get("combo");
+                var isBulk = params.get("bulk");
+                var msg = "Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.";
+                if (customMsg) {
+                  msg = customMsg;
+                } else if (orderId) {
+                  msg = "Namaste Khana Peena Ghar Se! I would like to check the status of my Order #" + orderId + ".";
+                } else if (productSlug) {
+                  msg = "Namaste Khana Peena Ghar Se! I would like to order " + productSlug + ". Please share details.";
+                } else if (isCombo) {
+                  msg = "Namaste Khana Peena Ghar Se! I want to order The Ghar Ka Achar 4-in-1 Signature Combo Box (₹999).";
+                } else if (isBulk) {
+                  msg = "Namaste Khana Peena Ghar Se! I am interested in bulk orders / festive gifting hampers for homemade achars.";
+                }
+                var target = "https://wa.me/919812389881?text=" + encodeURIComponent(msg);
+                var btn = document.getElementById("wa-direct-btn-2");
+                if (btn) btn.href = target;
+                setTimeout(function() {
+                  window.location.replace(target);
+                }, 350);
+              } catch(e) {}
+            })();
+          </script>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/how-its-made",
+    title: "How It's Made: Traditional Sun-Cured Achars | Khana Peena Ghar Se",
+    description: "Discover our authentic, slow-cured achar making process in Bahadurgarh. 100% cold-pressed mustard oil, whole hand-roasted spices, zero chemical preservatives.",
+    canonical: "https://khanapeenagharse.in/how-its-made",
+    ogImage: "https://khanapeenagharse.in/images/brand/about-owner.jpg",
+    content: `
+      <header>
+        <h1>How Our Authentic Achars Are Handcrafted</h1>
+        <p>From sourcing farm-fresh raw mangoes and gajar-gobhi-shalgam to sun-curing on Bahadurgarh rooftops with 100% pure cold-pressed mustard oil.</p>
+      </header>
+    `
+  },
+  {
+    path: "/privacy-policy",
+    title: "Privacy Policy | Khana Peena Ghar Se",
+    description: "Khana Peena Ghar Se privacy policy: how we safeguard your personal details and order information.",
+    canonical: "https://khanapeenagharse.in/privacy-policy",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Privacy Policy - Khana Peena Ghar Se</h1>
+        <p>We respect your privacy and never sell or share your contact information.</p>
+      </header>
+    `
+  },
+  {
+    path: "/terms",
+    title: "Terms and Conditions | Khana Peena Ghar Se",
+    description: "Terms and conditions of ordering artisanal homemade pickles from Khana Peena Ghar Se.",
+    canonical: "https://khanapeenagharse.in/terms",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Terms and Conditions - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/terms-and-conditions",
+    title: "Terms and Conditions | Khana Peena Ghar Se",
+    description: "Terms and conditions of ordering artisanal homemade pickles from Khana Peena Ghar Se.",
+    canonical: "https://khanapeenagharse.in/terms",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Terms and Conditions - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/shipping-policy",
+    title: "Shipping & Transit Damage Policy | Khana Peena Ghar Se",
+    description: "Pan-India delivery with shockproof packaging. 100% free immediate replacement jar if damaged in transit.",
+    canonical: "https://khanapeenagharse.in/shipping-policy",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Shipping & Transit Guarantee - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/refund-policy",
+    title: "Refund & Replacement Policy | Khana Peena Ghar Se",
+    description: "100% customer satisfaction guarantee: free replacements or prompt refunds with zero hassle.",
+    canonical: "https://khanapeenagharse.in/refund-policy",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Refund & Replacement Policy - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/returns",
+    title: "Refund & Replacement Policy | Khana Peena Ghar Se",
+    description: "100% customer satisfaction guarantee: free replacements or prompt refunds with zero hassle.",
+    canonical: "https://khanapeenagharse.in/refund-policy",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Refund & Replacement Policy - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/contact-us",
+    title: "Contact Us & Kitchen Location | Khana Peena Ghar Se",
+    description: "Contact Khana Peena Ghar Se. Kitchen location in Bahadurgarh, Haryana. WhatsApp support: +91 98123 89881. Email: khanapeena.ghar@gmail.com.",
+    canonical: "https://khanapeenagharse.in/contact",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Contact Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/shop",
+    title: "All Handcrafted Achars & Pickles | Khana Peena Ghar Se",
+    description: "Explore our collection of authentic homemade achars made with 100% pure cold-pressed mustard oil in Bahadurgarh.",
+    canonical: "https://khanapeenagharse.in/achar",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>All Handcrafted Achars - Khana Peena Ghar Se</h1>
+      </header>
+    `
+  },
+  {
+    path: "/cart",
+    title: "Your Shopping Cart | Khana Peena Ghar Se",
+    description: "Review your selected homemade achars and proceed to secure checkout.",
+    canonical: "https://khanapeenagharse.in/cart",
+    ogImage: "https://khanapeenagharse.in/images/brand/home-hero.jpg",
+    content: `
+      <header>
+        <h1>Your Shopping Cart - Khana Peena Ghar Se</h1>
+      </header>
+    `
   }
 ];
 

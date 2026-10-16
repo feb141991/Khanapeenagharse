@@ -5820,49 +5820,49 @@ function WhatsAppRedirectPage() {
   const [searchParams] = useSearchParams();
   const productCatalog = useCatalogProducts();
 
+  const productSlug = searchParams.get("product") || searchParams.get("item");
+  const orderId = searchParams.get("order");
+  const isBulk = searchParams.get("bulk");
+  const isCombo = searchParams.get("combo");
+  const customMsg = searchParams.get("msg") || searchParams.get("text");
+  const ref = searchParams.get("ref") || "direct_route";
+
+  let message = "Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.";
+
+  if (customMsg) {
+    message = customMsg;
+  } else if (orderId) {
+    message = `Namaste Khana Peena Ghar Se! I would like to check the status of my Order #${orderId}.`;
+  } else if (productSlug) {
+    const p = productCatalog.find((i) => i.slug === productSlug);
+    const name = p ? p.name : productSlug;
+    message = `Namaste Khana Peena Ghar Se! I would like to order ${name} (₹${p?.price || 299}). Please share details.`;
+  } else if (isCombo) {
+    message = "Namaste Khana Peena Ghar Se! I want to order The Ghar Ka Achar 4-in-1 Signature Combo Box (₹999).";
+  } else if (isBulk) {
+    message = "Namaste Khana Peena Ghar Se! I am interested in bulk orders / festive gifting hampers for homemade achars.";
+  }
+
+  const targetUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+
   useDocumentMeta({
     title: "Connecting to WhatsApp | Khana Peena Ghar Se",
     description: "Connect directly with Rachna's kitchen in Bahadurgarh on WhatsApp."
   });
 
   useEffect(() => {
-    const productSlug = searchParams.get("product") || searchParams.get("item");
-    const orderId = searchParams.get("order");
-    const isBulk = searchParams.get("bulk");
-    const isCombo = searchParams.get("combo");
-    const customMsg = searchParams.get("msg") || searchParams.get("text");
-    const ref = searchParams.get("ref") || "direct_route";
-
-    let message = "Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar from Bahadurgarh.";
-
-    if (customMsg) {
-      message = customMsg;
-    } else if (orderId) {
-      message = `Namaste Khana Peena Ghar Se! I would like to check the status of my Order #${orderId}.`;
-    } else if (productSlug) {
-      const p = productCatalog.find((i) => i.slug === productSlug);
-      const name = p ? p.name : productSlug;
-      message = `Namaste Khana Peena Ghar Se! I would like to order ${name} (₹${p?.price || 299}). Please share details.`;
-    } else if (isCombo) {
-      message = "Namaste Khana Peena Ghar Se! I want to order The Ghar Ka Achar 4-in-1 Signature Combo Box (₹999).";
-    } else if (isBulk) {
-      message = "Namaste Khana Peena Ghar Se! I am interested in bulk orders / festive gifting hampers for homemade achars.";
-    }
-
     trackEvent("whatsapp_redirect", {
       ref,
       product: productSlug || "",
       order_id: orderId || ""
     });
 
-    const targetUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
-    
     const timer = setTimeout(() => {
       window.location.replace(targetUrl);
     }, 450);
 
     return () => clearTimeout(timer);
-  }, [searchParams, productCatalog]);
+  }, [ref, productSlug, orderId, targetUrl]);
 
   return (
     <div className="page-shell" style={{ minHeight: "65vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -5875,7 +5875,7 @@ function WhatsAppRedirectPage() {
           Opening direct WhatsApp chat with Rachna's kitchen in Bahadurgarh.
         </p>
         <a
-          href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent("Namaste Khana Peena Ghar Se! I would like to order fresh homemade achar.")}`}
+          href={targetUrl}
           className="button button-primary"
           style={{ background: "#25D366", borderColor: "#25D366", color: "#FFF" }}
         >
@@ -5893,7 +5893,7 @@ function FloatingWhatsAppButton() {
       className="floating-whatsapp-btn"
       aria-label="Chat with Khana Peena Ghar Se on WhatsApp"
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       onClick={() => trackEvent("floating_whatsapp_click")}
     >
       <span className="wa-icon" aria-hidden="true">💬</span>
