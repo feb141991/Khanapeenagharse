@@ -1,7 +1,7 @@
 # ==============================================================================
 # Khana Peena Ghar Se - Robots & AI Crawler Directives Configuration
 # Official Domain: https://khanapeenagharse.in
-# Last Updated: 2026-10-16
+# Last Updated: 2026-10-17
 # ==============================================================================
 
 # User-agents for general search engines
