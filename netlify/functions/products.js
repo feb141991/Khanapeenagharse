@@ -62,7 +62,6 @@ function isValidMediaUrl(url) {
   if (!url || typeof url !== "string") return false;
   if (url.includes("/images/logo.png")) return false;
   if (url.includes("supabase.co/storage/v1/object/public/product-images")) return false;
-  if (url.endsWith("cover.jpg") || url.endsWith("detail-1.jpg") || url.endsWith("detail-2.jpg")) return false;
   return true;
 }
 

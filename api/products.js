@@ -65,15 +65,13 @@ function isValidMediaUrl(url) {
   if (url.includes("/images/logo.png")) return false;
   // Non-existent Supabase storage bucket
   if (url.includes("supabase.co/storage/v1/object/public/product-images")) return false;
-  // Missing placeholder files from DB
-  if (url.endsWith("cover.jpg") || url.endsWith("detail-1.jpg") || url.endsWith("detail-2.jpg")) return false;
   return true;
 }
 
 function toPublicMediaUrl(value, slug) {
   if (!value || typeof value !== "string") return null;
   if (value.startsWith("/images/")) return value;
-  // If it's a relative path like "aam-ka-achar/Aam ka aachar.png", resolve to local static path
+  // If it's a relative path like "aam-ka-achar/Aam ka aachar.png" or "aam-ka-achar/hero.jpg", resolve to local static path
   if (/^[a-z0-9_-]+\/[^/]+$/i.test(value)) {
     const candidate = `/images/achars/${value}`;
     if (isValidMediaUrl(candidate)) return candidate;

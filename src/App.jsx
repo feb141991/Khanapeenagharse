@@ -69,10 +69,7 @@ function mergeProductsFromDatabase(baseProducts, remoteProducts) {
       !url ||
       typeof url !== "string" ||
       url.includes("/images/logo.png") ||
-      url.includes("supabase.co/storage/v1/object/public/product-images") ||
-      url.endsWith("cover.jpg") ||
-      url.endsWith("detail-1.jpg") ||
-      url.endsWith("detail-2.jpg");
+      url.includes("supabase.co/storage/v1/object/public/product-images");
 
     const validRemoteGallery = Array.isArray(remote.gallery_images)
       ? remote.gallery_images.filter((img) => !isBadMediaUrl(img))
