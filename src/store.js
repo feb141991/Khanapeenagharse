@@ -2,7 +2,11 @@ const CART_KEY = "kp_cart_v3";
 const WISHLIST_KEY = "kp_wishlist_v3";
 
 function isBrowser() {
-  return typeof window !== "undefined" && !!window.localStorage;
+  try {
+    return typeof window !== "undefined" && !!window.localStorage;
+  } catch {
+    return false;
+  }
 }
 
 export function readJson(key, fallback) {

@@ -295,9 +295,24 @@ function CartDrawer({ isOpen, onClose, cart, updateCartQuantity }) {
     return items.reduce((sum, item) => sum + item.quantity, 0);
   }, [items]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [isOpen, onClose]);
 
-  return (
+  if (!isOpen) return null;
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <AnimatePresence>
       <div className="cart-drawer-root">
         <motion.div
@@ -336,14 +351,29 @@ function CartDrawer({ isOpen, onClose, cart, updateCartQuantity }) {
             {items.length ? (
               items.map((item) => (
                 <div key={item.product.slug} className="cart-drawer-item">
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="cart-drawer-item-img"
-                    onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
-                  />
+                  <Link
+                    to={`/product/${item.product.slug}`}
+                    onClick={onClose}
+                    className="cart-drawer-item-img-link"
+                    style={{ flexShrink: 0, display: "block" }}
+                  >
+                    <img
+                      src={item.product.image}
+                      alt={item.product.name}
+                      className="cart-drawer-item-img"
+                      onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
+                    />
+                  </Link>
                   <div className="cart-drawer-item-details">
-                    <h4 className="cart-drawer-item-name">{item.product.name}</h4>
+                    <h4 className="cart-drawer-item-name">
+                      <Link
+                        to={`/product/${item.product.slug}`}
+                        onClick={onClose}
+                        style={{ color: "inherit", textDecoration: "none" }}
+                      >
+                        {item.product.name}
+                      </Link>
+                    </h4>
                     <p className="cart-drawer-item-meta">{item.product.size} • ₹{item.product.price}</p>
                     <div className="cart-drawer-item-controls">
                       <div className="cart-drawer-qty-pill">
@@ -424,7 +454,8 @@ function CartDrawer({ isOpen, onClose, cart, updateCartQuantity }) {
           ) : null}
         </motion.aside>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
@@ -1352,7 +1383,7 @@ function KitchenMomentsSection({ addToCart }) {
   const handleQuickAdd = (slug) => {
     const product = catalog.find((p) => p.slug === slug);
     if (product && addToCart) {
-      addToCart(product, 1);
+      addToCart(product.slug, 1, product.stock, product);
     }
   };
 
@@ -1466,84 +1497,108 @@ function KitchenMomentsSection({ addToCart }) {
         </div>
       </div>
 
-      {/* Interactive Story Spotlight Modal */}
-      <AnimatePresence>
-        {activeStory && (
-          <motion.div
-            className="story-modal-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActiveStory(null)}
-          >
-            <motion.div
-              className="story-modal-card"
-              initial={{ scale: 0.92, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 20 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                className="story-modal-close"
-                onClick={() => setActiveStory(null)}
-                aria-label="Close Story"
-              >
-                ✕
-              </button>
-
-              <div className="story-modal-image-col">
-                <img
-                  src={activeStory.image}
-                  alt={activeStory.title}
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/brand/home-hero.jpg";
-                  }}
-                />
-                <div className="story-modal-badge">
-                  ✦ {activeStory.highlightBadge}
-                </div>
-              </div>
-
-              <div className="story-modal-content-col">
-                <div>
-                  <span className="story-modal-eyebrow">
-                    {activeStory.category} • {activeStory.readTime}
-                  </span>
-                  <h2 className="story-modal-title">{activeStory.storyHeadline}</h2>
-                </div>
-
-                <blockquote className="story-modal-quote">
-                  {activeStory.storyQuote}
-                </blockquote>
-
-                <p className="story-modal-body">{activeStory.storyBody}</p>
-
-                <div className="story-modal-actions">
-                  {activeStory.relatedProductSlug && (
-                    <button
-                      type="button"
-                      className="button button-mustard-primary"
-                      onClick={() => handleOpenProduct(activeStory.relatedProductSlug)}
-                    >
-                      {activeStory.relatedProductLabel} (₹{activeStory.relatedProductPrice}) →
-                    </button>
-                  )}
-                  <Link
-                    to={activeStory.linkUrl}
-                    className="button button-outline-dark"
-                    onClick={() => setActiveStory(null)}
-                  >
-                    {activeStory.linkText} ↗
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <KitchenStoryModal
+        story={activeStory}
+        onClose={() => setActiveStory(null)}
+        onOpenProduct={handleOpenProduct}
+      />
     </section>
+  );
+}
+
+function KitchenStoryModal({ story, onClose, onOpenProduct }) {
+  useEffect(() => {
+    if (!story) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [story, onClose]);
+
+  if (!story || typeof document === "undefined") return null;
+
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        className="story-modal-backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="story-modal-card"
+          initial={{ scale: 0.92, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.92, opacity: 0, y: 20 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="story-modal-close"
+            onClick={onClose}
+            aria-label="Close Story"
+          >
+            ✕
+          </button>
+
+          <div className="story-modal-image-col">
+            <img
+              src={story.image}
+              alt={story.title}
+              onError={(e) => {
+                e.currentTarget.src = "/images/brand/home-hero.jpg";
+              }}
+            />
+            <div className="story-modal-badge">
+              ✦ {story.highlightBadge}
+            </div>
+          </div>
+
+          <div className="story-modal-content-col">
+            <div>
+              <span className="story-modal-eyebrow">
+                {story.category} • {story.readTime}
+              </span>
+              <h2 className="story-modal-title">{story.storyHeadline}</h2>
+            </div>
+
+            <blockquote className="story-modal-quote">
+              {story.storyQuote}
+            </blockquote>
+
+            <p className="story-modal-body">{story.storyBody}</p>
+
+            <div className="story-modal-actions">
+              {story.relatedProductSlug && (
+                <button
+                  type="button"
+                  className="button button-mustard-primary"
+                  onClick={() => onOpenProduct(story.relatedProductSlug)}
+                >
+                  {story.relatedProductLabel} (₹{story.relatedProductPrice}) →
+                </button>
+              )}
+              <Link
+                to={story.linkUrl}
+                className="button button-outline-dark"
+                onClick={onClose}
+              >
+                {story.linkText} ↗
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
   );
 }
 
@@ -2435,7 +2490,9 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
         },
         ...filtered
       ].slice(0, 5); // Keep up to 5 recent
-      localStorage.setItem("kp_recent_pincodes", JSON.stringify(updated));
+      try {
+        localStorage.setItem("kp_recent_pincodes", JSON.stringify(updated));
+      } catch {}
       return updated;
     });
   }, []);
@@ -2483,7 +2540,9 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
       const estimate = getPincodeEstimate(clean);
       setResult(estimate);
       setPincode(clean);
-      localStorage.setItem("kp_pincode", clean);
+      try {
+        localStorage.setItem("kp_pincode", clean);
+      } catch {}
       saveToRecent(clean, estimate);
       setIsChanging(false);
       setShowPopular(false);
@@ -2512,7 +2571,9 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
     e.stopPropagation();
     setRecentPins((prev) => {
       const updated = prev.filter((p) => p.pin !== pinToRemove);
-      localStorage.setItem("kp_recent_pincodes", JSON.stringify(updated));
+      try {
+        localStorage.setItem("kp_recent_pincodes", JSON.stringify(updated));
+      } catch {}
       return updated;
     });
   };
@@ -3092,7 +3153,7 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
                 onError={(e) => { e.currentTarget.src = "/images/logo.png"; }}
               />
             </div>
-            {product.images?.length > 1 ? (
+            {Array.isArray(product.images) && product.images.length > 1 ? (
               <div className="product-gallery-thumbs">
                 {product.images.map((img) => (
                   <button
@@ -3222,9 +3283,13 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
               <div>
                 <p>Handcrafted using pure, unrefined cold-pressed kacchi ghani mustard oil, sun-dried spices, and fresh produce. No artificial colours or chemical preservatives.</p>
                 <div className="badge-tag-list">
-                  {product.ingredients?.map((ing) => (
-                    <span key={ing} className="badge-tag">🌿 {ing}</span>
-                  ))}
+                  {Array.isArray(product.ingredients)
+                    ? product.ingredients.map((ing) => (
+                        <span key={ing} className="badge-tag">🌿 {ing}</span>
+                      ))
+                    : typeof product.ingredients === "string" && product.ingredients.trim()
+                    ? <span className="badge-tag">🌿 {product.ingredients}</span>
+                    : null}
                 </div>
               </div>
             )}
@@ -3233,9 +3298,13 @@ function ProductPage({ addToCart, wishlist, toggleWishlist }) {
               <div>
                 <p>This homestyle flavour sits naturally beside everyday Indian meals and festive thalis:</p>
                 <div className="badge-tag-list">
-                  {product.pairings?.map((pair) => (
-                    <span key={pair} className="badge-tag">🍽️ {pair}</span>
-                  ))}
+                  {Array.isArray(product.pairings)
+                    ? product.pairings.map((pair) => (
+                        <span key={pair} className="badge-tag">🍽️ {pair}</span>
+                      ))
+                    : typeof product.pairings === "string" && product.pairings.trim()
+                    ? <span className="badge-tag">🍽️ {product.pairings}</span>
+                    : null}
                 </div>
               </div>
             )}
@@ -4055,12 +4124,22 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
   const [orderSuccess, setOrderSuccess] = useState(null);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [checkoutPincode, setCheckoutPincode] = useState(() => localStorage.getItem("kp_pincode") || "");
+  const [checkoutPincode, setCheckoutPincode] = useState(() => {
+    try {
+      return localStorage.getItem("kp_pincode") || "";
+    } catch {
+      return "";
+    }
+  });
   const [checkoutCity, setCheckoutCity] = useState("");
   const [checkoutState, setCheckoutState] = useState("");
   const [checkoutPinEstimate, setCheckoutPinEstimate] = useState(() => {
-    const saved = localStorage.getItem("kp_pincode");
-    return saved && /^\d{6}$/.test(saved) ? getPincodeEstimate(saved) : null;
+    try {
+      const saved = localStorage.getItem("kp_pincode");
+      return saved && /^\d{6}$/.test(saved) ? getPincodeEstimate(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
   useEffect(() => {
@@ -4070,10 +4149,10 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
       }
       if (!checkoutCity && checkoutPinEstimate.region) {
         const guessedCity = checkoutPinEstimate.region.split("/")[0].trim();
-        setCheckoutCity(guessedCity);
+        if (guessedCity) setCheckoutCity(guessedCity);
       }
     }
-  }, [checkoutPinEstimate]);
+  }, [checkoutPinEstimate, checkoutState, checkoutCity]);
 
   const handlePincodeChange = (e) => {
     const val = e.target.value.replace(/\D/g, "").slice(0, 6);
@@ -4082,7 +4161,9 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
       const est = getPincodeEstimate(val);
       setCheckoutPinEstimate(est);
       if (est && est.valid) {
-        localStorage.setItem("kp_pincode", val);
+        try {
+          localStorage.setItem("kp_pincode", val);
+        } catch {}
         setCheckoutState(est.state || "");
         const guessedCity = est.region ? est.region.split("/")[0].trim() : "";
         if (guessedCity) setCheckoutCity(guessedCity);
@@ -4146,7 +4227,9 @@ function CartPage({ cart, updateCartQuantity, onClearCart }) {
         shipping: shippingFee
       });
 
-      localStorage.removeItem("kp_cart_v3");
+      try {
+        localStorage.removeItem("kp_cart_v3");
+      } catch {}
       if (onClearCart) onClearCart();
       setOrderSuccess(result.order);
       setStatus("");
@@ -5844,11 +5927,15 @@ function useShopState() {
         image: product?.image || null
       });
     },
-    addToCart(slug, quantity = 1, maxStock = Number.POSITIVE_INFINITY, product = null) {
+    addToCart(slugOrProduct, quantity = 1, maxStock = Number.POSITIVE_INFINITY, productParam = null) {
+      const slug = typeof slugOrProduct === "object" && slugOrProduct ? slugOrProduct.slug : slugOrProduct;
+      const product = (typeof slugOrProduct === "object" && slugOrProduct) ? slugOrProduct : (productParam || productCatalog.find((p) => p.slug === slug));
+      const actualMaxStock = typeof slugOrProduct === "object" && typeof slugOrProduct.stock === "number" ? slugOrProduct.stock : maxStock;
+
       setCartState((current) => {
         const existing = current.find((item) => item.slug === slug);
         const nextQuantity = Math.max(0, Math.min(
-          maxStock,
+          actualMaxStock,
           (existing?.quantity || 0) + quantity
         ));
 
