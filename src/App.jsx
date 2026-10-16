@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, Route, Routes, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { faqs, products, testimonials } from "./data";
@@ -427,19 +428,243 @@ function CartDrawer({ isOpen, onClose, cart, updateCartQuantity }) {
   );
 }
 
+function QuickViewModal({ product, isOpen, onClose, onAddToCart, onNavigateToProduct }) {
+  const [selectedImgIdx, setSelectedImgIdx] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [modalAdded, setModalAdded] = useState(false);
+
+  // Lock body scroll and listen for Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  // Reset indices on open
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedImgIdx(0);
+      setQuantity(1);
+      setModalAdded(false);
+    }
+  }, [isOpen, product]);
+
+  if (!isOpen || !product) return null;
+  if (typeof document === "undefined") return null;
+
+  const images = Array.isArray(product.images) && product.images.length > 0
+    ? product.images
+    : [product.image || "/images/logo.png"];
+
+  const dietaryBadges = Array.isArray(product.dietaryBadges)
+    ? product.dietaryBadges
+    : [];
+
+  const ingredientsText = Array.isArray(product.ingredients)
+    ? product.ingredients.join(", ")
+    : typeof product.ingredients === "string"
+    ? product.ingredients
+    : "";
+
+  const handleAdd = () => {
+    if (product.stock <= 0) return;
+    onAddToCart(product.slug, quantity, product.stock, product);
+    setModalAdded(true);
+    setTimeout(() => setModalAdded(false), 1800);
+  };
+
+  const modalContent = (
+    <AnimatePresence>
+      <motion.div
+        className="product-quickview-backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="product-quickview-card"
+          initial={{ scale: 0.94, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.94, opacity: 0, y: 20 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            className="quickview-close-btn"
+            onClick={onClose}
+            aria-label="Close Quick View"
+          >
+            ✕
+          </button>
+
+          {/* Left Column: Visual Showcase & Gallery */}
+          <div className="quickview-gallery-col">
+            <div className="quickview-main-image-wrap">
+              <img
+                src={images[selectedImgIdx] || product.image || "/images/logo.png"}
+                alt={product.name}
+                onError={(e) => {
+                  e.currentTarget.src = "/images/logo.png";
+                }}
+              />
+              <div className="quickview-image-badge">
+                ✦ 100% Pure Mustard Oil • Zero Palm Oil
+              </div>
+            </div>
+
+            {images.length > 1 && (
+              <div className="quickview-thumbs-strip">
+                {images.map((img, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`quickview-thumb-btn ${selectedImgIdx === i ? "is-active" : ""}`}
+                    onClick={() => setSelectedImgIdx(i)}
+                  >
+                    <img
+                      src={img}
+                      alt=""
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/logo.png";
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Culinary Details & Instant Order Controls */}
+          <div className="quickview-info-col">
+            <div className="quickview-meta-pills">
+              <span className="quickview-category-pill">{product.category}</span>
+              {product.spice && (
+                <span className="quickview-spice-pill">
+                  🌶️ {product.spice}
+                </span>
+              )}
+              <span className="quickview-shelf-pill">⏳ 12-Month Life</span>
+            </div>
+
+            <h2 className="quickview-title">{product.name}</h2>
+            <p className="quickview-tagline">{product.tagline}</p>
+
+            <div className="quickview-price-box">
+              <div className="quickview-price-wrap">
+                <span className="quickview-price-main">₹{product.price}</span>
+                {product.originalPrice && product.originalPrice > product.price && (
+                  <>
+                    <span className="quickview-price-original">₹{product.originalPrice}</span>
+                    <span className="quickview-savings-badge">
+                      Save ₹{product.originalPrice - product.price}
+                    </span>
+                  </>
+                )}
+              </div>
+              <span className="quickview-size-badge">{product.size}</span>
+            </div>
+
+            <p className="quickview-description">
+              {product.shortDescription || product.description}
+            </p>
+
+            {/* Dietary & Craft Badges */}
+            {dietaryBadges.length > 0 && (
+              <div className="quickview-dietary-pills">
+                {dietaryBadges.slice(0, 4).map((badge, i) => (
+                  <span key={i} className="quickview-dietary-pill">
+                    ✓ {badge}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Ingredients snippet */}
+            {ingredientsText && (
+              <div className="quickview-ingredients-row">
+                <strong>Ingredients:</strong>{" "}
+                <span>{ingredientsText}</span>
+              </div>
+            )}
+
+            {/* Instant Delivery Check in QuickView */}
+            <PincodeChecker compact={true} />
+
+            {/* Purchase & Action Controls */}
+            <div className="quickview-actions-wrap">
+              <div className="quickview-qty-selector">
+                <button
+                  type="button"
+                  className="quickview-qty-btn"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={quantity <= 1}
+                >
+                  −
+                </button>
+                <span className="quickview-qty-val">{quantity}</span>
+                <button
+                  type="button"
+                  className="quickview-qty-btn"
+                  onClick={() => setQuantity((q) => Math.min(product.stock || 20, q + 1))}
+                  disabled={quantity >= (product.stock || 20)}
+                >
+                  +
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className={`button button-mustard-primary quickview-add-btn ${modalAdded ? "is-added" : ""}`}
+                disabled={product.stock <= 0}
+                onClick={handleAdd}
+              >
+                {product.stock <= 0
+                  ? "Out of Stock"
+                  : modalAdded
+                  ? "✓ Added to Cart!"
+                  : `Add to Cart • ₹${product.price * quantity}`}
+              </button>
+            </div>
+
+            <div className="quickview-footer-links">
+              <button
+                type="button"
+                className="quickview-full-details-link"
+                onClick={onNavigateToProduct}
+              >
+                View Full Product Details &amp; Customer Reviews →
+              </button>
+
+              <div className="quickview-trust-note">
+                🔒 Handcrafted in Bahadurgarh • Free Safe Pan-India Delivery
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+
+  return createPortal(modalContent, document.body);
+}
+
 function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay = 0 }) {
   const navigate = useNavigate();
   const [justAdded, setJustAdded] = useState(false);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
-  const [selectedImgIdx, setSelectedImgIdx] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [modalAdded, setModalAdded] = useState(false);
   const isWishlisted = wishlist.includes(product.slug);
-
-  const images =
-    product.images && product.images.length > 0
-      ? product.images
-      : [product.image];
 
   const handleAdd = (qty = 1) => {
     if (product.stock <= 0) return;
@@ -448,18 +673,9 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
     setTimeout(() => setJustAdded(false), 1500);
   };
 
-  const handleModalAdd = () => {
-    if (product.stock <= 0) return;
-    addToCart(product.slug, quantity, product.stock, product);
-    setModalAdded(true);
-    setTimeout(() => setModalAdded(false), 1800);
-  };
-
   const openQuickView = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setSelectedImgIdx(0);
-    setQuantity(1);
     setIsQuickViewOpen(true);
     trackQuickView(product);
     trackViewItem(product);
@@ -467,7 +683,6 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
 
   const closeQuickView = () => {
     setIsQuickViewOpen(false);
-    setModalAdded(false);
   };
 
   const goToProductPage = () => {
@@ -501,7 +716,7 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
             {isWishlisted ? "♥" : "♡"}
           </button>
 
-          <Link to={`/product/${product.slug}`} style={{ width: "100%", height: "100%" }}>
+          <Link to={`/product/${product.slug}`} className="product-card-visual-link" style={{ width: "100%", height: "100%", display: "block" }}>
             <img
               src={product.image}
               alt={product.name}
@@ -512,19 +727,23 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
             />
           </Link>
 
-          {/* Sleek Translucent Quick View Hover Trigger */}
+          {/* Quick link hover trigger on image */}
           <button
             type="button"
             className="product-card-quickview-btn"
             onClick={openQuickView}
             aria-label={`Quick view ${product.name}`}
           >
-            <span>🔍</span> Quick View
+            <span>⚡</span> Quick View
           </button>
         </div>
 
         <div className="product-card-info">
-          <h3>{product.name}</h3>
+          <h3>
+            <Link to={`/product/${product.slug}`} className="product-card-title-link">
+              {product.name}
+            </Link>
+          </h3>
           <p className="product-card-tagline">{product.tagline}</p>
           <div className="product-card-price-row">
             <span className="product-card-price">₹{product.price}</span>
@@ -535,196 +754,38 @@ function ProductCard({ product, wishlist = [], toggleWishlist, addToCart, delay 
         <div className="product-card-actions">
           <button
             type="button"
-            className={`button button-primary button-sm ${justAdded ? "is-added button-pulse" : ""}`}
+            className={`button button-primary button-sm product-card-add-btn ${justAdded ? "is-added button-pulse" : ""}`}
             disabled={product.stock <= 0}
             onClick={() => handleAdd(1)}
           >
             {product.stock <= 0 ? "Out of Stock" : justAdded ? "✓ Added!" : "Add to Cart"}
           </button>
-          <button
-            type="button"
-            className="button button-cream-secondary button-sm"
-            onClick={openQuickView}
-          >
-            Quick View
-          </button>
+          <div className="product-card-dual-links">
+            <button
+              type="button"
+              className="button button-cream-secondary button-xs product-card-quick-btn"
+              onClick={openQuickView}
+              aria-label={`Quick view ${product.name}`}
+            >
+              <span>⚡</span> Quick View
+            </button>
+            <Link
+              to={`/product/${product.slug}`}
+              className="button button-cream-secondary button-xs product-card-details-link"
+            >
+              Details →
+            </Link>
+          </div>
         </div>
       </motion.article>
 
-      {/* Translucent & Transparent Luxury Quick View Modal */}
-      <AnimatePresence>
-        {isQuickViewOpen && (
-          <motion.div
-            className="product-quickview-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={closeQuickView}
-          >
-            <motion.div
-              className="product-quickview-card"
-              initial={{ scale: 0.92, opacity: 0, y: 24 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.92, opacity: 0, y: 24 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                className="quickview-close-btn"
-                onClick={closeQuickView}
-                aria-label="Close Quick View"
-              >
-                ✕
-              </button>
-
-              {/* Left Column: Visual Showcase & Gallery */}
-              <div className="quickview-gallery-col">
-                <div className="quickview-main-image-wrap">
-                  <img
-                    src={images[selectedImgIdx] || product.image}
-                    alt={product.name}
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/logo.png";
-                    }}
-                  />
-                  <div className="quickview-image-badge">
-                    ✦ 100% Pure Mustard Oil • Zero Palm Oil
-                  </div>
-                </div>
-
-                {images.length > 1 && (
-                  <div className="quickview-thumbs-strip">
-                    {images.map((img, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        className={`quickview-thumb-btn ${selectedImgIdx === i ? "is-active" : ""}`}
-                        onClick={() => setSelectedImgIdx(i)}
-                      >
-                        <img
-                          src={img}
-                          alt=""
-                          onError={(e) => {
-                            e.currentTarget.src = "/images/logo.png";
-                          }}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Right Column: Culinary Details & Instant Order Controls */}
-              <div className="quickview-info-col">
-                <div className="quickview-meta-pills">
-                  <span className="quickview-category-pill">{product.category}</span>
-                  {product.spice && (
-                    <span className="quickview-spice-pill">
-                      🌶️ {product.spice}
-                    </span>
-                  )}
-                  <span className="quickview-shelf-pill">⏳ 12-Month Life</span>
-                </div>
-
-                <h2 className="quickview-title">{product.name}</h2>
-                <p className="quickview-tagline">{product.tagline}</p>
-
-                <div className="quickview-price-box">
-                  <div className="quickview-price-wrap">
-                    <span className="quickview-price-main">₹{product.price}</span>
-                    {product.originalPrice && product.originalPrice > product.price && (
-                      <>
-                        <span className="quickview-price-original">₹{product.originalPrice}</span>
-                        <span className="quickview-savings-badge">
-                          Save ₹{product.originalPrice - product.price}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <span className="quickview-size-badge">{product.size}</span>
-                </div>
-
-                <p className="quickview-description">
-                  {product.shortDescription || product.description}
-                </p>
-
-                {/* Dietary & Craft Badges */}
-                {product.dietaryBadges && product.dietaryBadges.length > 0 && (
-                  <div className="quickview-dietary-pills">
-                    {product.dietaryBadges.slice(0, 4).map((badge, i) => (
-                      <span key={i} className="quickview-dietary-pill">
-                        ✓ {badge}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {/* Ingredients snippet */}
-                {product.ingredients && product.ingredients.length > 0 && (
-                  <div className="quickview-ingredients-row">
-                    <strong>Ingredients:</strong>{" "}
-                    <span>{product.ingredients.join(", ")}</span>
-                  </div>
-                )}
-
-                {/* Instant Delivery Check in QuickView */}
-                <PincodeChecker compact={true} />
-
-                {/* Purchase & Action Controls */}
-                <div className="quickview-actions-wrap">
-                  <div className="quickview-qty-selector">
-                    <button
-                      type="button"
-                      className="quickview-qty-btn"
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      disabled={quantity <= 1}
-                    >
-                      −
-                    </button>
-                    <span className="quickview-qty-val">{quantity}</span>
-                    <button
-                      type="button"
-                      className="quickview-qty-btn"
-                      onClick={() => setQuantity((q) => Math.min(product.stock || 20, q + 1))}
-                      disabled={quantity >= (product.stock || 20)}
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    className={`button button-mustard-primary quickview-add-btn ${modalAdded ? "is-added" : ""}`}
-                    disabled={product.stock <= 0}
-                    onClick={handleModalAdd}
-                  >
-                    {product.stock <= 0
-                      ? "Out of Stock"
-                      : modalAdded
-                      ? "✓ Added to Cart!"
-                      : `Add to Cart • ₹${product.price * quantity}`}
-                  </button>
-                </div>
-
-                <div className="quickview-footer-links">
-                  <button
-                    type="button"
-                    className="quickview-full-details-link"
-                    onClick={goToProductPage}
-                  >
-                    View Full Product Details &amp; Reviews →
-                  </button>
-
-                  <div className="quickview-trust-note">
-                    🔒 Handcrafted in Bahadurgarh • Free Safe Pan-India Delivery
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <QuickViewModal
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={closeQuickView}
+        onAddToCart={addToCart}
+        onNavigateToProduct={goToProductPage}
+      />
     </>
   );
 }
@@ -2328,7 +2389,13 @@ function getPincodeEstimate(rawPin) {
 }
 
 function PincodeChecker({ compact = false, onSelectPincode }) {
-  const [pincode, setPincode] = useState(() => localStorage.getItem("kp_pincode") || "");
+  const [pincode, setPincode] = useState(() => {
+    try {
+      return localStorage.getItem("kp_pincode") || "";
+    } catch {
+      return "";
+    }
+  });
   const [recentPins, setRecentPins] = useState(() => {
     try {
       const saved = localStorage.getItem("kp_recent_pincodes");
@@ -2339,9 +2406,13 @@ function PincodeChecker({ compact = false, onSelectPincode }) {
   });
 
   const [result, setResult] = useState(() => {
-    const saved = localStorage.getItem("kp_pincode");
-    if (saved && /^\d{6}$/.test(saved)) {
-      return getPincodeEstimate(saved);
+    try {
+      const saved = localStorage.getItem("kp_pincode");
+      if (saved && /^\d{6}$/.test(saved)) {
+        return getPincodeEstimate(saved);
+      }
+    } catch {
+      return null;
     }
     return null;
   });
